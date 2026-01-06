@@ -226,7 +226,7 @@ export default function AlertPage() {
                         <p className="text-gray-600 mt-1">Monitor and manage soldier fitness alerts</p>
                     </div>
                     <div className="flex gap-3">
-                        <Button variant="outline" size="lg" onClick={handleMarkAllAsRead}>
+                        <Button variant="outline" size="lg" onClick={handleMarkAllAsRead} className="cursor-pointer">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
@@ -308,6 +308,7 @@ export default function AlertPage() {
                                                         variant="outline"
                                                         size="sm"
                                                         onClick={() => handleMarkAsRead(alert.id)}
+                                                        className="cursor-pointer"
                                                     >
                                                         Mark as Read
                                                     </Button>
@@ -316,6 +317,7 @@ export default function AlertPage() {
                                                     <Button
                                                         size="sm"
                                                         onClick={() => handleAcknowledge(alert.id)}
+                                                        className="cursor-pointer"
                                                     >
                                                         Acknowledge
                                                     </Button>
