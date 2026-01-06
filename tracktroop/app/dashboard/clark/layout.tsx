@@ -61,7 +61,7 @@ export default function SoldierLayout({
 
                     <Button variant="outline" size="sm" className="gap-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white cursor-pointer">
                         <LogOut className="h-4 w-4" />
-                        <span className="hidden sm:inline">Logout</span>
+                        <Link href="/auth">Logout</Link>
                     </Button>
                 </div>
             </header>

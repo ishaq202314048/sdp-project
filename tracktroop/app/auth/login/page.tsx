@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { redirect } from "next/navigation";
 
 export default function LoginPage() {
     const [userType, setUserType] = useState("");
@@ -20,6 +21,13 @@ export default function LoginPage() {
         setIsLoading(true);
         
         console.log({ userType, email, password, rememberMe });
+        if(userType === "clark") {
+            redirect("/dashboard/clark");
+        } else if(userType === "soldiers") {
+            redirect("/dashboard/soldier");
+        } else if(userType === "adjudant") {
+            redirect("/dashboard/adjudant");
+        }
 
         setTimeout(() => {
             setIsLoading(false);
