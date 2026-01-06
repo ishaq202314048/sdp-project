@@ -181,10 +181,6 @@ export default function ClarkHomePage() {
         }
     };
 
-    const getResultBadgeVariant = (result: string) => {
-        return result === "Pass" ? "default" : "destructive";
-    };
-
     return (
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto space-y-6">
@@ -193,20 +189,6 @@ export default function ClarkHomePage() {
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Command Dashboard</h1>
                         <p className="text-gray-600 mt-1">Unit readiness and fitness monitoring overview</p>
-                    </div>
-                    <div className="flex gap-3">
-                        <Button variant="outline" size="lg">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Generate Report
-                        </Button>
-                        <Button size="lg">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                            View Alerts
-                        </Button>
                     </div>
                 </div>
 
@@ -225,122 +207,55 @@ export default function ClarkHomePage() {
                     ))}
                 </div>
 
-                {/* Unit Readiness Overview */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Unit Readiness Status</CardTitle>
-                            <CardDescription>Overall fitness distribution</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                <div>
-                                    <div className="flex justify-between mb-2">
-                                        <span className="text-sm font-medium text-gray-700">Fit Soldiers</span>
-                                        <span className="text-sm font-medium text-green-600">{fitnessPercentage}%</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
-                                        <div
-                                            className="bg-green-600 h-3 rounded-full transition-all"
-                                            style={{ width: `${fitnessPercentage}%` }}
-                                        />
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-1">{stats.fitSoldiers} of {stats.totalSoldiers} soldiers</p>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Unit Readiness Status</CardTitle>
+                        <CardDescription>Overall fitness distribution</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div>
+                                <div className="flex justify-between mb-2">
+                                    <span className="text-sm font-medium text-gray-700">Fit Soldiers</span>
+                                    <span className="text-sm font-medium text-green-600">{fitnessPercentage}%</span>
                                 </div>
-                                <div>
-                                    <div className="flex justify-between mb-2">
-                                        <span className="text-sm font-medium text-gray-700">Unfit Soldiers</span>
-                                        <span className="text-sm font-medium text-red-600">{unfitnessPercentage}%</span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-3">
-                                        <div
-                                            className="bg-red-600 h-3 rounded-full transition-all"
-                                            style={{ width: `${unfitnessPercentage}%` }}
-                                        />
-                                    </div>
-                                    <p className="text-xs text-gray-500 mt-1">{stats.unfitSoldiers} soldiers need attention</p>
+                                <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div
+                                        className="bg-green-600 h-3 rounded-full transition-all"
+                                        style={{ width: `${fitnessPercentage}%` }}
+                                    />
                                 </div>
-                                <div className="pt-4 border-t">
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-sm text-gray-600">Average Score</p>
-                                            <p className="text-2xl font-bold text-gray-900">{stats.averageFitnessScore}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-600">Pending Tests</p>
-                                            <p className="text-2xl font-bold text-orange-600">{stats.pendingTests}</p>
-                                        </div>
+                                <p className="text-xs text-gray-500 mt-1">{stats.fitSoldiers} of {stats.totalSoldiers} soldiers</p>
+                            </div>
+                            <div>
+                                <div className="flex justify-between mb-2">
+                                    <span className="text-sm font-medium text-gray-700">Unfit Soldiers</span>
+                                    <span className="text-sm font-medium text-red-600">{unfitnessPercentage}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-3">
+                                    <div
+                                        className="bg-red-600 h-3 rounded-full transition-all"
+                                        style={{ width: `${unfitnessPercentage}%` }}
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">{stats.unfitSoldiers} soldiers need attention</p>
+                            </div>
+                            <div className="pt-4 border-t">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-sm text-gray-600">Average Score</p>
+                                        <p className="text-2xl font-bold text-gray-900">{stats.averageFitnessScore}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-600">Pending Tests</p>
+                                        <p className="text-2xl font-bold text-orange-600">{stats.pendingTests}</p>
                                     </div>
                                 </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Quick Actions</CardTitle>
-                            <CardDescription>Manage unit fitness operations</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="grid grid-cols-1 gap-3">
-                                <Button variant="outline" className="justify-start h-auto py-3">
-                                    <div className="flex items-center gap-3 w-full">
-                                        <div className="bg-blue-100 p-2 rounded">
-                                            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="font-semibold">View All Soldiers</p>
-                                            <p className="text-xs text-gray-500">Manage soldier profiles and records</p>
-                                        </div>
-                                    </div>
-                                </Button>
-                                <Button variant="outline" className="justify-start h-auto py-3">
-                                    <div className="flex items-center gap-3 w-full">
-                                        <div className="bg-green-100 p-2 rounded">
-                                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="font-semibold">Fitness Tests</p>
-                                            <p className="text-xs text-gray-500">View and manage fitness assessments</p>
-                                        </div>
-                                    </div>
-                                </Button>
-                                <Button variant="outline" className="justify-start h-auto py-3">
-                                    <div className="flex items-center gap-3 w-full">
-                                        <div className="bg-purple-100 p-2 rounded">
-                                            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="font-semibold">Training Schedules</p>
-                                            <p className="text-xs text-gray-500">Plan and monitor training programs</p>
-                                        </div>
-                                    </div>
-                                </Button>
-                                <Button variant="outline" className="justify-start h-auto py-3">
-                                    <div className="flex items-center gap-3 w-full">
-                                        <div className="bg-red-100 p-2 rounded">
-                                            <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="font-semibold">High Risk Monitoring</p>
-                                            <p className="text-xs text-gray-500">Track and manage at-risk soldiers</p>
-                                        </div>
-                                    </div>
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* High Risk Soldiers Alert */}
                 <Card className="border-red-200 bg-red-50">
                     <CardHeader>
                         <div className="flex items-center justify-between">
@@ -383,9 +298,6 @@ export default function ClarkHomePage() {
                                                 )}
                                             </div>
                                         </div>
-                                        <Button variant="outline" size="sm">
-                                            View Details
-                                        </Button>
                                     </div>
                                 </div>
                             ))}
@@ -431,8 +343,7 @@ export default function ClarkHomePage() {
                                                 <p className="text-xl font-bold">{test.score}</p>
                                             </div>
                                             <Badge
-                                                variant={getResultBadgeVariant(test.result)}
-                                                className="text-sm py-1 px-3"
+                                                className={`text-sm py-1 px-3 text-white ${test.result === 'Pass' ? 'bg-green-600' : 'bg-red-600'}`}
                                             >
                                                 {test.result}
                                             </Badge>
