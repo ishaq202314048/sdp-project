@@ -1,0 +1,449 @@
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+// Types
+interface UnitStats {
+    totalSoldiers: number;
+    fitSoldiers: number;
+    unfitSoldiers: number;
+    averageFitnessScore: number;
+    pendingTests: number;
+    highRiskSoldiers: number;
+}
+
+interface RecentTest {
+    id: string;
+    soldierName: string;
+    serviceNo: string;
+    rank: string;
+    testDate: string;
+    testType: string;
+    score: number;
+    result: "Pass" | "Fail";
+}
+
+interface HighRiskSoldier {
+    id: string;
+    name: string;
+    serviceNo: string;
+    rank: string;
+    riskType: "Injury" | "Obesity" | "Low Fitness" | "Medical";
+    status: string;
+    lastTestScore: number;
+}
+
+// Mock Data
+const mockUnitStats: UnitStats = {
+    totalSoldiers: 156,
+    fitSoldiers: 128,
+    unfitSoldiers: 28,
+    averageFitnessScore: 482,
+    pendingTests: 12,
+    highRiskSoldiers: 8
+};
+
+const mockRecentTests: RecentTest[] = [
+    {
+        id: "1",
+        soldierName: "Lt. Rahman",
+        serviceNo: "202114190",
+        rank: "Lieutenant",
+        testDate: "2026-01-05",
+        testType: "IPFT",
+        score: 537,
+        result: "Pass"
+    },
+    {
+        id: "2",
+        soldierName: "Lt. Ahmed",
+        serviceNo: "202114193",
+        rank: "Lieutenant",
+        testDate: "2026-01-04",
+        testType: "Monthly",
+        score: 392,
+        result: "Fail"
+    },
+    {
+        id: "3",
+        soldierName: "Capt. Hassan",
+        serviceNo: "202114194",
+        rank: "Captain",
+        testDate: "2026-01-03",
+        testType: "Quarterly",
+        score: 562,
+        result: "Pass"
+    }
+];
+
+const mockHighRiskSoldiers: HighRiskSoldier[] = [
+    {
+        id: "1",
+        name: "Lt. Ahmed",
+        serviceNo: "202114193",
+        rank: "Lieutenant",
+        riskType: "Low Fitness",
+        status: "3 consecutive failed tests",
+        lastTestScore: 392
+    },
+    {
+        id: "2",
+        name: "Sgt. Khan",
+        serviceNo: "202114201",
+        rank: "Sergeant",
+        riskType: "Obesity",
+        status: "BMI 32.5 - Above standard",
+        lastTestScore: 425
+    },
+    {
+        id: "3",
+        name: "Cpl. Hasan",
+        serviceNo: "202114205",
+        rank: "Corporal",
+        riskType: "Injury",
+        status: "Recovering from knee injury",
+        lastTestScore: 0
+    },
+    {
+        id: "4",
+        name: "Lt. Karim",
+        serviceNo: "202114198",
+        rank: "Lieutenant",
+        riskType: "Medical",
+        status: "Medical Category: C",
+        lastTestScore: 412
+    }
+];
+
+export default function ClarkHomePage() {
+    const [stats] = useState<UnitStats>(mockUnitStats);
+    const [recentTests] = useState<RecentTest[]>(mockRecentTests);
+    const [highRiskSoldiers] = useState<HighRiskSoldier[]>(mockHighRiskSoldiers);
+
+    const fitnessPercentage = ((stats.fitSoldiers / stats.totalSoldiers) * 100).toFixed(1);
+    const unfitnessPercentage = ((stats.unfitSoldiers / stats.totalSoldiers) * 100).toFixed(1);
+
+    const overviewCards = [
+        {
+            title: "Total Soldiers",
+            value: stats.totalSoldiers,
+            color: "text-blue-600",
+            bgColor: "bg-blue-50",
+            icon: "👥"
+        },
+        {
+            title: "Fit Soldiers",
+            value: `${stats.fitSoldiers} (${fitnessPercentage}%)`,
+            color: "text-green-600",
+            bgColor: "bg-green-50",
+            icon: "✓"
+        },
+        {
+            title: "Unfit Soldiers",
+            value: `${stats.unfitSoldiers} (${unfitnessPercentage}%)`,
+            color: "text-red-600",
+            bgColor: "bg-red-50",
+            icon: "⚠"
+        },
+        {
+            title: "Avg Fitness Score",
+            value: stats.averageFitnessScore,
+            color: "text-purple-600",
+            bgColor: "bg-purple-50",
+            icon: "📊"
+        },
+        {
+            title: "Pending Tests",
+            value: stats.pendingTests,
+            color: "text-orange-600",
+            bgColor: "bg-orange-50",
+            icon: "⏳"
+        },
+        {
+            title: "High Risk Soldiers",
+            value: stats.highRiskSoldiers,
+            color: "text-red-600",
+            bgColor: "bg-red-50",
+            icon: "🚨"
+        }
+    ];
+
+    const getRiskTypeBadgeColor = (type: string) => {
+        switch (type) {
+            case "Injury": return "text-orange-600 bg-orange-50 border-orange-200";
+            case "Obesity": return "text-red-600 bg-red-50 border-red-200";
+            case "Low Fitness": return "text-yellow-600 bg-yellow-50 border-yellow-200";
+            case "Medical": return "text-purple-600 bg-purple-50 border-purple-200";
+            default: return "";
+        }
+    };
+
+    const getResultBadgeVariant = (result: string) => {
+        return result === "Pass" ? "default" : "destructive";
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto space-y-6">
+                {/* Header */}
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">Command Dashboard</h1>
+                        <p className="text-gray-600 mt-1">Unit readiness and fitness monitoring overview</p>
+                    </div>
+                    <div className="flex gap-3">
+                        <Button variant="outline" size="lg">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Generate Report
+                        </Button>
+                        <Button size="lg">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            View Alerts
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Overview Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+                    {overviewCards.map((card, index) => (
+                        <Card key={index} className={card.bgColor}>
+                            <CardHeader className="pb-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-2xl">{card.icon}</span>
+                                </div>
+                                <CardDescription className="text-gray-600">{card.title}</CardDescription>
+                                <CardTitle className={`text-2xl ${card.color}`}>{card.value}</CardTitle>
+                            </CardHeader>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Unit Readiness Overview */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Unit Readiness Status</CardTitle>
+                            <CardDescription>Overall fitness distribution</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div>
+                                    <div className="flex justify-between mb-2">
+                                        <span className="text-sm font-medium text-gray-700">Fit Soldiers</span>
+                                        <span className="text-sm font-medium text-green-600">{fitnessPercentage}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                        <div
+                                            className="bg-green-600 h-3 rounded-full transition-all"
+                                            style={{ width: `${fitnessPercentage}%` }}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">{stats.fitSoldiers} of {stats.totalSoldiers} soldiers</p>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between mb-2">
+                                        <span className="text-sm font-medium text-gray-700">Unfit Soldiers</span>
+                                        <span className="text-sm font-medium text-red-600">{unfitnessPercentage}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-3">
+                                        <div
+                                            className="bg-red-600 h-3 rounded-full transition-all"
+                                            style={{ width: `${unfitnessPercentage}%` }}
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">{stats.unfitSoldiers} soldiers need attention</p>
+                                </div>
+                                <div className="pt-4 border-t">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-600">Average Score</p>
+                                            <p className="text-2xl font-bold text-gray-900">{stats.averageFitnessScore}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-600">Pending Tests</p>
+                                            <p className="text-2xl font-bold text-orange-600">{stats.pendingTests}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Quick Actions</CardTitle>
+                            <CardDescription>Manage unit fitness operations</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 gap-3">
+                                <Button variant="outline" className="justify-start h-auto py-3">
+                                    <div className="flex items-center gap-3 w-full">
+                                        <div className="bg-blue-100 p-2 rounded">
+                                            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                            </svg>
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-semibold">View All Soldiers</p>
+                                            <p className="text-xs text-gray-500">Manage soldier profiles and records</p>
+                                        </div>
+                                    </div>
+                                </Button>
+                                <Button variant="outline" className="justify-start h-auto py-3">
+                                    <div className="flex items-center gap-3 w-full">
+                                        <div className="bg-green-100 p-2 rounded">
+                                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-semibold">Fitness Tests</p>
+                                            <p className="text-xs text-gray-500">View and manage fitness assessments</p>
+                                        </div>
+                                    </div>
+                                </Button>
+                                <Button variant="outline" className="justify-start h-auto py-3">
+                                    <div className="flex items-center gap-3 w-full">
+                                        <div className="bg-purple-100 p-2 rounded">
+                                            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-semibold">Training Schedules</p>
+                                            <p className="text-xs text-gray-500">Plan and monitor training programs</p>
+                                        </div>
+                                    </div>
+                                </Button>
+                                <Button variant="outline" className="justify-start h-auto py-3">
+                                    <div className="flex items-center gap-3 w-full">
+                                        <div className="bg-red-100 p-2 rounded">
+                                            <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        </div>
+                                        <div className="text-left">
+                                            <p className="font-semibold">High Risk Monitoring</p>
+                                            <p className="text-xs text-gray-500">Track and manage at-risk soldiers</p>
+                                        </div>
+                                    </div>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* High Risk Soldiers Alert */}
+                <Card className="border-red-200 bg-red-50">
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-red-900">High Risk Soldiers</CardTitle>
+                                <CardDescription className="text-red-700">
+                                    Soldiers requiring immediate attention and monitoring
+                                </CardDescription>
+                            </div>
+                            <Badge variant="destructive" className="text-sm px-3 py-1">
+                                {highRiskSoldiers.length} Alerts
+                            </Badge>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-3">
+                            {highRiskSoldiers.map((soldier) => (
+                                <div
+                                    key={soldier.id}
+                                    className="bg-white border border-red-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                                >
+                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold text-gray-900">{soldier.name}</h3>
+                                                <Badge variant="outline">{soldier.rank}</Badge>
+                                                <Badge className={getRiskTypeBadgeColor(soldier.riskType)}>
+                                                    {soldier.riskType}
+                                                </Badge>
+                                            </div>
+                                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                                                <span>Service No: {soldier.serviceNo}</span>
+                                                <span>•</span>
+                                                <span>{soldier.status}</span>
+                                                {soldier.lastTestScore > 0 && (
+                                                    <>
+                                                        <span>•</span>
+                                                        <span>Last Score: {soldier.lastTestScore}</span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Button variant="outline" size="sm">
+                                            View Details
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Recent Fitness Tests */}
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle>Recent Fitness Tests</CardTitle>
+                                <CardDescription>Latest fitness assessment results</CardDescription>
+                            </div>
+                            <Button variant="outline" size="sm">View All</Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-3">
+                            {recentTests.map((test) => (
+                                <div
+                                    key={test.id}
+                                    className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                                >
+                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-semibold text-gray-900">{test.soldierName}</h3>
+                                                <Badge variant="outline">{test.rank}</Badge>
+                                            </div>
+                                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                                                <span>Service No: {test.serviceNo}</span>
+                                                <span>•</span>
+                                                <span>Test Date: {new Date(test.testDate).toLocaleDateString()}</span>
+                                                <span>•</span>
+                                                <span>Type: {test.testType}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4">
+                                            <div className="text-right">
+                                                <p className="text-sm text-gray-600">Score</p>
+                                                <p className="text-xl font-bold">{test.score}</p>
+                                            </div>
+                                            <Badge
+                                                variant={getResultBadgeVariant(test.result)}
+                                                className="text-sm py-1 px-3"
+                                            >
+                                                {test.result}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
