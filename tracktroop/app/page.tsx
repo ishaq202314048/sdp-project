@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -24,11 +25,8 @@ export default function HomePage() {
 						Replacing manual paperwork with automated scoring, real-time monitoring, and data-driven decision-making.
 					</p>
 					<div className="flex gap-4 justify-center flex-wrap">
-						<Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
-							Get Started
-						</Button>
-						<Button size="lg" variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800">
-							Learn More
+						<Button className="bg-emerald-600 hover:bg-emerald-700" asChild>
+							<Link href="/auth">Get Started</Link>
 						</Button>
 					</div>
 				</div>

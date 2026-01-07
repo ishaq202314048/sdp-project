@@ -6,7 +6,7 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Home, Activity, Apple, User, TrendingUp, LogOut } from "lucide-react";
+import { Home, Activity, Apple, User, Shield, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface navitem {
@@ -20,13 +20,13 @@ export default function SoldierLayout({
 }: {
     children: React.ReactNode;
 }) {
-
-
+    
     const navitems: navitem[] = [
-        { title: "Home", href: "/dashboard/soldier/home", icon: <Home /> },
-        { title: "Profile", href: "/dashboard/soldier/profile", icon: <User /> },
-        { title: "Fitness", href: "/dashboard/soldier/fitness", icon: <Activity /> },
-        { title: "Progress", href: "/dashboard/soldier/progress", icon: <TrendingUp /> },
+        { title: "Home", href: "/dashboard/adjudant/home", icon: <Home /> },
+        { title: "Profile", href: "/dashboard/adjudant/profile", icon: <User /> },
+        { title: "Soldiers", href: "/dashboard/adjudant/soldiers", icon: <Shield /> },
+        { title: "Fitness Tests", href: "/dashboard/adjudant/fitness-tests", icon: <Activity /> },
+        { title: "Alerts", href: "/dashboard/adjudant/alert", icon: <Apple /> },
     ];
 
     return (
@@ -38,7 +38,7 @@ export default function SoldierLayout({
                     <div className="flex items-center gap-2">
                         <div className="font-bold text-xl">TROOP TRACK</div>
                         <div className="text-sm text-muted-foreground hidden sm:block">
-                            | Soldier Dashboard
+                            | Adjudant Dashboard
                         </div>
                     </div>
 
@@ -66,7 +66,6 @@ export default function SoldierLayout({
                 </div>
             </header>
 
-            {/* Main Content */}
             <main className="flex-1">
                 {children}
             </main>

@@ -6,7 +6,7 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Home, Activity, Apple, User, TrendingUp, LogOut } from "lucide-react";
+import { Home , User , LogOut , BarChart3 , FileText} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface navitem {
@@ -23,10 +23,10 @@ export default function SoldierLayout({
 
 
     const navitems: navitem[] = [
-        { title: "Home", href: "/dashboard/soldier/home", icon: <Home /> },
-        { title: "Profile", href: "/dashboard/soldier/profile", icon: <User /> },
-        { title: "Fitness", href: "/dashboard/soldier/fitness", icon: <Activity /> },
-        { title: "Progress", href: "/dashboard/soldier/progress", icon: <TrendingUp /> },
+        { title: "Home", href: "/dashboard/clark/home", icon: <Home /> },
+        { title: "Profile", href: "/dashboard/clark/profile", icon: <User /> },
+        { title: "Overview", href: "/dashboard/clark/overview", icon: <BarChart3 /> },
+        { title: "Reports", href: "/dashboard/clark/reports", icon: <FileText /> },
     ];
 
     return (
@@ -38,7 +38,7 @@ export default function SoldierLayout({
                     <div className="flex items-center gap-2">
                         <div className="font-bold text-xl">TROOP TRACK</div>
                         <div className="text-sm text-muted-foreground hidden sm:block">
-                            | Soldier Dashboard
+                            | Clark Dashboard
                         </div>
                     </div>
 
