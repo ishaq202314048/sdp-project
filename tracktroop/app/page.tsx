@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Logo from "@/components/Logo";
 import { Activity, Shield, Users, Bell, TrendingUp, FileText, Target, Heart, Database } from "lucide-react";
 
 export default function HomePage() {
@@ -15,7 +16,10 @@ export default function HomePage() {
 						Military Grade Fitness Solution
 					</Badge>
 					<h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-						TROOP TRACK
+						<span className="inline-flex items-center gap-3">
+							<Logo size={56} />
+							<span>TROOP TRACK</span>
+						</span>
 					</h1>
 					<p className="text-xl md:text-2xl text-slate-300 mb-4">
 						Soldier&apos;s Fitness Assessment & Monitoring System

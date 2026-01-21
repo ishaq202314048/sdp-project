@@ -2,11 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-    TrendingUp,
-    Award,
-    Target,
-} from "lucide-react";
+// removed decorative icons from summary cards per request
 import {
     AreaChart,
     Area,
@@ -119,22 +115,16 @@ export default function ProgressPage() {
             title: "Overall Improvement",
             value: "+9%",
             subtitle: "Last 6 Months",
-            icon: TrendingUp,
-            iconColor: "text-green-600",
         },
         {
             title: "Current Streak",
             value: "6",
             subtitle: "Tests Passed",
-            icon: Award,
-            iconColor: "text-yellow-600"
         },
         {
             title: "Goals Achieved",
             value: "6/6",
             subtitle: "This Month",
-            icon: Target,
-            iconColor: "text-blue-600"
         },
     ];
 
@@ -147,19 +137,15 @@ export default function ProgressPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {summaryCards.map((card, index) => {
-                    const Icon = card.icon;
                     return (
                         <Card key={index}>
                             <CardHeader className="pb-3">
                                 <CardTitle className="text-sm font-medium text-gray-600">{card.title}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <div className="text-2xl font-bold">{card.value}</div>
-                                        <p className="text-xs text-gray-500 mt-2">{card.subtitle}</p>
-                                    </div>
-                                    <Icon className={`h-8 w-8 ${card.iconColor}`} />
+                                <div>
+                                    <div className="text-2xl font-bold">{card.value}</div>
+                                    <p className="text-xs text-gray-500 mt-2">{card.subtitle}</p>
                                 </div>
                             </CardContent>
                         </Card>

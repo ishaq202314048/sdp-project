@@ -6,8 +6,9 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Home, Activity, Apple, User, TrendingUp, LogOut } from "lucide-react";
+import { Home, Activity, User, TrendingUp, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
 
 interface navitem {
     title: string;
@@ -36,6 +37,7 @@ export default function SoldierLayout({
                 <div className="container flex h-16 items-center justify-between px-4">
 
                     <div className="flex items-center gap-2">
+                        <Logo size={36} />
                         <div className="font-bold text-xl">TROOP TRACK</div>
                         <div className="text-sm text-muted-foreground hidden sm:block">
                             | Soldier Dashboard

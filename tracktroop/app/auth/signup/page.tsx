@@ -99,8 +99,8 @@ export default function SignupPage() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="soldier">Soldier</SelectItem>
-                                    <SelectItem value="clark">Clark</SelectItem>
-                                    <SelectItem value="adjudant">Adjudant</SelectItem>
+                                    <SelectItem value="clerk">Clerk</SelectItem>
+                                    <SelectItem value="adjutant">Adjutant</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

@@ -19,9 +19,9 @@ import {
 
 export default function SoldierHomePage() {
     const soldierData = {
-        name: "Lt. John Doe",
+        name: "Sgt. John Doe",
         serviceNo: "BD-12345",
-        rank: "Lieutenant",
+        rank: "Sergeant.",
         age: 28,
         height: "175 cm",
         weight: "72 kg",

@@ -8,12 +8,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { redirect } from "next/navigation";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
     const [userType, setUserType] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
+    const [rememberMe] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -21,12 +22,13 @@ export default function LoginPage() {
         setIsLoading(true);
         
         console.log({ userType, email, password, rememberMe });
-        if(userType === "clark") {
-            redirect("/dashboard/clark");
+        if(userType === "clerk") {
+            redirect("/dashboard/clerk");
         } else if(userType === "soldiers") {
             redirect("/dashboard/soldier");
-        } else if(userType === "adjudant") {
-            redirect("/dashboard/adjudant");
+        } else if(userType === "adjutant") {
+            // redirect to the adjutant's home page (no index page exists at /dashboard/adjutant)
+            redirect("/dashboard/adjutant/home");
         }
 
         setTimeout(() => {
@@ -36,6 +38,11 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4 relative">
+            {/* Brand bar */}
+            <div className="absolute top-4 left-4 z-10 flex items-center gap-3 text-white">
+                <Logo size={36} />
+                <span className="font-bold text-xl tracking-wide">TROOP TRACK</span>
+            </div>
             
             <div 
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -49,7 +56,10 @@ export default function LoginPage() {
             <Card className="w-full max-w-md relative z-10 shadow-2xl">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold text-center">
-                        Welcome back
+                        <span className="inline-flex items-center justify-center gap-3">
+                            <Logo size={40} />
+                            <span>TROOP TRACK</span>
+                        </span>
                     </CardTitle>
                     <CardDescription className="text-center">
                         Enter your credentials to access your account
@@ -88,9 +98,9 @@ export default function LoginPage() {
                                     <SelectValue placeholder="Select your role" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="clark">Clark</SelectItem>
+                                    <SelectItem value="clerk">Clerk</SelectItem>
                                     <SelectItem value="soldiers">Soldiers</SelectItem>
-                                    <SelectItem value="adjudant">Adjudant</SelectItem>
+                                    <SelectItem value="adjutant">Adjutant</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
