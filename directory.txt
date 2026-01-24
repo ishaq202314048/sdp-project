@@ -1,0 +1,321 @@
+TROOP TRACK - Project Directory Structure
+===========================================
+
+Root Directory: /TroopTrack/
+│
+├── README.md                          # Project documentation
+├── .gitignore                         # Git ignore file
+├── docker-compose.yml                 # Docker configuration for development
+│
+├── /frontend/                         # Next.js Frontend Application
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── next.config.js
+│   ├── tsconfig.json
+│   ├── .env.local
+│   │
+│   ├── /public/
+│   │   ├── /images/
+│   │   │   ├── logo.png
+│   │   │   └── rank-badges/
+│   │   └── favicon.ico
+│   │
+│   ├── /src/
+│   │   ├── /app/                      # Next.js App Router
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx               # Landing/Login page
+│   │   │   ├── /auth/
+│   │   │   │   ├── /login/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── /signup/
+│   │   │   │       └── page.tsx
+│   │   │   │
+│   │   │   ├── /dashboard/            # Main dashboards
+│   │   │   │   ├── /soldier/
+│   │   │   │   │   ├── /home/       # Soldier's dashboard
+│   │   │   │   │   ├── /profile/
+│   │   │   │   │   ├── /fitness/
+│   │   │   │   │   └── /progress/
+│   │   │   │   │
+│   │   │   │   ├── /command/          # Command dashboard
+│   │   │   │   │   ├── /home/
+│   │   │   │   │   ├── /overview/
+│   │   │   │   │   ├── /unit-status/
+│   │   │   │   │   └── /reports/
+│   │   │   │   │
+│   │   │   │   └── /admin/            # Admin dashboard
+│   │   │   │       ├── /home/
+│   │   │   │       ├── /soldiers/
+│   │   │   │       ├── /fitness-tests/
+│   │   │   │       └── /alerts/
+│   │   │   │
+│   │   │   ├── /fitness/              # Fitness Module
+│   │   │   │   ├── /tests/
+│   │   │   │   │   ├── page.tsx       # All fitness tests
+│   │   │   │   │   ├── /ipft/
+│   │   │   │   │   ├── /monthly/
+│   │   │   │   │   └── /quarterly/
+│   │   │   │   └── /records/
+│   │   │   │
+│   │   │   ├── /nutrition/            # Nutrition Module
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── /plans/
+│   │   │   │   └── /tracking/
+│   │   │   │
+│   │   │   ├── /reports/              # Reports Module
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── /generate/
+│   │   │   │   └── /history/
+│   │   │   │
+│   │   │   └── /api/                  # API routes
+│   │   │       └── /...               # API endpoints
+│   │   │
+│   │   ├── /components/               # Reusable React components
+│   │   │   ├── /common/
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── Input.tsx
+│   │   │   │   ├── Card.tsx
+│   │   │   │   ├── Table.tsx
+│   │   │   │   ├── Modal.tsx
+│   │   │   │   └── Loader.tsx
+│   │   │   │
+│   │   │   ├── /layout/
+│   │   │   │   ├── Navbar.tsx
+│   │   │   │   ├── Sidebar.tsx
+│   │   │   │   └── Footer.tsx
+│   │   │   │
+│   │   │   ├── /dashboard/
+│   │   │   │   ├── SoldierCard.tsx
+│   │   │   │   ├── FitnessChart.tsx
+│   │   │   │   ├── ProgressChart.tsx
+│   │   │   │   ├── StatsCard.tsx
+│   │   │   │   └── AlertsPanel.tsx
+│   │   │   │
+│   │   │   ├── /fitness/
+│   │   │   │   ├── FitnessTestForm.tsx
+│   │   │   │   ├── TestResultCard.tsx
+│   │   │   │   └── PerformanceGraph.tsx
+│   │   │   │
+│   │   │   ├── /nutrition/
+│   │   │   │   ├── MealPlanCard.tsx
+│   │   │   │   ├── HydrationTracker.tsx
+│   │   │   │   └── NutritionChart.tsx
+│   │   │   │
+│   │   │   └── /reports/
+│   │   │       ├── ReportGenerator.tsx
+│   │   │       └── PDFViewer.tsx
+│   │   │
+│   │   ├── /lib/                      # Utility functions & helpers
+│   │   │   ├── api.ts                 # API client setup
+│   │   │   ├── auth.ts                # Authentication helpers
+│   │   │   ├── socket.ts              # Socket.io client
+│   │   │   ├── validation.ts          # Form validation
+│   │   │   └── utils.ts               # General utilities
+│   │   │
+│   │   ├── /hooks/                    # Custom React hooks
+│   │   │   ├── useAuth.ts
+│   │   │   ├── useFitness.ts
+│   │   │   ├── useNotifications.ts
+│   │   │   └── useSocket.ts
+│   │   │
+│   │   ├── /context/                  # React Context providers
+│   │   │   ├── AuthContext.tsx
+│   │   │   ├── NotificationContext.tsx
+│   │   │   └── ThemeContext.tsx
+│   │   │
+│   │   ├── /types/                    # TypeScript type definitions
+│   │   │   ├── soldier.ts
+│   │   │   ├── fitness.ts
+│   │   │   ├── nutrition.ts
+│   │   │   └── auth.ts
+│   │   │
+│   │   └── /styles/                   # Global styles
+│   │       ├── globals.css
+│   │       └── variables.css
+│   │
+│   └── /tests/                        # Frontend tests
+│       ├── /unit/
+│       └── /integration/
+│
+│
+├── /backend/                          # Express.js Backend Application
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── tsconfig.json
+│   ├── .env
+│   │
+│   ├── /src/
+│   │   ├── server.ts                  # Main server entry point
+│   │   ├── app.ts                     # Express app configuration
+│   │   │
+│   │   ├── /config/                   # Configuration files
+│   │   │   ├── database.ts            # PostgreSQL configuration
+│   │   │   ├── redis.ts               # Redis configuration
+│   │   │   ├── auth.ts                # JWT & authentication config
+│   │   │   └── constants.ts           # App constants
+│   │   │
+│   │   ├── /routes/                   # API route handlers
+│   │   │   ├── index.ts               # Main router
+│   │   │   ├── auth.routes.ts         # Authentication routes
+│   │   │   ├── soldier.routes.ts      # Soldier CRUD routes
+│   │   │   ├── fitness.routes.ts      # Fitness test routes
+│   │   │   ├── nutrition.routes.ts    # Nutrition routes
+│   │   │   ├── report.routes.ts       # Report generation routes
+│   │   │   ├── notification.routes.ts # Notification routes
+│   │   │   └── admin.routes.ts        # Admin routes
+│   │   │
+│   │   ├── /controllers/              # Request handlers
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── soldier.controller.ts
+│   │   │   ├── fitness.controller.ts
+│   │   │   ├── nutrition.controller.ts
+│   │   │   ├── report.controller.ts
+│   │   │   ├── notification.controller.ts
+│   │   │   └── admin.controller.ts
+│   │   │
+│   │   ├── /services/                 # Business logic layer
+│   │   │   ├── auth.service.ts
+│   │   │   ├── soldier.service.ts
+│   │   │   ├── fitness.service.ts
+│   │   │   ├── nutrition.service.ts
+│   │   │   ├── report.service.ts
+│   │   │   ├── notification.service.ts
+│   │   │   ├── bmi.service.ts         # BMI calculation
+│   │   │   └── analytics.service.ts   # Data analytics
+│   │   │
+│   │   ├── /models/                   # Database models (ORM)
+│   │   │   ├── soldier.model.ts
+│   │   │   ├── fitnessTest.model.ts
+│   │   │   ├── nutrition.model.ts
+│   │   │   ├── injury.model.ts
+│   │   │   ├── notification.model.ts
+│   │   │   └── user.model.ts
+│   │   │
+│   │   ├── /middleware/               # Express middleware
+│   │   │   ├── auth.middleware.ts     # JWT verification
+│   │   │   ├── validation.middleware.ts
+│   │   │   ├── error.middleware.ts
+│   │   │   ├── logger.middleware.ts
+│   │   │   └── rateLimiter.middleware.ts
+│   │   │
+│   │   ├── /utils/                    # Utility functions
+│   │   │   ├── jwt.util.ts
+│   │   │   ├── password.util.ts
+│   │   │   ├── date.util.ts
+│   │   │   ├── pdf.util.ts            # PDF generation
+│   │   │   └── validator.util.ts
+│   │   │
+│   │   ├── /socket/                   # Socket.io handlers
+│   │   │   ├── index.ts               # Socket setup
+│   │   │   ├── notification.socket.ts
+│   │   │   └── realtime.socket.ts
+│   │   │
+│   │   ├── /database/                 # Database related files
+│   │   │   ├── /migrations/           # Database migrations
+│   │   │   │   ├── 001_create_users.sql
+│   │   │   │   ├── 002_create_soldiers.sql
+│   │   │   │   ├── 003_create_fitness_tests.sql
+│   │   │   │   ├── 004_create_nutrition.sql
+│   │   │   │   ├── 005_create_injuries.sql
+│   │   │   │   └── 006_create_notifications.sql
+│   │   │   │
+│   │   │   ├── /seeds/                # Database seed data
+│   │   │   │   ├── users.seed.ts
+│   │   │   │   └── soldiers.seed.ts
+│   │   │   │
+│   │   │   └── connection.ts          # Database connection
+│   │   │
+│   │   ├── /jobs/                     # Scheduled tasks/cron jobs
+│   │   │   ├── monthlyAlert.job.ts
+│   │   │   ├── quarterlyAlert.job.ts
+│   │   │   └── fitnessReminder.job.ts
+│   │   │
+│   │   └── /types/                    # TypeScript types
+│   │       ├── express.d.ts
+│   │       ├── soldier.types.ts
+│   │       ├── fitness.types.ts
+│   │       └── nutrition.types.ts
+│   │
+│   └── /tests/                        # Backend tests
+│       ├── /unit/
+│       ├── /integration/
+│       └── /e2e/
+│
+│
+├── /database/                         # Database scripts & documentation
+│   ├── schema.sql                     # Complete database schema
+│   ├── /scripts/
+│   │   ├── setup.sql
+│   │   └── cleanup.sql
+│   └── README.md                      # Database documentation
+│
+│
+├── /shared/                           # Shared code between frontend & backend
+│   ├── /types/                        # Shared TypeScript types
+│   │   ├── soldier.types.ts
+│   │   ├── fitness.types.ts
+│   │   └── api.types.ts
+│   │
+│   └── /constants/                    # Shared constants
+│       ├── fitnessStandards.ts        # Military fitness standards
+│       ├── ranks.ts                   # Military ranks
+│       └── medicalCategories.ts       # Medical categories
+│
+│
+├── /docs/                             # Project documentation
+│   ├── API_DOCUMENTATION.md
+│   ├── DATABASE_SCHEMA.md
+│   ├── DEPLOYMENT.md
+│   ├── USER_GUIDE.md
+│   └── DEVELOPER_GUIDE.md
+│
+│
+└── /scripts/                          # Utility scripts
+    ├── setup.sh                       # Project setup script
+    ├── deploy.sh                      # Deployment script
+    └── seed-database.sh               # Database seeding script
+
+
+KEY FILE DESCRIPTIONS:
+======================
+
+FRONTEND FILES:
+- Authentication pages (login, signup)
+- Role-based dashboards (Soldier, Command, Admin)
+- Fitness test management interfaces
+- Nutrition & hydration tracking
+- Real-time notifications display
+- Report generation & viewing
+- Progress charts using Chart.js
+- Responsive components with Tailwind CSS
+
+BACKEND FILES:
+- RESTful API endpoints for all modules
+- JWT-based authentication & authorization
+- Role-based access control (RBAC)
+- PostgreSQL database integration
+- Redis for caching & sessions
+- Socket.io for real-time notifications
+- PDF report generation
+- Automated alert system (cron jobs)
+- BMI & fitness score calculations
+- Data analytics & insights
+
+DATABASE TABLES:
+- users (authentication)
+- soldiers (personal details, service no, rank)
+- fitness_tests (IPFT, monthly, quarterly tests)
+- nutrition_plans (meal plans, hydration)
+- injuries (injury records, recovery tracking)
+- notifications (alerts, reminders)
+- medical_categories (A, B, C, Temporary)
+- performance_metrics (long-term tracking)
+
+CONFIGURATION FILES:
+- Environment variables (.env, .env.local)
+- TypeScript configs (tsconfig.json)
+- Next.js config (next.config.js)
+- Docker setup (docker-compose.yml)
+- Git ignore (.gitignore)
+
+TOTAL ESTIMATED FILES: 150+

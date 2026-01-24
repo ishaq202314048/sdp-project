@@ -1,0 +1,42 @@
+// Prisma schema for SQLite database
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String
+  userType  String
+  serviceNo String?
+  fitnessStatus String?
+  createdAt DateTime @default(now())
+}
+
+model FitnessPlan {
+  id         String   @id @default(uuid())
+  title      String
+  status     String   // 'Fit' or 'Unfit'
+  exercises  Json     // array of exercise objects { name, duration, focus }
+  createdBy  String
+  createdAt  DateTime @default(now())
+
+  @@index([status])
+}
+
+model AssignedPlan {
+  id         String   @id @default(uuid())
+  userId     String
+  planId     String
+  assignedBy String?
+  assignedAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([planId])
+}

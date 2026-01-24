@@ -1,0 +1,44 @@
+[
+  {
+    "email": "a@gmail.com",
+    "password": "$2a$10$sppeMt60FPXZsryzK6bzAeGbmzjzX/e5gZb0Em.aFv8FczbaUcOYe",
+    "fullName": "a",
+    "userType": "soldier",
+    "serviceNo": "1234",
+    "id": "3cc051dc-cf83-4543-8e3e-56d0d0462531",
+    "createdAt": "2026-01-22T02:04:55.844Z"
+  },
+  {
+    "email": "a2@gmail.com",
+    "password": "$2a$10$9EjXIyd3SjuD3gjWBim/weFMN6QIF9UnTUQKF8KymtxEzxboNZ6R.",
+    "fullName": "a",
+    "userType": "clerk",
+    "id": "04481808-081f-4ae8-b601-7cfcc4bfb458",
+    "createdAt": "2026-01-22T02:10:25.067Z"
+  },
+  {
+    "email": "a3@gmail.com",
+    "password": "$2a$10$lIOF3fm9nxzJaAtL6pv1DepCSN8mAPGC/NhvyXr6oRJT63H7Jcf8S",
+    "fullName": "a",
+    "userType": "adjutant",
+    "id": "6e356366-6b3f-439e-894e-840dc8c09dd2",
+    "createdAt": "2026-01-22T02:11:42.032Z"
+  },
+  {
+    "email": "a1@gmail.com",
+    "password": "$2a$10$ZCH6kbfySUkE0izdTS4ppeVIhT7t60yGovYO7eYL1NGzBChq8UJjq",
+    "fullName": "a",
+    "userType": "soldier",
+    "serviceNo": "1234",
+    "id": "cf4488c8-ef8f-4432-8dd9-56ba7fad6a5f",
+    "createdAt": "2026-01-22T02:23:28.244Z"
+  },
+  {
+    "email": "adiba@gmail.com",
+    "password": "$2a$10$deuuUQFyQHBwfksBu9/MleGP6FgeIH4dvTF4Q./aiBpiEQeaRE2Dy",
+    "fullName": "Sadia Nawshin",
+    "userType": "adjutant",
+    "id": "b3c07516-0311-4a71-9843-520898de6f9c",
+    "createdAt": "2026-01-22T03:43:25.651Z"
+  }
+]
