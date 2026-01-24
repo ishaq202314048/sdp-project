@@ -1,0 +1,250 @@
+Department of Computer Science & Technology
+Military Institute of Science & Technology, Dhaka
+
+TROOP TRACK:
+Soldier’s Fitness Assessment & Monitoring System
+
+Finalized Idea Report
+CSE-364: Software Development Project – 1
+
+Submitted To:
+Lt Col Md Abul Basar
+Asso. Prof. Dr. T M Shahriar Sazzad
+Lec Alisha Kabir
+Lec Kazi Fahim Tahmid
+Lec Sanjana Jahan Sifat
+
+Submitted By: (Group 8)
+
+Lt. Soiyoda Shifat Jahan (202114190)
+Lt. Nargis Sultana (202114193)
+Lt Sadia Nawshin Adiba (202114194)
+Md Ishaq Sharif (202314048)
+Submission Date: December 11, 2025
+1
+
+1.
+
+TITLE: TROOP TRACK: Soldier’s Fitness Assessment & Monitoring System
+
+2.
+PROBLEM STATEMENT: Most fitness evaluations are still conducted
+manually, resulting in delayed assessments that hinder timely decision-making.
+Existing manual processes also introduce frequent errors and inconsistencies,
+reducing the accuracy of recorded IPFT & fitness data.
+Important IPFT records are often misplaced or incomplete, creating gaps in
+documentation and accountability which also creates problem during promotion.
+Unit Commanding (CO) & Staff officers (Adjt, QM) face hassels to monitor
+individual fitness levels, track both personal and unit-wide short & long term
+progress, and identify high-risk soldiers such as those facing injury, obesity, or low
+fitness.
+Hassle to monitor high-risk soldiers (injury, obesity, low fitness), and plan
+effective, targeted training schedules.
+Absence of any notification/ alert to admin monthly or quarterly if any individual
+can’t meet up certain military fitneses standard.
+
+3.
+BACKGROUND & MOTIVATION: Modern defense forces increasingly rely on
+data-driven decision-making. Physical fitness directly influences soldier
+survivability, performance, and mission outcome. Manual record-keeping fails to
+provide real-time insights or accurate monitoring of soldiers’ physical health. A
+digital fitness monitoring system ensures accuracy, efficiency, accountability, and
+readiness assessment. It also can help medical officers to detect early warning
+signs, trainers optimize workout plans, and commanders evaluate unitwide preparedness.
+
+2
+
+4.
+
+LITERATURE REVIEW:
+Existing Study
+
+Focus Area
+
+Limitations
+
+Military Services Fitness
+Database (MSFD) —
+2009
+
+Tracks soldier fitness,
+weight, and body-fat
+over time
+
+Retrospective only; no
+real-time monitoring; no
+nutrition/injury data
+
+Holistic Health and
+Fitness Management
+System (H2FMS) — 2025
+
+High cost; complex;
+limited to well-resourced
+forces
+
+Real-time Monitoring of
+Military Health — 2025
+
+Integrates fitness,
+nutrition, sleep, injury,
+performance;
+dashboards
+Real-time Monitoring of
+Military Health — 2025
+
+WearableMil: Military
+Activity Recognition —
+2024
+
+WearableMil: Military
+Activity Recognition —
+2024
+
+WearableMil: Military
+Activity Recognition —
+2024
+
+Usability of Wearable
+Physiological Devices —
+2025
+
+Evaluates usability and
+feasibility of wearables
+
+Limited long-term data;
+integration with systems
+not tested
+
+Real-time Monitoring of
+Military Health — 2025
+
+These limitations justify the need for a military unit’s robust, real-time, and fitness
+monitoring solution like Soldier’s Fitness Assessment & Monitoring System .
+
+5.
+
+OBJECTIVES
+a. To automate fitness evaluations for timely, accurate assessments with realtime visibility for admins
+
+3
+
+b. To ensure complete, error-free, and securely stored IPFT records through a
+centralized system
+c. To identify high-risk soldiers through integrated performance and health
+analytics
+d. To enable long-term tracking of soldier progress and overall unit readiness
+by developing targeted training schedules
+e. To issue automated notifications for monthly mile tests and required
+physical activities when certain military standards are not met
+
+6.
+
+KEY FEATURES
+a. Soldier’s Dashboard
+1)
+2)
+3)
+4)
+5)
+
+Unique Soldier ID (Service No)
+Personal details: age, rank, height, weight
+Medical category (A, B, C, Temporary)
+Injury records and recovery tracking
+Weight limitations based on age and height (Auto BMI Calculation)
+
+b. Fitness Test Module
+1)
+2)
+3)
+
+Standard military fitness tests (mile test, push-up, sit-up, pull-up, rope
+climbing,swimming)
+Automated pass/fail calculation and progress tracking
+(quarterly/monthly/IPFT)
+Long-term performance charts for individual and unit
+
+c. Nutrition & Hydration Monitoring
+1)
+
+Personalized nutrition and hydration plans based on medical conditions,
+training intensity, and weight goals (will change basing on weight, health
+condition, IPFT performance)
+
+d. Alerts & Notifications
+•
+
+IPFT reminders
+4
+
+•
+•
+
+Low-performance and overweight alerts
+Notifications for failing to meet military standards
+
+e. Command & Admin Dashboard
+•
+•
+
+Real-time unit and individual fitness monitoring
+Fit vs unfit soldier percentage and training effectiveness comparison
+
+f. Reports & Documentation
+•
+•
+•
+
+7.
+
+Fitness test reports
+Weight limitations and medical categories
+Meal (Nutrition) and hydration schedules in PDF (Report) format
+
+TARGET users
+a. Soldiers
+b. Clark
+c. Adjudant
+
+8.
+
+Technology Stack
+Component
+Frontend
+Backend
+Database
+
+Technology
+Next.js, Chart.js
+Express.js, Socket.io
+PostgreSQL, Redis
+
+5
+
+Figure: Sign up/ Login Page
+
+9.
+Conclusion: The Soldier’s Fitness Assessment & Monitoring System will
+provide a centralized, efficient, and accurate platform to manage military fitnessrelated records. It replaces manual paperwork with automated scoring, real-time
+monitoring, and data-driven decision-making. The system supports soldiers,
+medical teams, and commanders through proper monitoring to ensure a fit and
+capable military unit.
+
+10.
+
+References:
+1. Williamson, J., et al. (2009). Military Services Fitness Database: Longitudinal
+Tracking of Soldier Fitness and Weight. PMC.
+2. Holistic Health and Fitness Management System (H2FMS). (2025). PubMed.
+3. De Vries, L., et al. (2025). Real-time Monitoring of Military Health and
+Readiness. PMC.
+4. Shi, X., et al. (2024). WearableMil: A Framework for Military Activity
+Recognition and Performance Monitoring. arXiv.
+5. Favorov, O., et al. (2025). Expected and Perceived Usability of Wearable
+Physiological Devices. Military Medicine, 190(S2), 109–116.
+6
+
+7
+
+
