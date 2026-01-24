@@ -12,12 +12,29 @@ type Item = {
 
 type Mark = { id: string; name: string; duration?: string; result?: string; createdAt: string };
 
+// Predefined exercises for Fit vs Unfit soldiers
+const FIT_EXERCISES = [
+    "Timed Run - 20m",
+    "Push-ups - 3 sets",
+    "Sit-ups - 3 sets",
+    "Interval Sprints - 10x",
+    "Swimming - 30m",
+];
+
+const UNFIT_EXERCISES = [
+    "Brisk Walk - 20m",
+    "Light Jog - 15m",
+    "Assisted Push-ups - 3 sets",
+    "Core Mobility - 10m",
+    "Low-Impact Cycling - 20m",
+];
+
 export default function SoldiersList({ items, limit }: { items: Item[]; limit?: number }) {
     const list = typeof limit === "number" ? items.slice(0, limit) : items;
 
     const [openFor, setOpenFor] = useState<string | null>(null);
     const [marks, setMarks] = useState<Record<string, Mark[]>>({});
-    const [form, setForm] = useState<Record<string, { name: string; duration: string; result: string }>>({});
+    const [form, setForm] = useState<Record<string, { name: string; customName?: string; duration: string; result: string }>>({});
     const [loadingFor, setLoadingFor] = useState<string | null>(null);
 
     if (!list || list.length === 0) {
@@ -71,13 +88,19 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
                     {openFor === s.id && (
                         <div className="mt-3 space-y-2">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <input value={form[s.id]?.name || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), name: e.target.value } }))} placeholder="Exercise name" className="border px-2 py-1 rounded" />
-                                <input value={form[s.id]?.duration || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), duration: e.target.value } }))} placeholder="Duration (e.g. 20m)" className="border px-2 py-1 rounded" />
+                                <select value={form[s.id]?.name || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), name: e.target.value } }))} className="border px-2 py-1 rounded">
+                                    <option value="">Select exercise</option>
+                                    {(s.fitnessStatus === 'Fit' ? FIT_EXERCISES : UNFIT_EXERCISES).map((ex) => (
+                                        <option key={ex} value={ex}>{ex}</option>
+                                    ))}
+                                    <option value="__custom__">-- Custom --</option>
+                                </select>
+                                {/* allow manual override when custom selected or to tweak name */}
+                                <input value={form[s.id]?.name === '__custom__' ? form[s.id]?.customName || '' : (form[s.id]?.name || '')} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', customName: '', duration: '', result: '' }), customName: e.target.value, name: '__custom__' } }))} placeholder="Or enter exercise name" className="border px-2 py-1 rounded" />
                                 <select value={form[s.id]?.result || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), result: e.target.value } }))} className="border px-2 py-1 rounded">
                                     <option value="">Result</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Partial">Partial</option>
-                                    <option value="Missed">Missed</option>
+                                    <option value="Pass">Pass</option>
+                                    <option value="Fail">Fail</option>
                                 </select>
                             </div>
                             <div className="flex gap-2">
