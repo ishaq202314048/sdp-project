@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
 import { getUser } from "@/lib/auth-client";
@@ -33,7 +34,7 @@ export default function FitnessPage() {
     const workoutPlansDefault = fitnessStatus === 'Fit' ? fitWorkoutPlans : unfitWorkoutPlans;
 
     // assigned plan (from clerk) overrides the default plans when present
-    const [assignedPlanExercises, setAssignedPlanExercises] = useState<Array<{ name: string; duration: string; focus: string }>>([]);
+    const [assignedPlanExercises, setAssignedPlanExercises] = useState<Array<Record<string, unknown>>>([]);
 
     const fetchAssignedPlan = async (userId?: string) => {
         if (!userId) return;
@@ -41,7 +42,7 @@ export default function FitnessPage() {
             const res = await fetch(`/api/fitness/assign?userId=${encodeURIComponent(userId)}`);
             const json = await res.json();
             if (json?.plan?.exercises) {
-                setAssignedPlanExercises(json.plan.exercises as any);
+                setAssignedPlanExercises(json.plan.exercises as Array<Record<string, unknown>>);
             } else {
                 setAssignedPlanExercises([]);
             }
@@ -137,7 +138,32 @@ export default function FitnessPage() {
         })();
     }, [targetUserId]);
 
-    const workoutPlansToShow = assignedPlanExercises && assignedPlanExercises.length > 0 ? assignedPlanExercises : workoutPlansDefault;
+    
+
+    // day selector (Sunday-first)
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const getTodayName = () => days[new Date().getDay()];
+    const [selectedDay, setSelectedDay] = useState<string>(getTodayName());
+
+    // normalize assigned plan shape: some plans store exercises as day blocks [{ day, items: [...] }]
+    const isDayBlock = (arr: unknown): arr is Array<{ day: string; items: Array<Record<string, unknown>> }> => {
+        if (!Array.isArray(arr) || (arr as unknown[]).length === 0) return false;
+        const first = (arr as unknown[])[0] as unknown;
+        const maybeDay = (first as { day?: unknown }).day;
+        const maybeItems = (first as { items?: unknown }).items;
+        return typeof maybeDay === 'string' && Array.isArray(maybeItems);
+    };
+
+    const exercisesForSelectedDay = (): Array<Record<string, unknown>> => {
+        if (isDayBlock(assignedPlanExercises)) {
+            const block = (assignedPlanExercises as Array<{ day: string; items: Array<Record<string, unknown>> }>).find((b) => String(b.day).toLowerCase() === selectedDay.toLowerCase());
+            return block ? block.items : [];
+        }
+        // assignedPlanExercises may be flat list or empty; if present and flat, show all for any day
+        if (assignedPlanExercises && assignedPlanExercises.length > 0) return assignedPlanExercises as Array<Record<string, unknown>>;
+        // fallback: default plans mapped to record shape
+        return workoutPlansDefault.map((p) => ({ name: p.name, duration: p.duration, focus: p.focus }));
+    };
 
     return (
         <div className="p-6 space-y-6">
@@ -146,8 +172,8 @@ export default function FitnessPage() {
                 <p className="text-gray-500 mt-1">Track your performance and progress</p>
                 <div className="mt-4 flex items-center gap-4">
                     <span className="text-sm text-gray-600">Status:</span>
-                    <div className={`px-2 py-1 rounded ${fitnessStatus === 'Fit' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
-                        {fitnessStatus}{/* show a simple badge */}
+                    <div className={`px-3 py-1 rounded-full shadow-sm text-sm ${fitnessStatus === 'Fit' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                        {fitnessStatus}
                     </div>
                     {/* Clerk controls: allow updating another user's status by id */}
                     {isClerk && (
@@ -156,20 +182,10 @@ export default function FitnessPage() {
                                 value={targetUserId ?? ''}
                                 onChange={(e) => setTargetUserId(e.target.value || undefined)}
                                 placeholder="target user id"
-                                className="border px-2 py-1 rounded"
+                                className="border px-3 py-2 rounded-md shadow-sm"
                             />
-                            <button
-                                className="px-2 py-1 rounded bg-green-600 text-white"
-                                onClick={() => targetUserId && updateStatus(targetUserId, 'Fit')}
-                            >
-                                Set Fit
-                            </button>
-                            <button
-                                className="px-2 py-1 rounded bg-red-600 text-white"
-                                onClick={() => targetUserId && updateStatus(targetUserId, 'Unfit')}
-                            >
-                                Set Unfit
-                            </button>
+                            <Button size="sm" variant="default" onClick={() => targetUserId && updateStatus(targetUserId, 'Fit')}>Set Fit</Button>
+                            <Button size="sm" variant="destructive" onClick={() => targetUserId && updateStatus(targetUserId, 'Unfit')}>Set Unfit</Button>
                         </div>
                     )}
                 </div>
@@ -185,24 +201,84 @@ export default function FitnessPage() {
                             <CardTitle>Workout Plan</CardTitle>
                         </CardHeader>
                         <CardContent>
+                            <div className="mb-4 flex items-center gap-3">
+                                <div className="flex-1">
+                                    <label className="text-sm block mb-1">Select weekday</label>
+                                    <select value={selectedDay} onChange={(e) => setSelectedDay(e.target.value)} className="border px-3 py-2 rounded-md shadow-sm w-full">
+                                        {days.map((d) => (
+                                            <option key={d} value={d}>{d}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="shrink-0 mt-6">
+                                    <Button size="sm" variant="default" className="bg-green-100 text-green-800 hover:bg-green-200 border-green-200" onClick={() => {
+                                        // build and download week plan
+                                        const buildWeekPlan = () => {
+                                            // if day-block format, produce mapping for each weekday
+                                            if (isDayBlock(assignedPlanExercises)) {
+                                                const mapping: Record<string, Array<Record<string, unknown>>> = {};
+                                                days.forEach((d) => (mapping[d] = []));
+                                                (assignedPlanExercises as Array<{ day: string; items: Array<Record<string, unknown>> }>).forEach((b) => {
+                                                    const dayName = String(b.day);
+                                                    mapping[dayName] = b.items || [];
+                                                });
+                                                return mapping;
+                                            }
+
+                                            // if flat list available, put it under "AllDays"
+                                            if (assignedPlanExercises && assignedPlanExercises.length > 0) {
+                                                return { AllDays: assignedPlanExercises };
+                                            }
+
+                                            // fallback: use default workout plans mapped to each day
+                                            const fallback = workoutPlansDefault.map((p) => ({ name: p.name, duration: p.duration, focus: p.focus }));
+                                            const mapping: Record<string, Array<Record<string, unknown>>> = {};
+                                            days.forEach((d) => (mapping[d] = fallback));
+                                            return mapping;
+                                        };
+
+                                        try {
+                                            const weekPlan = buildWeekPlan();
+                                            const payload = {
+                                                userId: targetUserId ?? "unknown",
+                                                generatedAt: new Date().toISOString(),
+                                                plan: weekPlan,
+                                            };
+                                            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+                                            const url = URL.createObjectURL(blob);
+                                            const a = document.createElement("a");
+                                            a.href = url;
+                                            const fileNameUser = (targetUserId ?? "user").replace(/[^a-z0-9-_]/gi, "_");
+                                            a.download = `week-plan-${fileNameUser}-${new Date().toISOString().slice(0,10)}.json`;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            a.remove();
+                                            URL.revokeObjectURL(url);
+                                        } catch {
+                                            // silent fail for now
+                                        }
+                                    }}>Download Week</Button>
+                                </div>
+                            </div>
+
                             <div className="space-y-4">
-                                {workoutPlansToShow.map((plan, index) => (
+                                {exercisesForSelectedDay().map((plan, index) => (
                                     <div key={index}>
                                         <div className="flex items-center justify-between py-3">
                                             <div className="flex items-center gap-4">
-                                                <div className="p-2 rounded-lg bg-blue-100">
-                                                    <Dumbbell className="h-5 w-5 text-blue-600" />
-                                                </div>
+                                                            <div className="p-2 rounded-lg bg-linear-to-br from-blue-50 to-blue-100">
+                                                                <Dumbbell className="h-5 w-5 text-blue-600" />
+                                                            </div>
                                                 <div>
-                                                    <h3 className="font-semibold">{plan.name}</h3>
-                                                    <p className="text-sm text-gray-500">{plan.focus}</p>
+                                                    <h3 className="font-semibold">{String(plan.name)}</h3>
+                                                    <p className="text-sm text-gray-500">{String(plan.focus ?? '')}</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-sm text-gray-700">{plan.duration}</p>
+                                                <p className="text-sm text-gray-700">{String(plan.duration ?? '')}</p>
                                             </div>
                                         </div>
-                                        {index !== workoutPlansToShow.length - 1 && <Separator />}
+                                        {index !== exercisesForSelectedDay().length - 1 && <Separator />}
                                     </div>
                                 ))}
                             </div>
