@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -140,10 +139,77 @@ const mockSoldiers: SoldierItem[] = [
 ];
 
 export default function ClerkHomePage() {
-    const [stats] = useState<UnitStats>(mockUnitStats);
+    const [stats, setStats] = useState<UnitStats>(mockUnitStats);
     const [recentTests] = useState<RecentTest[]>(mockRecentTests);
-    const [highRiskSoldiers] = useState<HighRiskSoldier[]>(mockHighRiskSoldiers);
-    const [soldiers] = useState<SoldierItem[]>(mockSoldiers);
+    const [highRiskSoldiers, setHighRiskSoldiers] = useState<HighRiskSoldier[]>([]);
+    const [soldiers, setSoldiers] = useState<SoldierItem[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch soldiers from database on mount
+    useEffect(() => {
+        const fetchSoldiers = async () => {
+            try {
+                const response = await fetch('/api/soldiers');
+                if (response.ok) {
+                    const data = await response.json();
+                    setSoldiers(data);
+                    
+                    // Update stats based on fetched soldiers
+                    const fitCount = data.filter((s: SoldierItem) => s.fitnessStatus === 'Fit').length;
+                    const unfitCount = data.filter((s: SoldierItem) => s.fitnessStatus === 'Unfit').length;
+                    
+                    setStats({
+                        totalSoldiers: data.length,
+                        fitSoldiers: fitCount,
+                        unfitSoldiers: unfitCount,
+                        averageFitnessScore: 482, // Can be calculated from real data if available
+                        pendingTests: 12,
+                        highRiskSoldiers: 8
+                    });
+                } else {
+                    // Fallback to mock data if API fails
+                    setSoldiers(mockSoldiers);
+                }
+            } catch (error) {
+                console.error('Failed to fetch soldiers:', error);
+                // Fallback to mock data
+                setSoldiers(mockSoldiers);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSoldiers();
+    }, []);
+
+    // Fetch high-risk soldiers from database
+    useEffect(() => {
+        const fetchHighRiskSoldiers = async () => {
+            try {
+                const response = await fetch('/api/high-risk-soldiers');
+                if (response.ok) {
+                    const data = await response.json();
+                    setHighRiskSoldiers(data.highRiskSoldiers);
+                    
+                    // Update stats with actual high-risk count
+                    setStats(prevStats => ({
+                        ...prevStats,
+                        highRiskSoldiers: data.highRiskSoldiers.length,
+                    }));
+                } else {
+                    console.warn('Failed to fetch high-risk soldiers');
+                    // Keep mock data as fallback
+                    setHighRiskSoldiers(mockHighRiskSoldiers);
+                }
+            } catch (error) {
+                console.error('Failed to fetch high-risk soldiers:', error);
+                // Fallback to mock data
+                setHighRiskSoldiers(mockHighRiskSoldiers);
+            }
+        };
+
+        fetchHighRiskSoldiers();
+    }, []);
 
     // Filters
     const [serviceNoFilter, setServiceNoFilter] = useState("");
@@ -377,7 +443,9 @@ export default function ClerkHomePage() {
                         </div>
 
                         <div>
-                            {filteredSoldiers.length === 0 ? (
+                            {loading ? (
+                                <p className="text-sm text-gray-600">Loading soldiers...</p>
+                            ) : filteredSoldiers.length === 0 ? (
                                 <p className="text-sm text-gray-600">No soldiers found matching your filters.</p>
                             ) : (
                                 <SoldiersList items={filteredSoldiers} />
@@ -479,56 +547,6 @@ export default function ClerkHomePage() {
                                                     </>
                                                 )}
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Recent Fitness Tests */}
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle>Recent Fitness Tests</CardTitle>
-                                <CardDescription>Latest fitness assessment results</CardDescription>
-                            </div>
-                            <Button variant="outline" size="sm">View All</Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3">
-                            {recentTests.map((test) => (
-                                <div
-                                    key={test.id}
-                                    className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                                >
-                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <h3 className="font-semibold text-gray-900">{test.soldierName}</h3>
-                                                <Badge variant="outline">{test.rank}</Badge>
-                                            </div>
-                                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-                                                <span>Service No: {test.serviceNo}</span>
-                                                <span>•</span>
-                                                <span>Test Date: {new Date(test.testDate).toLocaleDateString()}</span>
-                                                <span>•</span>
-                                                <span>Type: {test.testType}</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="text-right">
-                                                <p className="text-sm text-gray-600">Score</p>
-                                                <p className="text-xl font-bold">{test.score}</p>
-                                            </div>
-                                            <Badge
-                                                className={`text-sm py-1 px-3 text-white ${test.result === 'Pass' ? 'bg-green-600' : 'bg-red-600'}`}
-                                            >
-                                                {test.result}
-                                            </Badge>
                                         </div>
                                     </div>
                                 </div>

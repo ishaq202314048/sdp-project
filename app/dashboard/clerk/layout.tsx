@@ -6,9 +6,9 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Home, Activity, Apple, User, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Home, Activity, Apple, User } from "lucide-react";
 import Logo from "@/components/Logo";
+import { LogoutButton } from "@/components/LogoutButton";
 
 interface navitem {
     title: string;
@@ -60,10 +60,7 @@ export default function ClerkLayout({
                         </NavigationMenuList>
                     </NavigationMenu>
 
-                    <Button variant="outline" size="sm" className="gap-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white cursor-pointer">
-                        <LogOut className="h-4 w-4" />
-                        <Link href="/auth">Logout</Link>
-                    </Button>
+                    <LogoutButton />
                 </div>
             </header>
 

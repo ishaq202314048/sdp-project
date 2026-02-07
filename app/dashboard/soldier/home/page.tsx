@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import {
     Activity,
     User,
@@ -17,7 +18,61 @@ import {
     Timer
 } from "lucide-react";
 
+interface FitnessTest {
+    id: string;
+    exerciseName: string;
+    result: string;
+    createdAt: string;
+}
+
 export default function SoldierHomePage() {
+    const [fitnessTests, setFitnessTests] = useState<FitnessTest[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [userId, setUserId] = useState<string | null>(null);
+
+    // Function to fetch fitness tests
+    const fetchFitnessTests = async () => {
+        try {
+            setLoading(true);
+            // Get user from localStorage
+            const userStr = localStorage.getItem('user');
+            if (!userStr) {
+                setLoading(false);
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            
+            // Only fetch tests if the logged-in user is a soldier
+            if (user.userType !== 'soldier') {
+                console.log('Only soldiers can view their own fitness tests');
+                setLoading(false);
+                return;
+            }
+
+            setUserId(user.id);
+
+            // Fetch fitness tests that have been justified by clerk
+            const response = await fetch(`/api/soldier-fitness-tests?userId=${user.id}`);
+            if (response.ok) {
+                const data = await response.json();
+                setFitnessTests(data.tests || []);
+            } else {
+                setFitnessTests([]);
+            }
+        } catch (error) {
+            console.error('Failed to fetch fitness tests:', error);
+            setFitnessTests([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Fetch user and fitness tests on component mount
+    useEffect(() => {
+        fetchFitnessTests();
+    }, []);
+
     const soldierData = {
         name: "Sgt. John Doe",
         serviceNo: "BD-12345",
@@ -31,13 +86,6 @@ export default function SoldierHomePage() {
         lastIPFT: "2025-11-15",
         nextIPFT: "2026-02-15",
     };
-
-    const recentTests = [
-        { name: "Mile Run", score: "8:30 min", status: "Pass", date: "2025-12-20" },
-        { name: "Push-ups", score: "45 reps", status: "Pass", date: "2025-12-18" },
-        { name: "Sit-ups", score: "52 reps", status: "Pass", date: "2025-12-18" },
-        { name: "Pull-ups", score: "12 reps", status: "Pass", date: "2025-12-15" },
-    ];
 
     const upcomingActivities = [
         { name: "Monthly Mile Test", date: "2026-01-10", type: "Required" },
@@ -128,36 +176,53 @@ export default function SoldierHomePage() {
                         
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Trophy className="w-5 h-5 text-emerald-600" />
-                                    Recent Fitness Tests
-                                </CardTitle>
-                                <CardDescription>Your latest performance results</CardDescription>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Trophy className="w-5 h-5 text-emerald-600" />
+                                        <div>
+                                            <CardTitle>Recent Fitness Tests</CardTitle>
+                                            <CardDescription>Tests justified by clerk</CardDescription>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => fetchFitnessTests()}
+                                        disabled={loading}
+                                    >
+                                        {loading ? 'Refreshing...' : 'Refresh'}
+                                    </Button>
+                                </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
-                                    {recentTests.map((test, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors"
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                                    <Dumbbell className="w-5 h-5 text-emerald-600" />
+                                    {loading ? (
+                                        <p className="text-sm text-gray-600">Loading fitness tests...</p>
+                                    ) : fitnessTests.length === 0 ? (
+                                        <p className="text-sm text-gray-600">No justified fitness tests yet.</p>
+                                    ) : (
+                                        fitnessTests.map((test) => (
+                                            <div
+                                                key={test.id}
+                                                className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                                                        <Dumbbell className="w-5 h-5 text-emerald-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-slate-900 dark:text-white">{test.exerciseName}</p>
+                                                        <p className="text-sm text-slate-600 dark:text-slate-400">{new Date(test.createdAt).toLocaleDateString()}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="font-semibold text-slate-900 dark:text-white">{test.name}</p>
-                                                    <p className="text-sm text-slate-600 dark:text-slate-400">{test.date}</p>
+                                                <div className="text-right">
+                                                    <Badge variant="default" className={test.result === 'Pass' ? 'bg-emerald-500' : 'bg-red-500'}>
+                                                        {test.result}
+                                                    </Badge>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="font-bold text-slate-900 dark:text-white">{test.score}</p>
-                                                <Badge variant="default" className="bg-emerald-500">
-                                                    {test.status}
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ))
+                                    )}
                                 </div>
                                 <Button className="w-full mt-4" variant="outline">
                                     View All Test Results

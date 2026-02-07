@@ -10,11 +10,14 @@ export async function GET(req: Request) {
 
   if (!status) {
     const plans = await prisma.fitnessPlan.findMany({ orderBy: { createdAt: 'desc' } });
-    return NextResponse.json(plans);
+    // parse exercises JSON string to make API consumer receive arrays
+    const parsed = plans.map((p) => ({ ...p, exercises: p.exercises ? JSON.parse(String(p.exercises)) : [] }));
+    return NextResponse.json(parsed);
   }
 
   const plans = await prisma.fitnessPlan.findMany({ where: { status }, orderBy: { createdAt: 'desc' } });
-  return NextResponse.json(plans);
+  const parsed = plans.map((p) => ({ ...p, exercises: p.exercises ? JSON.parse(String(p.exercises)) : [] }));
+  return NextResponse.json(parsed);
 }
 
 export async function POST(req: Request) {
@@ -28,9 +31,11 @@ export async function POST(req: Request) {
     }
 
     try {
-      const created = await prisma.fitnessPlan.create({ data: { title, exercises, status, createdBy } });
+  // ensure exercises stored as JSON string for SQLite compatibility
+  const created = await prisma.fitnessPlan.create({ data: { title, exercises: JSON.stringify(exercises), status, createdBy } });
       console.log('Created fitnessPlan id=', created.id);
-      return NextResponse.json({ ok: true, plan: created });
+  // return created plan with parsed exercises
+  return NextResponse.json({ ok: true, plan: { ...created, exercises: exercises } });
     } catch (dbErr) {
       console.error('DB error creating fitnessPlan', String(dbErr));
       return NextResponse.json({ error: String(dbErr), received: body }, { status: 500 });

@@ -29,5 +29,7 @@ export async function GET(req: Request) {
   if (!assignment) return NextResponse.json({ assignment: null });
 
   const plan = await prisma.fitnessPlan.findUnique({ where: { id: assignment.planId } });
-  return NextResponse.json({ assignment, plan });
+  // ensure exercises are parsed from JSON string for API consumers
+  const parsedPlan = plan ? { ...plan, exercises: plan.exercises ? JSON.parse(String(plan.exercises)) : [] } : null;
+  return NextResponse.json({ assignment, plan: parsedPlan });
 }

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,30 +28,69 @@ import {
     Award,
 } from "lucide-react";
 
+interface ClerkProfile {
+    id: string;
+    fullName: string;
+    email: string;
+    clerkServiceNo?: string;
+    clerkRank?: string;
+    clerkUnit?: string;
+    clerkRole?: string;
+    clerkDateOfJoining?: string;
+    clerkPhone?: string;
+    clerkAddress?: string;
+    clerkEmergencyContactName?: string;
+    clerkEmergencyContact?: string;
+}
+
 export default function ClerkProfilePage() {
+    const [profile, setProfile] = useState<ClerkProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     
-    const [profileData, setProfileData] = useState({
-        fullName: "Cpl. Muhammad Hassan",
-        serviceNo: "BA-1001",
-        email: "hassan.clerk@military.gov.bd",
-        phone: "+880-1700-000001",
-        rank: "Corporal",
-        unit: "Headquarters, Dhaka",
-        joinDate: "2005-06-15",
-        role: "Administrative Officer (Clerk)",
-        status: "Active",
-        address: "Dhaka Cantonment, Dhaka",
-        emergencyContactName: "Fatima Hassan (Wife)",
-        emergencyContact: "+880-1712-987654",
+    const [formData, setFormData] = useState({
+        phone: "",
+        address: "",
+        emergencyContactName: "",
+        emergencyContact: "",
     });
 
-    const [formData, setFormData] = useState({
-        phone: profileData.phone,
-        address: profileData.address,
-        emergencyContactName: profileData.emergencyContactName,
-        emergencyContact: profileData.emergencyContact,
-    });
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const userData = localStorage.getItem('user');
+                if (!userData) {
+                    setError('User not found in session');
+                    setLoading(false);
+                    return;
+                }
+
+                const user = JSON.parse(userData);
+                const response = await fetch(`/api/profile?userId=${user.id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const data = await response.json();
+                setProfile(data);
+                setFormData({
+                    phone: data.clerkPhone || "",
+                    address: data.clerkAddress || "",
+                    emergencyContactName: data.clerkEmergencyContactName || "",
+                    emergencyContact: data.clerkEmergencyContact || "",
+                });
+            } catch (err) {
+                console.error('Error fetching profile:', err);
+                setError(err instanceof Error ? err.message : 'Failed to load profile');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -60,35 +99,65 @@ export default function ClerkProfilePage() {
         });
     };
 
-    const handleSaveChanges = () => {
-        setProfileData({
-            ...profileData,
-            phone: formData.phone,
-            address: formData.address,
-            emergencyContactName: formData.emergencyContactName,
-            emergencyContact: formData.emergencyContact,
-        });
-        setIsDialogOpen(false);
+    const handleSaveChanges = async () => {
+        if (!profile) return;
+        
+        try {
+            const response = await fetch(`/api/profile?userId=${profile.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    phone: formData.phone,
+                    address: formData.address,
+                    emergencyContactName: formData.emergencyContactName,
+                    emergencyContact: formData.emergencyContact,
+                }),
+            });
+
+            if (response.ok) {
+                const updatedData = await response.json();
+                setProfile(updatedData);
+                setIsDialogOpen(false);
+            }
+        } catch (err) {
+            console.error('Error saving changes:', err);
+        }
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
+                <p className="text-lg text-gray-600">Loading profile...</p>
+            </div>
+        );
+    }
+
+    if (error || !profile) {
+        return (
+            <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
+                <p className="text-lg text-red-600">{error || 'Profile not found'}</p>
+            </div>
+        );
+    }
+
     const serviceDetails = [
-        { label: "Service Number", value: profileData.serviceNo, icon: Shield },
-        { label: "Rank", value: profileData.rank, icon: Award },
-        { label: "Unit", value: profileData.unit, icon: Shield },
-        { label: "Role", value: profileData.role, icon: Shield },
-        { label: "Date of Joining", value: new Date(profileData.joinDate).toLocaleDateString(), icon: Calendar },
+        { label: "Service Number", value: profile.clerkServiceNo || "N/A", icon: Shield },
+        { label: "Rank", value: profile.clerkRank || "N/A", icon: Award },
+        { label: "Unit", value: profile.clerkUnit || "N/A", icon: Shield },
+        { label: "Role", value: profile.clerkRole || "N/A", icon: Shield },
+        { label: "Date of Joining", value: profile.clerkDateOfJoining ? new Date(profile.clerkDateOfJoining).toLocaleDateString() : "N/A", icon: Calendar },
     ];
 
     const personalDetails = [
-        { label: "Email", value: profileData.email, icon: Mail },
-        { label: "Phone", value: profileData.phone, icon: Phone },
-        { label: "Address", value: profileData.address, icon: MapPin },
-        { label: "Status", value: profileData.status, icon: Shield },
+        { label: "Email", value: profile.email, icon: Mail },
+        { label: "Phone", value: profile.clerkPhone || "N/A", icon: Phone },
+        { label: "Address", value: profile.clerkAddress || "N/A", icon: MapPin },
+        { label: "Status", value: "Active", icon: Shield },
     ];
 
     const emergencyInfo = [
-        { label: "Emergency Contact Name", value: profileData.emergencyContactName },
-        { label: "Emergency Contact Number", value: profileData.emergencyContact },
+        { label: "Emergency Contact Name", value: profile.clerkEmergencyContactName || "N/A" },
+        { label: "Emergency Contact Number", value: profile.clerkEmergencyContact || "N/A" },
     ];
 
     return (
@@ -177,27 +246,27 @@ export default function ClerkProfilePage() {
                             </div>
 
                             <div className="flex-1 text-center md:text-left">
-                                <h2 className="text-3xl font-bold mb-2">{profileData.fullName}</h2>
+                                <h2 className="text-3xl font-bold mb-2">{profile.fullName}</h2>
                                 <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
                                     <Badge className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-                                        {profileData.rank}
+                                        {profile.clerkRank || "N/A"}
                                     </Badge>
                                     <Badge className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-                                        {profileData.serviceNo}
+                                        {profile.clerkServiceNo || "N/A"}
                                     </Badge>
                                     <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white border-none">
-                                        {profileData.status}
+                                        Active
                                     </Badge>
                                 </div>
-                                <p className="text-lg opacity-90 mb-2">{profileData.unit}</p>
+                                <p className="text-lg opacity-90 mb-2">{profile.clerkUnit || "Unit not set"}</p>
                                 <div className="flex flex-wrap gap-4 text-sm opacity-90 justify-center md:justify-start">
                                     <span className="flex items-center gap-1">
                                         <Mail className="w-4 h-4" />
-                                        {profileData.email}
+                                        {profile.email}
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <Phone className="w-4 h-4" />
-                                        {profileData.phone}
+                                        {profile.clerkPhone || "N/A"}
                                     </span>
                                 </div>
                             </div>
@@ -262,23 +331,21 @@ export default function ClerkProfilePage() {
                     </Card>
                 </div>
 
+                {/* Emergency Information */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Phone className="w-5 h-5 text-blue-600" />
+                            <Shield className="w-5 h-5 text-red-600" />
                             Emergency Information
                         </CardTitle>
-                        <CardDescription>Your emergency contact details</CardDescription>
+                        <CardDescription>Emergency contact details</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-4">
-                            {emergencyInfo.map((detail, index) => (
-                                <div key={index} className="flex items-start gap-3">
-                                    <Phone className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
-                                    <div>
-                                        <p className="text-sm text-slate-500 dark:text-slate-400">{detail.label}</p>
-                                        <p className="font-semibold text-slate-900 dark:text-white">{detail.value}</p>
-                                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {emergencyInfo.map((info, index) => (
+                                <div key={index} className="space-y-2">
+                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{info.label}</p>
+                                    <p className="text-slate-600 dark:text-slate-300">{info.value}</p>
                                 </div>
                             ))}
                         </div>

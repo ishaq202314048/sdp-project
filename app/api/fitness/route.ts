@@ -92,9 +92,5 @@ async function seedData() {
   }
 }
 
-// Call the seed function
-seedData()
-  .catch((e) => console.error('Error seeding data:', e))
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// NOTE: seeding disabled in dev runtime to avoid creating incomplete users (signup flow handles user creation)
+// If you want to seed data, run a dedicated script with correct user fields and hashed passwords.

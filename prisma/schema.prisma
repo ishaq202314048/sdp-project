@@ -9,21 +9,60 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  fullName  String
-  userType  String
-  serviceNo String?
-  fitnessStatus String?
-  createdAt DateTime @default(now())
+  id                   String   @id @default(uuid())
+  email                String   @unique
+  password             String
+  fullName             String
+  userType             String
+  // Common fields
+  serviceNo            String?
+  rank                 String?
+  unit                 String?
+  phone                String?
+  address              String?
+  emergencyContactName String?
+  emergencyContact     String?
+  fitnessStatus        String?
+  
+  // Soldier-specific fields
+  dateOfBirth          DateTime?
+  dateOfJoining        DateTime?
+  bloodGroup           String?
+  height               Int?      // in cm
+  weight               Int?      // in kg
+  bmi                  Float?
+  medicalCategory      String?
+  
+  // Clerk-specific fields
+  clerkServiceNo       String?
+  clerkRank            String?
+  clerkUnit            String?
+  clerkRole            String?
+  clerkDateOfJoining   DateTime?
+  clerkPhone           String?
+  clerkAddress         String?
+  clerkEmergencyContactName String?
+  clerkEmergencyContact String?
+  
+  // Adjutant-specific fields
+  adjutantServiceNo    String?
+  adjutantRank         String?
+  adjutantUnit         String?
+  adjutantDateOfJoining DateTime?
+  adjutantPhone        String?
+  adjutantAddress      String?
+  adjutantEmergencyContactName String?
+  adjutantEmergencyContact String?
+  
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model FitnessPlan {
   id         String   @id @default(uuid())
   title      String
   status     String   // 'Fit' or 'Unfit'
-  exercises  Json     // array of exercise objects { name, duration, focus }
+  exercises  String   // JSON stringified array of exercise objects { name, duration, focus }
   createdBy  String
   createdAt  DateTime @default(now())
 
@@ -40,3 +79,35 @@ model AssignedPlan {
   @@index([userId])
   @@index([planId])
 }
+
+model LoginSession {
+  id        String   @id @default(uuid())
+  userId    String
+  email     String
+  userType  String
+  ipAddress String?
+  userAgent String?
+  loginAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([email])
+  @@index([loginAt])
+}
+
+model FitnessTest {
+  id              String   @id @default(uuid())
+  soldierUserId   String   // Soldier's user ID
+  exerciseName    String
+  duration        String?
+  result          String   // Pass/Fail
+  score           Int?
+  justifiedBy     String?  // Clerk's user ID who justified it
+  justifiedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([soldierUserId])
+  @@index([justifiedBy])
+  @@index([createdAt])
+}
+

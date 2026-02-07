@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 type Item = {
     id: string;
@@ -12,7 +12,7 @@ type Item = {
 
 type Mark = { id: string; name: string; duration?: string; result?: string; createdAt: string };
 
-// Predefined exercises for Fit vs Unfit soldiers
+// Predefined exercises for Fit vs Unfit soldiers (fallback if no allocated exercises)
 const FIT_EXERCISES = [
     "Timed Run - 20m",
     "Push-ups - 3 sets",
@@ -36,6 +36,49 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
     const [marks, setMarks] = useState<Record<string, Mark[]>>({});
     const [form, setForm] = useState<Record<string, { name: string; customName?: string; duration: string; result: string }>>({});
     const [loadingFor, setLoadingFor] = useState<string | null>(null);
+    const [allocatedExercises, setAllocatedExercises] = useState<Record<string, string[]>>({});
+    const [loadingExercises, setLoadingExercises] = useState<Record<string, boolean>>({});
+    const [clerkUserId, setClerkUserId] = useState<string | null>(null);
+
+    // Get clerk's user ID from localStorage
+    useEffect(() => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            setClerkUserId(user.id);
+        }
+    }, []);
+
+    // Fetch allocated exercises for each soldier for today
+    useEffect(() => {
+        const fetchExercisesForSoldiers = async () => {
+            const exercises: Record<string, string[]> = {};
+            
+            for (const soldier of list) {
+                setLoadingExercises((prev) => ({ ...prev, [soldier.id]: true }));
+                try {
+                    const response = await fetch(`/api/soldier-exercises?userId=${soldier.id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        exercises[soldier.id] = data.exercises || [];
+                    } else {
+                        exercises[soldier.id] = [];
+                    }
+                } catch (error) {
+                    console.error(`Failed to fetch exercises for soldier ${soldier.id}:`, error);
+                    exercises[soldier.id] = [];
+                } finally {
+                    setLoadingExercises((prev) => ({ ...prev, [soldier.id]: false }));
+                }
+            }
+            
+            setAllocatedExercises(exercises);
+        };
+
+        if (list.length > 0) {
+            fetchExercisesForSoldiers();
+        }
+    }, [list]);
 
     if (!list || list.length === 0) {
         return <p className="text-sm text-gray-600">No soldiers found.</p>;
@@ -44,19 +87,57 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
     const submitMark = async (soldier: Item) => {
         const f = form[soldier.id] || { name: "", duration: "", result: "" };
         if (!f.name.trim()) return;
+        if (!clerkUserId) {
+            console.error('Clerk user ID not found');
+            return;
+        }
+
         setLoadingFor(soldier.id);
         try {
-            const payload = { userId: soldier.id, exercise: { name: f.name, duration: f.duration, result: f.result } };
-            // send to debug endpoint (server will echo). Replace with real API when available.
-            const res = await fetch('/api/fitness/debug', {
+            // Save fitness test to database
+            const res = await fetch('/api/fitness-test/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({
+                    soldierUserId: soldier.id,
+                    clerkUserId: clerkUserId,
+                    exerciseName: f.name,
+                    duration: f.duration || null,
+                    result: f.result || 'Unknown',
+                }),
             });
-            const json = await res.json().catch(() => ({}));
-            console.log('Mark response', res.status, json);
-            const newMark: Mark = { id: String(Date.now()), name: f.name, duration: f.duration, result: f.result, createdAt: new Date().toISOString() };
+
+            if (!res.ok) {
+                throw new Error('Failed to save fitness test');
+            }
+
+            const json = await res.json();
+            console.log('Fitness test saved:', json);
+
+            const newMark: Mark = { 
+                id: json.test.id, 
+                name: f.name, 
+                duration: f.duration, 
+                result: f.result, 
+                createdAt: new Date().toISOString() 
+            };
             setMarks((p) => ({ ...p, [soldier.id]: [...(p[soldier.id] || []), newMark] }));
+            
+            // Calculate and update soldier's fitness status based on pass rate
+            try {
+                const statusRes = await fetch(`/api/fitness/calculate-status?userId=${soldier.id}`, {
+                    method: 'POST',
+                });
+                if (statusRes.ok) {
+                    const statusData = await statusRes.json();
+                    console.log('Fitness status updated:', statusData);
+                } else {
+                    console.warn('Failed to update fitness status');
+                }
+            } catch (statusErr) {
+                console.error('Error updating fitness status:', statusErr);
+            }
+            
             // reset form for this soldier
             setForm((p) => ({ ...p, [soldier.id]: { name: '', duration: '', result: '' } }));
             setOpenFor(null);
@@ -90,9 +171,17 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                 <select value={form[s.id]?.name || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), name: e.target.value } }))} className="border px-2 py-1 rounded">
                                     <option value="">Select exercise</option>
-                                    {(s.fitnessStatus === 'Fit' ? FIT_EXERCISES : UNFIT_EXERCISES).map((ex) => (
-                                        <option key={ex} value={ex}>{ex}</option>
-                                    ))}
+                                    {loadingExercises[s.id] ? (
+                                        <option disabled>Loading exercises...</option>
+                                    ) : allocatedExercises[s.id] && allocatedExercises[s.id].length > 0 ? (
+                                        allocatedExercises[s.id].map((ex) => (
+                                            <option key={ex} value={ex}>{ex}</option>
+                                        ))
+                                    ) : (
+                                        (s.fitnessStatus === 'Fit' ? FIT_EXERCISES : UNFIT_EXERCISES).map((ex) => (
+                                            <option key={ex} value={ex}>{ex}</option>
+                                        ))
+                                    )}
                                     <option value="__custom__">-- Custom --</option>
                                 </select>
                                 {/* allow manual override when custom selected or to tweak name */}

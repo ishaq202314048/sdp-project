@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserByEmail } from "@/lib/db";
+import { getUserByEmail, prisma } from "@/lib/db";
 import { comparePassword } from "@/lib/auth";
 import { generateToken } from "@/lib/jwt";
 
@@ -42,6 +42,22 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       email: user.email,
       userType: user.userType,
+    });
+
+    // Store login session in database
+    const ipAddress = request.headers.get("x-forwarded-for") || 
+                      request.headers.get("x-real-ip") || 
+                      "unknown";
+    const userAgent = request.headers.get("user-agent") || "unknown";
+    
+    await prisma.loginSession.create({
+      data: {
+        userId: user.id,
+        email: user.email,
+        userType: user.userType,
+        ipAddress,
+        userAgent,
+      },
     });
 
     return NextResponse.json(

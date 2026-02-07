@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,18 +11,16 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 // Types
 interface AdjudantProfile {
     id: string;
-    name: string;
-    rank: string;
-    serviceNo: string;
-    avatar?: string;
+    fullName: string;
+    adjutantRank?: string;
+    adjutantServiceNo?: string;
     email: string;
-    phone: string;
-    joinDate: string;
-    unit: string;
-    unitCommander: string;
-    responsibility: string;
-    status: "Active" | "On Leave" | "Inactive";
-    location: string;
+    adjutantPhone?: string;
+    adjutantUnit?: string;
+    adjutantDateOfJoining?: string;
+    adjutantAddress?: string;
+    adjutantEmergencyContactName?: string;
+    adjutantEmergencyContact?: string;
 }
 
 interface ActivityLog {
@@ -41,30 +39,7 @@ interface UnitOverview {
     highRiskSoldiers: number;
 }
 
-// Mock Data
-const mockProfile: AdjudantProfile = {
-    id: "ADJ001",
-    name: "Major Karim Ahmed",
-    rank: "Major",
-    serviceNo: "198901234",
-    email: "karim.ahmed@military.com",
-    phone: "+880-2-XXXX-5678",
-    joinDate: "2020-06-15",
-    unit: "Infantry Battalion - 1st Unit",
-    unitCommander: "Lt Col Md Abul Basar",
-    responsibility: "Adjudant - Administrative & Fitness Management",
-    status: "Active",
-    location: "Dhaka Cantonment, Bangladesh"
-};
-
-const mockUnitOverview: UnitOverview = {
-    totalSoldiers: 156,
-    averageScore: 482,
-    passRate: 82.1,
-    pendingTests: 12,
-    highRiskSoldiers: 8
-};
-
+// Mock Activity Log (kept for now, can be fetched from DB later)
 const mockActivityLog: ActivityLog[] = [
     {
         id: "1",
@@ -103,11 +78,51 @@ const mockActivityLog: ActivityLog[] = [
     }
 ];
 
+const mockUnitOverview: UnitOverview = {
+    totalSoldiers: 156,
+    averageScore: 482,
+    passRate: 82.1,
+    pendingTests: 12,
+    highRiskSoldiers: 8
+};
+
 export default function AdjudantProfilePage() {
-    const [profile] = useState<AdjudantProfile>(mockProfile);
+    const [profile, setProfile] = useState<AdjudantProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [unitOverview] = useState<UnitOverview>(mockUnitOverview);
     const [activityLog] = useState<ActivityLog[]>(mockActivityLog);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const userData = localStorage.getItem('user');
+                if (!userData) {
+                    setError('User not found in session');
+                    setLoading(false);
+                    return;
+                }
+
+                const user = JSON.parse(userData);
+                const response = await fetch(`/api/profile?userId=${user.id}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const data = await response.json();
+                setProfile(data);
+            } catch (err) {
+                console.error('Error fetching profile:', err);
+                setError(err instanceof Error ? err.message : 'Failed to load profile');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     const getActivityCategoryColor = (category: string) => {
         switch (category) {
@@ -120,14 +135,21 @@ export default function AdjudantProfilePage() {
         }
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case "Active": return "text-green-700 bg-green-100";
-            case "On Leave": return "text-yellow-700 bg-yellow-100";
-            case "Inactive": return "text-gray-700 bg-gray-100";
-            default: return "";
-        }
-    };
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+                <p className="text-lg text-gray-600">Loading profile...</p>
+            </div>
+        );
+    }
+
+    if (error || !profile) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
+                <p className="text-lg text-red-600">{error || 'Profile not found'}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 p-6">
@@ -138,8 +160,8 @@ export default function AdjudantProfilePage() {
                         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
                             <div className="flex gap-6">
                                 {/* Avatar Placeholder */}
-                                <div className="flex-shrink-0">
-                                    <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
+                                <div className="shrink-0">
+                                    <div className="w-24 h-24 rounded-lg bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
                                         <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                                         </svg>
@@ -149,28 +171,28 @@ export default function AdjudantProfilePage() {
                                 {/* Profile Info */}
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <h1 className="text-3xl font-bold text-gray-900">{profile.name}</h1>
-                                        <Badge className={getStatusColor(profile.status)}>
-                                            {profile.status}
+                                        <h1 className="text-3xl font-bold text-gray-900">{profile.fullName}</h1>
+                                        <Badge className="text-green-700 bg-green-100">
+                                            Active
                                         </Badge>
                                     </div>
-                                    <p className="text-lg text-gray-600 mb-1">{profile.responsibility}</p>
+                                    <p className="text-lg text-gray-600 mb-1">Adjutant - Administrative & Fitness Management</p>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-4">
                                         <div>
                                             <p className="font-semibold text-gray-700">Rank</p>
-                                            <p>{profile.rank}</p>
+                                            <p>{profile.adjutantRank || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <p className="font-semibold text-gray-700">Service No</p>
-                                            <p>{profile.serviceNo}</p>
+                                            <p>{profile.adjutantServiceNo || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <p className="font-semibold text-gray-700">Unit Commander</p>
-                                            <p>{profile.unitCommander}</p>
+                                            <p className="font-semibold text-gray-700">Unit</p>
+                                            <p>{profile.adjutantUnit || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <p className="font-semibold text-gray-700">Join Date</p>
-                                            <p>{new Date(profile.joinDate).toLocaleDateString()}</p>
+                                            <p>{profile.adjutantDateOfJoining ? new Date(profile.adjutantDateOfJoining).toLocaleDateString() : 'N/A'}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -178,7 +200,7 @@ export default function AdjudantProfilePage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                         </svg>
-                                        <span>{profile.location}</span>
+                                        <span>{profile.adjutantAddress || 'Address not set'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -205,11 +227,11 @@ export default function AdjudantProfilePage() {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label>Full Name</Label>
-                                                    <Input defaultValue={profile.name} />
+                                                    <Input defaultValue={profile.fullName} />
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label>Rank</Label>
-                                                    <Input defaultValue={profile.rank} disabled />
+                                                    <Input defaultValue={profile.adjutantRank || ''} disabled />
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
@@ -219,12 +241,12 @@ export default function AdjudantProfilePage() {
                                                 </div>
                                                 <div className="space-y-2">
                                                     <Label>Phone</Label>
-                                                    <Input defaultValue={profile.phone} />
+                                                    <Input defaultValue={profile.adjutantPhone || ''} />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <Label>Location</Label>
-                                                <Input defaultValue={profile.location} />
+                                                <Label>Address</Label>
+                                                <Input defaultValue={profile.adjutantAddress || ''} />
                                             </div>
                                             <div className="flex justify-end gap-3 pt-4 border-t">
                                                 <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
@@ -271,7 +293,7 @@ export default function AdjudantProfilePage() {
                                 </svg>
                                 <div>
                                     <p className="text-sm text-gray-600">Phone</p>
-                                    <p className="font-semibold text-gray-900">{profile.phone}</p>
+                                    <p className="font-semibold text-gray-900">{profile.adjutantPhone || 'N/A'}</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -284,11 +306,11 @@ export default function AdjudantProfilePage() {
                         <CardContent className="space-y-4">
                             <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
                                 <p className="text-sm text-gray-600 mb-1">Assigned Unit</p>
-                                <p className="font-semibold text-gray-900">{profile.unit}</p>
+                                <p className="font-semibold text-gray-900">{profile.adjutantUnit || 'N/A'}</p>
                             </div>
                             <div className="p-3 bg-orange-50 rounded-lg border border-orange-200">
-                                <p className="text-sm text-gray-600 mb-1">Commanding Officer</p>
-                                <p className="font-semibold text-gray-900">{profile.unitCommander}</p>
+                                <p className="text-sm text-gray-600 mb-1">Unit Location</p>
+                                <p className="font-semibold text-gray-900">{profile.adjutantAddress || 'Address not set'}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -345,7 +367,7 @@ export default function AdjudantProfilePage() {
                                     className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
                                 >
                                     <div className="flex items-start gap-4">
-                                        <div className="flex-shrink-0">
+                                        <div className="shrink-0">
                                             <Badge className={getActivityCategoryColor(activity.category)}>
                                                 {activity.category}
                                             </Badge>
