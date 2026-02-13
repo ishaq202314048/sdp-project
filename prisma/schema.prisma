@@ -15,7 +15,7 @@ model User {
   fullName             String
   userType             String
   // Common fields
-  serviceNo            String?
+  serviceNo            String?   @unique
   rank                 String?
   unit                 String?
   phone                String?
@@ -34,7 +34,7 @@ model User {
   medicalCategory      String?
   
   // Clerk-specific fields
-  clerkServiceNo       String?
+  clerkServiceNo       String?   @unique
   clerkRank            String?
   clerkUnit            String?
   clerkRole            String?
@@ -45,7 +45,7 @@ model User {
   clerkEmergencyContact String?
   
   // Adjutant-specific fields
-  adjutantServiceNo    String?
+  adjutantServiceNo    String?   @unique
   adjutantRank         String?
   adjutantUnit         String?
   adjutantDateOfJoining DateTime?
@@ -109,5 +109,28 @@ model FitnessTest {
   @@index([soldierUserId])
   @@index([justifiedBy])
   @@index([createdAt])
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  title       String
+  type        String   // 'new-soldiers', 'fitness-summary', etc.
+  content     String   // JSON stringified report data
+  sentBy      String   // Clerk user ID who sent
+  sentByName  String   // Clerk's name
+  sentTo      String   // 'adjutant'
+  status      String   @default("sent") // 'sent', 'read'
+  createdAt   DateTime @default(now())
+
+  @@index([sentBy])
+  @@index([sentTo])
+  @@index([createdAt])
+}
+
+model IpftDate {
+  id        String   @id @default(uuid())
+  date      DateTime
+  setBy     String   // Adjutant user ID
+  createdAt DateTime @default(now())
 }
 

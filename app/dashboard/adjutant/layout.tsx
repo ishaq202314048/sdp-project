@@ -6,7 +6,7 @@ import {
     NavigationMenuList,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { Home, Activity, Apple, User, Shield } from "lucide-react";
+import { Home, User, Shield, FileText } from "lucide-react";
 import Logo from "@/components/Logo";
 import { LogoutButton } from "@/components/LogoutButton";
 
@@ -26,8 +26,7 @@ export default function SoldierLayout({
         { title: "Home", href: "/dashboard/adjutant/home", icon: <Home /> },
         { title: "Profile", href: "/dashboard/adjutant/profile", icon: <User /> },
         { title: "Soldiers", href: "/dashboard/adjutant/soldiers", icon: <Shield /> },
-        { title: "Fitness Tests", href: "/dashboard/adjutant/fitness-tests", icon: <Activity /> },
-        { title: "Alerts", href: "/dashboard/adjutant/alert", icon: <Apple /> },
+        { title: "Reports", href: "/dashboard/adjutant/reports", icon: <FileText /> },
     ];
 
     return (

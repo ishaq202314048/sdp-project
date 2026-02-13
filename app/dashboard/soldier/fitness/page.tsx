@@ -3,8 +3,10 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { Dumbbell } from "lucide-react";
+import { Dumbbell, Download } from "lucide-react";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 export default function FitnessPage() {
     // (recent test list removed from this view)
@@ -14,14 +16,15 @@ export default function FitnessPage() {
 
     const [weeklyPlan, setWeeklyPlan] = useState<{ id: string; title: string; status: 'Fit' | 'Unfit'; exercises: Array<{ day: string; items: Array<{ name: string; duration: string; focus: string }> }>; createdBy: string; createdAt: string } | null>(null);
     const [planLoading, setPlanLoading] = useState(false);
-    // IPFT date state and picker
-    const [ipftDate, setIpftDate] = useState<string>("2026-02-15");
-    const [showDatePicker, setShowDatePicker] = useState(false);
+    // IPFT date from database (set by adjutant)
+    const [ipftDate, setIpftDate] = useState<string | null>(null);
+    // Fitness tests from database
+    const [fitnessTests, setFitnessTests] = useState<{ id: string; exerciseName: string; result: string }[]>([]);
 
-    const getDaysRemaining = (dateStr: string) => {
+    const getDaysRemaining = (dateStr: string | null) => {
+        if (!dateStr) return 0;
         const target = new Date(dateStr);
         const now = new Date();
-        // reset time to midnight for rough day diff
         const t = Date.UTC(target.getFullYear(), target.getMonth(), target.getDate());
         const n = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
         const diff = Math.ceil((t - n) / (1000 * 60 * 60 * 24));
@@ -29,6 +32,10 @@ export default function FitnessPage() {
     };
 
     const daysRemaining = getDaysRemaining(ipftDate);
+
+    const totalTests = fitnessTests.length;
+    const passedTests = fitnessTests.filter(t => t.result === 'Pass').length;
+    const overallScore = totalTests > 0 ? Math.round((passedTests / totalTests) * 100) : 0;
 
     const overviewCards = [
         {
@@ -39,25 +46,19 @@ export default function FitnessPage() {
         },
         {
             title: "Overall Score",
-            value: "87%",
-            subtitle: "Above Average"
+            value: totalTests > 0 ? `${overallScore}%` : "—",
+            subtitle: totalTests > 0 ? (overallScore >= 80 ? "Above Average" : overallScore >= 50 ? "Average" : "Below Average") : "No tests yet"
         },
         {
             title: "Tests Passed",
-            value: "6/6",
-            subtitle: "Last Month"
+            value: totalTests > 0 ? `${passedTests}/${totalTests}` : "—",
+            subtitle: totalTests > 0 ? "From justified tests" : "No tests yet"
         },
         {
             title: "Next IPFT",
-            value: `${daysRemaining}`,
-            subtitle: ipftDate
+            value: ipftDate ? `${daysRemaining}` : "—",
+            subtitle: ipftDate ? new Date(ipftDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Not scheduled"
         }
-    ];
-
-    const upcomingTests = [
-        { name: "Monthly Mile Test", date: "2026-01-10" },
-        { name: "Quarterly Assessment", date: "2026-01-30" },
-        { name: "IPFT", date: "2026-02-15" },
     ];
 
     // Fetch weekly plan based on fitness status
@@ -103,10 +104,23 @@ export default function FitnessPage() {
                     setFitnessStatus(data.status);
                     console.log('Loaded fitness status from database:', data.status);
                 }
+
+                // Fetch fitness tests for this soldier
+                const testsRes = await fetch(`/api/soldier-fitness-tests?userId=${user.id}`);
+                if (testsRes.ok) {
+                    const testsData = await testsRes.json();
+                    setFitnessTests(testsData.tests || []);
+                }
             } catch (error) {
                 console.error('Failed to load fitness status:', error);
             }
         };
+
+        // Fetch IPFT date
+        fetch("/api/fitness-test/ipft-date")
+            .then(res => res.json())
+            .then(data => { if (data.date) setIpftDate(data.date); })
+            .catch(() => {});
 
         loadFitnessStatus();
     }, []);
@@ -120,6 +134,91 @@ export default function FitnessPage() {
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const getTodayName = () => days[new Date().getDay()];
     const [selectedDay, setSelectedDay] = useState<string>(getTodayName());
+
+    // Download weekly plan as PDF
+    const downloadWeeklyPlanPDF = async () => {
+        if (!weeklyPlan || !weeklyPlan.exercises) return;
+
+        const pdfDoc = await PDFDocument.create();
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+        const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+        const pageWidth = 595;
+        const pageHeight = 842;
+        const margin = 50;
+        let page = pdfDoc.addPage([pageWidth, pageHeight]);
+        let y = pageHeight - margin;
+
+        const addNewPage = () => {
+            page = pdfDoc.addPage([pageWidth, pageHeight]);
+            y = pageHeight - margin;
+        };
+
+        const checkSpace = (needed: number) => {
+            if (y - needed < margin) addNewPage();
+        };
+
+        // Title
+        page.drawText("Weekly Fitness Plan", { x: margin, y, size: 22, font: fontBold, color: rgb(0.1, 0.1, 0.1) });
+        y -= 28;
+        page.drawText(`${weeklyPlan.title} — ${weeklyPlan.status} Soldiers`, { x: margin, y, size: 12, font, color: rgb(0.4, 0.4, 0.4) });
+        y -= 14;
+        page.drawText(`Generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`, { x: margin, y, size: 10, font, color: rgb(0.5, 0.5, 0.5) });
+        y -= 30;
+
+        // Divider
+        page.drawLine({ start: { x: margin, y }, end: { x: pageWidth - margin, y }, thickness: 1, color: rgb(0.8, 0.8, 0.8) });
+        y -= 20;
+
+        // Each day
+        for (const dayPlan of weeklyPlan.exercises) {
+            checkSpace(50);
+
+            // Day header
+            page.drawRectangle({ x: margin, y: y - 4, width: pageWidth - margin * 2, height: 22, color: rgb(0.93, 0.95, 0.97) });
+            page.drawText(dayPlan.day, { x: margin + 10, y: y, size: 14, font: fontBold, color: rgb(0.15, 0.15, 0.15) });
+            y -= 30;
+
+            if (!dayPlan.items || dayPlan.items.length === 0) {
+                checkSpace(20);
+                page.drawText("Rest Day", { x: margin + 20, y, size: 11, font, color: rgb(0.5, 0.5, 0.5) });
+                y -= 25;
+            } else {
+                for (const exercise of dayPlan.items) {
+                    checkSpace(40);
+
+                    // Exercise name
+                    page.drawText(`•  ${exercise.name}`, { x: margin + 20, y, size: 11, font: fontBold, color: rgb(0.2, 0.2, 0.2) });
+
+                    // Duration on right side
+                    if (exercise.duration) {
+                        const durWidth = font.widthOfTextAtSize(exercise.duration, 10);
+                        page.drawText(exercise.duration, { x: pageWidth - margin - durWidth, y, size: 10, font, color: rgb(0.4, 0.4, 0.4) });
+                    }
+                    y -= 16;
+
+                    // Focus
+                    if (exercise.focus) {
+                        page.drawText(`Focus: ${exercise.focus}`, { x: margin + 32, y, size: 9, font, color: rgb(0.5, 0.5, 0.5) });
+                        y -= 14;
+                    }
+
+                    y -= 6;
+                }
+            }
+
+            y -= 10;
+        }
+
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes as BlobPart], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Weekly_Fitness_Plan_${weeklyPlan.status}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
 
     return (
         <div className="p-6 space-y-6">
@@ -141,10 +240,20 @@ export default function FitnessPage() {
                     {/* Weekly Plan from Database - NOW IN MAIN AREA */}
                     <Card className="mt-6">
                         <CardHeader>
-                            <CardTitle>Your Weekly Routine</CardTitle>
-                            <CardDescription>
-                                {weeklyPlan ? `${weeklyPlan.title} for ${weeklyPlan.status} Soldiers` : `Routine for ${fitnessStatus} Soldiers`}
-                            </CardDescription>
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle>Your Weekly Routine</CardTitle>
+                                    <CardDescription>
+                                        {weeklyPlan ? `${weeklyPlan.title} for ${weeklyPlan.status} Soldiers` : `Routine for ${fitnessStatus} Soldiers`}
+                                    </CardDescription>
+                                </div>
+                                {weeklyPlan && (
+                                    <Button variant="outline" size="sm" onClick={downloadWeeklyPlanPDF} className="flex items-center gap-2">
+                                        <Download className="w-4 h-4" />
+                                        Download PDF
+                                    </Button>
+                                )}
+                            </div>
                         </CardHeader>
                         <CardContent>
                             {planLoading ? (
@@ -211,83 +320,30 @@ export default function FitnessPage() {
                 </div>
 
                 <div className="space-y-4">
-                    {overviewCards.map((card, index) => {
-                        if (card.title === "Next IPFT") {
-                            return (
-                                <Card key={index}>
-                                    <CardHeader className="pb-3">
-                                        <CardTitle className="text-sm font-medium text-gray-600">{card.title}</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <div className="text-2xl font-bold">{card.value}</div>
-                                                <p className="text-sm text-gray-500 mt-2">{card.subtitle}</p>
-                                            </div>
-                                            <div className="relative">
-                                                <button
-                                                    className="text-sm text-blue-600 underline"
-                                                    onClick={() => setShowDatePicker((v) => !v)}
-                                                >
-                                                    Edit
-                                                </button>
-                                                {showDatePicker && (
-                                                    <div className="absolute right-0 mt-2 bg-white p-2 rounded shadow z-10">
-                                                        <input
-                                                            type="date"
-                                                            value={ipftDate}
-                                                            onChange={(e) => setIpftDate(e.target.value)}
-                                                            className="border px-2 py-1 rounded"
-                                                        />
-                                                        <div className="text-xs text-gray-500 mt-1">Select IPFT date</div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            );
-                        }
-
-                        return (
-                            <Card key={index}>
-                                <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-medium text-gray-600">{card.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <div className="text-2xl font-bold">{card.value}</div>
-                                            {card.badgeColor ? (
-                                                <Badge className={`mt-2 ${card.badgeColor}`}>{card.subtitle}</Badge>
-                                            ) : (
-                                                <p className="text-sm text-gray-500 mt-2">{card.subtitle}</p>
-                                            )}
-                                        </div>
+                    {overviewCards.map((card, index) => (
+                        <Card key={index}>
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-sm font-medium text-gray-600">{card.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <div className="text-2xl font-bold">{card.value}</div>
+                                        {card.badgeColor ? (
+                                            <Badge className={`mt-2 ${card.badgeColor}`}>{card.subtitle}</Badge>
+                                        ) : (
+                                            <p className="text-sm text-gray-500 mt-2">{card.subtitle}</p>
+                                        )}
                                     </div>
-                                </CardContent>
-                            </Card>
-                        );
-                    })}
-
-                    {/* Upcoming tests list with IPFT highlighted */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Upcoming Tests</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-2">
-                                {upcomingTests.map((t) => (
-                                    <div key={t.name} className="flex items-center justify-between">
-                                        <div className="text-sm text-gray-700">{t.name}</div>
-                                        <div className={`text-sm ${t.name === 'IPFT' ? 'text-red-600 font-semibold' : 'text-gray-600'}`}>
-                                            {t.name === 'IPFT' ? ipftDate : t.date}
+                                    {card.title === "Next IPFT" && ipftDate && (
+                                        <div className="text-sm text-gray-500">
+                                            {daysRemaining} days left
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
             </div>
         </div>

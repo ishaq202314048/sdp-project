@@ -23,75 +23,18 @@ interface AdjudantProfile {
     adjutantEmergencyContact?: string;
 }
 
-interface ActivityLog {
-    id: string;
-    action: string;
-    details: string;
-    timestamp: string;
-    category: "Fitness Test" | "Alert" | "Soldier Management" | "Report" | "System";
-}
-
 interface UnitOverview {
     totalSoldiers: number;
-    averageScore: number;
+    fitSoldiers: number;
+    unfitSoldiers: number;
     passRate: number;
-    pendingTests: number;
-    highRiskSoldiers: number;
 }
-
-// Mock Activity Log (kept for now, can be fetched from DB later)
-const mockActivityLog: ActivityLog[] = [
-    {
-        id: "1",
-        action: "Recorded Fitness Test",
-        details: "IPFT test results for Lt. Rahman (Service No: 202114190) - Score: 537 (Pass)",
-        timestamp: "2026-01-07 14:30",
-        category: "Fitness Test"
-    },
-    {
-        id: "2",
-        action: "Generated Alert",
-        details: "Low performance alert created for Lt. Ahmed - 3 consecutive failed tests",
-        timestamp: "2026-01-06 10:15",
-        category: "Alert"
-    },
-    {
-        id: "3",
-        action: "Updated Soldier Profile",
-        details: "Medical category updated for Sgt. Khan - BMI adjustment required",
-        timestamp: "2026-01-05 09:45",
-        category: "Soldier Management"
-    },
-    {
-        id: "4",
-        action: "Generated Report",
-        details: "Monthly fitness report generated for command review",
-        timestamp: "2026-01-04 16:20",
-        category: "Report"
-    },
-    {
-        id: "5",
-        action: "System Update",
-        details: "System backup completed successfully",
-        timestamp: "2026-01-03 23:00",
-        category: "System"
-    }
-];
-
-const mockUnitOverview: UnitOverview = {
-    totalSoldiers: 156,
-    averageScore: 482,
-    passRate: 82.1,
-    pendingTests: 12,
-    highRiskSoldiers: 8
-};
 
 export default function AdjudantProfilePage() {
     const [profile, setProfile] = useState<AdjudantProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [unitOverview] = useState<UnitOverview>(mockUnitOverview);
-    const [activityLog] = useState<ActivityLog[]>(mockActivityLog);
+    const [unitOverview, setUnitOverview] = useState<UnitOverview | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
     useEffect(() => {
@@ -105,14 +48,22 @@ export default function AdjudantProfilePage() {
                 }
 
                 const user = JSON.parse(userData);
-                const response = await fetch(`/api/profile?userId=${user.id}`);
-                
-                if (!response.ok) {
+                const [profileRes, overviewRes] = await Promise.all([
+                    fetch(`/api/profile?userId=${user.id}`),
+                    fetch('/api/soldiers/unit-overview'),
+                ]);
+
+                if (!profileRes.ok) {
                     throw new Error('Failed to fetch profile');
                 }
 
-                const data = await response.json();
+                const data = await profileRes.json();
                 setProfile(data);
+
+                if (overviewRes.ok) {
+                    const overviewData = await overviewRes.json();
+                    setUnitOverview(overviewData);
+                }
             } catch (err) {
                 console.error('Error fetching profile:', err);
                 setError(err instanceof Error ? err.message : 'Failed to load profile');
@@ -123,17 +74,6 @@ export default function AdjudantProfilePage() {
 
         fetchProfile();
     }, []);
-
-    const getActivityCategoryColor = (category: string) => {
-        switch (category) {
-            case "Fitness Test": return "text-blue-600 bg-blue-50 border-blue-200";
-            case "Alert": return "text-red-600 bg-red-50 border-red-200";
-            case "Soldier Management": return "text-purple-600 bg-purple-50 border-purple-200";
-            case "Report": return "text-green-600 bg-green-50 border-green-200";
-            case "System": return "text-gray-600 bg-gray-50 border-gray-200";
-            default: return "";
-        }
-    };
 
     if (loading) {
         return (
@@ -323,64 +263,28 @@ export default function AdjudantProfilePage() {
                         <CardDescription>Key metrics for your assigned unit</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                <p className="text-sm text-gray-600 mb-2">Total Soldiers</p>
-                                <p className="text-2xl font-bold text-blue-600">{unitOverview.totalSoldiers}</p>
-                            </div>
-                            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                                <p className="text-sm text-gray-600 mb-2">Pass Rate</p>
-                                <p className="text-2xl font-bold text-green-600">{unitOverview.passRate.toFixed(1)}%</p>
-                            </div>
-                            <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                                <p className="text-sm text-gray-600 mb-2">Avg Score</p>
-                                <p className="text-2xl font-bold text-purple-600">{unitOverview.averageScore}</p>
-                            </div>
-                            <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                                <p className="text-sm text-gray-600 mb-2">Pending Tests</p>
-                                <p className="text-2xl font-bold text-orange-600">{unitOverview.pendingTests}</p>
-                            </div>
-                            <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-                                <p className="text-sm text-gray-600 mb-2">High Risk</p>
-                                <p className="text-2xl font-bold text-red-600">{unitOverview.highRiskSoldiers}</p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Activity Log */}
-                <Card>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle>Recent Activity</CardTitle>
-                                <CardDescription>Your recent actions in the system</CardDescription>
-                            </div>
-                            <Button variant="outline" size="sm">View All</Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-3">
-                            {activityLog.map((activity) => (
-                                <div
-                                    key={activity.id}
-                                    className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                                >
-                                    <div className="flex items-start gap-4">
-                                        <div className="shrink-0">
-                                            <Badge className={getActivityCategoryColor(activity.category)}>
-                                                {activity.category}
-                                            </Badge>
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-semibold text-gray-900 mb-1">{activity.action}</h4>
-                                            <p className="text-sm text-gray-600 mb-2">{activity.details}</p>
-                                            <p className="text-xs text-gray-500">{activity.timestamp}</p>
-                                        </div>
-                                    </div>
+                        {unitOverview ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                    <p className="text-sm text-gray-600 mb-2">Total Soldiers</p>
+                                    <p className="text-2xl font-bold text-blue-600">{unitOverview.totalSoldiers}</p>
                                 </div>
-                            ))}
-                        </div>
+                                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                                    <p className="text-sm text-gray-600 mb-2">Fit Soldiers</p>
+                                    <p className="text-2xl font-bold text-green-600">{unitOverview.fitSoldiers}</p>
+                                </div>
+                                <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                                    <p className="text-sm text-gray-600 mb-2">Unfit Soldiers</p>
+                                    <p className="text-2xl font-bold text-red-600">{unitOverview.unfitSoldiers}</p>
+                                </div>
+                                <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                                    <p className="text-sm text-gray-600 mb-2">Pass Rate</p>
+                                    <p className="text-2xl font-bold text-purple-600">{unitOverview.passRate.toFixed(1)}%</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className="text-gray-500">Loading unit overview...</p>
+                        )}
                     </CardContent>
                 </Card>
             </div>

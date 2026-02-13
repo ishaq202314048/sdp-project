@@ -59,7 +59,6 @@ export async function PATCH(request: NextRequest) {
             'bloodGroup',
             'height',
             'weight',
-            'bmi',
             'medicalCategory',
         ];
 
@@ -67,6 +66,17 @@ export async function PATCH(request: NextRequest) {
         for (const field of allowedFields) {
             if (field in body) {
                 updateData[field] = body[field];
+            }
+        }
+
+        // Auto-calculate BMI when height or weight changes
+        if ('height' in body || 'weight' in body) {
+            // Get current user to fill in missing height/weight
+            const currentUser = await prisma.user.findUnique({ where: { id: userId } });
+            const h = Number(body.height ?? currentUser?.height);
+            const w = Number(body.weight ?? currentUser?.weight);
+            if (h && w && h > 0) {
+                updateData['bmi'] = parseFloat((w / ((h / 100) ** 2)).toFixed(1));
             }
         }
 

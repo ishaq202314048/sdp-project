@@ -1,31 +1,50 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Users, AlertTriangle, CheckCircle2, Activity, FileText, UserX } from "lucide-react";
-import { useState } from "react";
+import { Users, CheckCircle2, UserX, CalendarDays } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function AdjudantHomePage() {
-	// Mock data - replace with real data from API
-	const stats = {
-		totalSoldiers: 150,
-		fitSoldiers: 132,
-		unfitSoldiers: 18,
-		highRiskSoldiers: 8,
+	const [stats, setStats] = useState({ totalSoldiers: 0, fitSoldiers: 0, unfitSoldiers: 0 });
+
+	const [ipftDate, setIpftDate] = useState<string>("");
+	const [ipftSaved, setIpftSaved] = useState(false);
+
+	useEffect(() => {
+		// Fetch soldiers from database
+		fetch("/api/soldiers")
+			.then(res => res.json())
+			.then(data => {
+				if (Array.isArray(data)) {
+					const fitCount = data.filter((s: { fitnessStatus: string }) => s.fitnessStatus === 'Fit').length;
+					const unfitCount = data.filter((s: { fitnessStatus: string }) => s.fitnessStatus === 'Unfit').length;
+					setStats({ totalSoldiers: data.length, fitSoldiers: fitCount, unfitSoldiers: unfitCount });
+				}
+			})
+			.catch(err => console.error('Failed to fetch soldiers:', err));
+
+		fetch("/api/fitness-test/ipft-date")
+			.then(res => res.json())
+			.then(data => { if (data.date) setIpftDate(data.date); })
+			.catch(() => {});
+	}, []);
+
+	const handleSaveIpftDate = async () => {
+		if (!ipftDate) return;
+		try {
+			const res = await fetch("/api/fitness-test/ipft-date", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ date: ipftDate }),
+			});
+			if (res.ok) {
+				setIpftSaved(true);
+				setTimeout(() => setIpftSaved(false), 3000);
+			}
+		} catch (err) {
+			console.error("Failed to save IPFT date", err);
+		}
 	};
-
-	const recentAlerts = [
-		{ id: 1, message: "5 soldiers overweight - immediate attention required", type: "warning" },
-		{ id: 2, message: "Monthly mile test due in 3 days", type: "info" },
-		{ id: 3, message: "3 soldiers failed IPFT standards", type: "danger" },
-	];
-
-	const upcomingTests = [
-		{ id: 1, name: "Lt. Ahmed Khan", serviceNo: "BA-10234", date: "Jan 8, 2026" },
-		{ id: 2, name: "Cpl. Rahman Ali", serviceNo: "BA-10567", date: "Jan 10, 2026" },
-		{ id: 3, name: "Sgt. Karim Hassan", serviceNo: "BA-10892", date: "Jan 12, 2026" },
-	];
 
 	return (
 		<div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
@@ -34,7 +53,7 @@ export default function AdjudantHomePage() {
 					<h1 className="text-3xl font-bold">Adjutant Dashboard</h1>
 				</div>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 					<Card>
 						<CardHeader>
 							<CardDescription className="flex items-center gap-2">
@@ -64,80 +83,39 @@ export default function AdjudantHomePage() {
 							<CardTitle className="text-3xl text-red-600">{stats.unfitSoldiers}</CardTitle>
 						</CardHeader>
 					</Card>
-
-					<Card>
-						<CardHeader>
-							<CardDescription className="flex items-center gap-2">
-								<AlertTriangle className="h-4 w-4 text-orange-600" />
-								High Risk
-							</CardDescription>
-							<CardTitle className="text-3xl text-orange-600">{stats.highRiskSoldiers}</CardTitle>
-						</CardHeader>
-					</Card>
-				</div>
-
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-					<Card>
-						<CardHeader>
-							<CardTitle>Recent Alerts</CardTitle>
-							<CardDescription>Important updates and reminders</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<div className="space-y-3">
-								{recentAlerts.map((alert) => (
-									<div key={alert.id} className="flex items-start gap-3 p-3 rounded-lg border">
-										<AlertTriangle className={`h-5 w-5 ${alert.type === "warning" ? "text-orange-600" : alert.type === "danger" ? "text-red-600" : "text-blue-600"}`} />
-										<p className="text-sm flex-1">{alert.message}</p>
-									</div>
-								))}
-							</div>
-						</CardContent>
-					</Card>
-
-					<Card>
-						<CardHeader>
-							<CardTitle>Upcoming IPFT</CardTitle>
-							<CardDescription>Scheduled fitness tests</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<div className="space-y-3">
-								{upcomingTests.map((test) => (
-									<div key={test.id} className="flex items-center justify-between p-3 rounded-lg border">
-										<div>
-											<p className="font-medium text-sm">{test.name}</p>
-											<p className="text-xs text-muted-foreground">{test.serviceNo}</p>
-										</div>
-										<p className="text-sm">{test.date}</p>
-									</div>
-								))}
-							</div>
-						</CardContent>
-					</Card>
 				</div>
 
 				<Card>
 					<CardHeader>
-						<CardTitle>Quick Actions</CardTitle>
+						<CardTitle className="flex items-center gap-2">
+							<CalendarDays className="h-5 w-5" />
+							IPFT Date
+						</CardTitle>
+						<CardDescription>Set the date for the next Individual Physical Fitness Test</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-							<Button variant="outline" className="justify-start" asChild>
-								<Link href="/dashboard/adjutant/soldiers">
-									<Users className="mr-2 h-4 w-4" />
-									View Soldiers
-								</Link>
-							</Button>
-							<Button variant="outline" className="justify-start" asChild>
-								<Link href="/dashboard/adjutant/fitness-tests">
-									<Activity className="mr-2 h-4 w-4" />
-									Manage Tests
-								</Link>
-							</Button>
-							<Button variant="outline" className="justify-start">
-								<FileText className="mr-2 h-4 w-4" />
-								Generate Report
-							</Button>
+						<div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+							<div className="space-y-2 flex-1">
+								<label htmlFor="ipft-date" className="text-sm font-medium">Select Date</label>
+								<input
+									id="ipft-date"
+									type="date"
+									value={ipftDate}
+									onChange={(e) => setIpftDate(e.target.value)}
+									className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+								/>
+							</div>
+							<button
+								onClick={handleSaveIpftDate}
+								disabled={!ipftDate}
+								className="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+							>
+								Save IPFT Date
+							</button>
 						</div>
+						{ipftSaved && (
+							<p className="mt-3 text-sm text-green-600 font-medium">✓ IPFT date saved successfully!</p>
+						)}
 					</CardContent>
 				</Card>
 

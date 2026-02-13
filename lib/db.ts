@@ -25,6 +25,7 @@ export interface UserRecord {
   bloodGroup?: string | null;
   height?: number | null;
   weight?: number | null;
+  bmi?: number | null;
   medicalCategory?: string | null;
   
   // Clerk-specific fields
@@ -85,6 +86,20 @@ export async function getUserById(id: string): Promise<UserRecord | undefined> {
 export async function emailExists(email: string): Promise<boolean> {
   const normalized = email.trim().toLowerCase();
   const user = await prisma.user.findUnique({ where: { email: normalized } });
+  return !!user;
+}
+
+export async function serviceNoExists(serviceNo: string): Promise<boolean> {
+  const trimmed = serviceNo.trim();
+  const user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { serviceNo: trimmed },
+        { clerkServiceNo: trimmed },
+        { adjutantServiceNo: trimmed },
+      ],
+    },
+  });
   return !!user;
 }
 

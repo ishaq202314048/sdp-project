@@ -85,8 +85,10 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
     }
 
     const submitMark = async (soldier: Item) => {
-        const f = form[soldier.id] || { name: "", duration: "", result: "" };
-        if (!f.name.trim()) return;
+        const f = form[soldier.id] || { name: "", customName: "", duration: "", result: "" };
+        // Resolve actual exercise name: use customName when "Custom" is selected
+        const exerciseName = f.name === '__custom__' ? (f.customName || '').trim() : f.name.trim();
+        if (!exerciseName) return;
         if (!clerkUserId) {
             console.error('Clerk user ID not found');
             return;
@@ -101,7 +103,7 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
                 body: JSON.stringify({
                     soldierUserId: soldier.id,
                     clerkUserId: clerkUserId,
-                    exerciseName: f.name,
+                    exerciseName: exerciseName,
                     duration: f.duration || null,
                     result: f.result || 'Unknown',
                 }),
@@ -116,7 +118,7 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
 
             const newMark: Mark = { 
                 id: json.test.id, 
-                name: f.name, 
+                name: exerciseName, 
                 duration: f.duration, 
                 result: f.result, 
                 createdAt: new Date().toISOString() 
@@ -139,7 +141,7 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
             }
             
             // reset form for this soldier
-            setForm((p) => ({ ...p, [soldier.id]: { name: '', duration: '', result: '' } }));
+            setForm((p) => ({ ...p, [soldier.id]: { name: '', customName: '', duration: '', result: '' } }));
             setOpenFor(null);
         } catch (err) {
             console.error('Failed to submit mark', err);
@@ -169,7 +171,7 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
                     {openFor === s.id && (
                         <div className="mt-3 space-y-2">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <select value={form[s.id]?.name || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), name: e.target.value } }))} className="border px-2 py-1 rounded">
+                                <select value={form[s.id]?.name || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', customName: '', duration: '', result: '' }), name: e.target.value, customName: '' } }))} className="border px-2 py-1 rounded">
                                     <option value="">Select exercise</option>
                                     {loadingExercises[s.id] ? (
                                         <option disabled>Loading exercises...</option>
@@ -184,8 +186,16 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
                                     )}
                                     <option value="__custom__">-- Custom --</option>
                                 </select>
-                                {/* allow manual override when custom selected or to tweak name */}
-                                <input value={form[s.id]?.name === '__custom__' ? form[s.id]?.customName || '' : (form[s.id]?.name || '')} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', customName: '', duration: '', result: '' }), customName: e.target.value, name: '__custom__' } }))} placeholder="Or enter exercise name" className="border px-2 py-1 rounded" />
+                                {/* Custom exercise name input — only shown when Custom is selected */}
+                                {form[s.id]?.name === '__custom__' && (
+                                    <input
+                                        value={form[s.id]?.customName || ''}
+                                        onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '__custom__', customName: '', duration: '', result: '' }), customName: e.target.value } }))}
+                                        placeholder="Enter custom exercise name"
+                                        className="border px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        autoFocus
+                                    />
+                                )}
                                 <select value={form[s.id]?.result || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), result: e.target.value } }))} className="border px-2 py-1 rounded">
                                     <option value="">Result</option>
                                     <option value="Pass">Pass</option>

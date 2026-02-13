@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createUser, emailExists } from "@/lib/db";
+import { createUser, emailExists, serviceNoExists } from "@/lib/db";
 import { hashPassword } from "@/lib/auth";
 import { generateToken } from "@/lib/jwt";
 
@@ -55,6 +55,12 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: "Service number is required for soldiers" },
           { status: 400 }
+        );
+      }
+      if (await serviceNoExists(serviceNo)) {
+        return NextResponse.json(
+          { error: "A user with this service number already exists" },
+          { status: 409 }
         );
       }
       if (!unit) {
@@ -114,6 +120,12 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+      if (await serviceNoExists(clerkServiceNo)) {
+        return NextResponse.json(
+          { error: "A user with this service number already exists" },
+          { status: 409 }
+        );
+      }
       if (!clerkRank) {
         return NextResponse.json(
           { error: "Rank is required for clerks" },
@@ -169,6 +181,12 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           { error: "Service number is required for adjutants" },
           { status: 400 }
+        );
+      }
+      if (await serviceNoExists(adjutantServiceNo)) {
+        return NextResponse.json(
+          { error: "A user with this service number already exists" },
+          { status: 409 }
         );
       }
       if (!adjutantRank) {
@@ -231,6 +249,7 @@ export async function POST(request: NextRequest) {
       bloodGroup: userType === "soldier" ? bloodGroup : undefined,
       height: userType === "soldier" ? Number(height) : undefined,
       weight: userType === "soldier" ? Number(weight) : undefined,
+      bmi: userType === "soldier" ? parseFloat((Number(weight) / ((Number(height) / 100) ** 2)).toFixed(1)) : undefined,
       medicalCategory: userType === "soldier" ? medicalCategory : undefined,
       // Clerk fields
       clerkServiceNo: userType === "clerk" ? clerkServiceNo : undefined,
