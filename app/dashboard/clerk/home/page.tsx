@@ -107,34 +107,34 @@ export default function ClerkHomePage() {
         {
             title: "Total Soldiers",
             value: stats.totalSoldiers,
-            color: "text-blue-600",
-            bgColor: "bg-blue-50",
+            color: "text-blue-400",
+            bgColor: "bg-blue-500/10 border-blue-500/20",
             icon: "👥"
         },
         {
             title: "Fit Soldiers",
             value: `${stats.fitSoldiers} (${fitnessPercentage}%)`,
-            color: "text-green-600",
-            bgColor: "bg-green-50",
+            color: "text-emerald-400",
+            bgColor: "bg-emerald-500/10 border-emerald-500/20",
             icon: "✓"
         },
         {
             title: "Unfit Soldiers",
             value: `${stats.unfitSoldiers} (${unfitnessPercentage}%)`,
-            color: "text-red-600",
-            bgColor: "bg-red-50",
+            color: "text-red-400",
+            bgColor: "bg-red-500/10 border-red-500/20",
             icon: "⚠"
         },
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="min-h-screen bg-[#020617] p-6">
             <div className="max-w-7xl mx-auto space-y-6">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Command Dashboard</h1>
-                        <p className="text-gray-600 mt-1">Unit readiness and fitness monitoring overview</p>
+                        <h1 className="text-3xl font-bold text-white">Command Dashboard</h1>
+                        <p className="text-slate-400 mt-1">Unit readiness and fitness monitoring overview</p>
                     </div>
                 </div>
 
@@ -149,7 +149,7 @@ export default function ClerkHomePage() {
                                             <div className="flex items-center justify-between">
                                                 <span className="text-2xl">{card.icon}</span>
                                             </div>
-                                            <CardDescription className="text-gray-600">{card.title}</CardDescription>
+                                            <CardDescription className="text-slate-400">{card.title}</CardDescription>
                                             <CardTitle className={`text-2xl ${card.color}`}>{card.value}</CardTitle>
                                         </CardHeader>
                                     </Card>
@@ -165,7 +165,7 @@ export default function ClerkHomePage() {
                                             <div className="flex items-center justify-between">
                                                 <span className="text-2xl">{card.icon}</span>
                                             </div>
-                                            <CardDescription className="text-gray-600">{card.title}</CardDescription>
+                                            <CardDescription className="text-slate-400">{card.title}</CardDescription>
                                             <CardTitle className={`text-2xl ${card.color}`}>{card.value}</CardTitle>
                                         </CardHeader>
                                     </Card>
@@ -181,7 +181,7 @@ export default function ClerkHomePage() {
                                         <div className="flex items-center justify-between">
                                             <span className="text-2xl">{card.icon}</span>
                                         </div>
-                                        <CardDescription className="text-gray-600">{card.title}</CardDescription>
+                                        <CardDescription className="text-slate-400">{card.title}</CardDescription>
                                         <CardTitle className={`text-2xl ${card.color}`}>{card.value}</CardTitle>
                                     </CardHeader>
                                 </Card>
@@ -205,37 +205,37 @@ export default function ClerkHomePage() {
                             <input
                                 type="text"
                                 placeholder="Search by service no"
-                                className="w-full border px-3 py-2 rounded"
+                                className="w-full border border-white/[0.1] bg-white/[0.05] text-slate-200 placeholder-slate-500 px-3 py-2 rounded-xl focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
                                 value={serviceNoFilter}
                                 onChange={(e) => setServiceNoFilter(e.target.value)}
                             />
                             <select
-                                className="w-full border px-3 py-2 rounded"
+                                className="w-full border border-white/[0.1] bg-white/[0.05] text-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
                                 value={rankFilter}
                                 onChange={(e) => setRankFilter(e.target.value)}
                             >
-                                <option value="all">All Ranks</option>
+                                <option value="all" className="bg-[#0c1425] text-slate-200">All Ranks</option>
                                 {uniqueRanks.map((r) => (
-                                    <option key={r} value={r}>{r}</option>
+                                    <option key={r} value={r} className="bg-[#0c1425] text-slate-200">{r}</option>
                                 ))}
                             </select>
                             <select
-                                className="w-full border px-3 py-2 rounded"
+                                className="w-full border border-white/[0.1] bg-white/[0.05] text-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >
-                                <option value="all">All Statuses</option>
-                                <option value="Fit">Fit</option>
-                                <option value="At Risk">At Risk</option>
-                                <option value="Unfit">Unfit</option>
+                                <option value="all" className="bg-[#0c1425] text-slate-200">All Statuses</option>
+                                <option value="Fit" className="bg-[#0c1425] text-slate-200">Fit</option>
+                                <option value="At Risk" className="bg-[#0c1425] text-slate-200">At Risk</option>
+                                <option value="Unfit" className="bg-[#0c1425] text-slate-200">Unfit</option>
                             </select>
                         </div>
 
                         <div>
                             {loading ? (
-                                <p className="text-sm text-gray-600">Loading soldiers...</p>
+                                <p className="text-sm text-slate-400">Loading soldiers...</p>
                             ) : filteredSoldiers.length === 0 ? (
-                                <p className="text-sm text-gray-600">No soldiers found matching your filters.</p>
+                                <p className="text-sm text-slate-400">No soldiers found matching your filters.</p>
                             ) : (
                                 <SoldiersList items={filteredSoldiers} />
                             )}
@@ -254,29 +254,29 @@ export default function ClerkHomePage() {
                         <div className="space-y-4">
                             <div>
                                 <div className="flex justify-between mb-2">
-                                    <span className="text-sm font-medium text-gray-700">Fit Soldiers</span>
-                                    <span className="text-sm font-medium text-green-600">{fitnessPercentage}%</span>
+                                    <span className="text-sm font-medium text-slate-300">Fit Soldiers</span>
+                                    <span className="text-sm font-medium text-emerald-400">{fitnessPercentage}%</span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-3">
+                                <div className="w-full bg-white/[0.08] rounded-full h-3">
                                     <div
-                                        className="bg-green-600 h-3 rounded-full transition-all"
+                                        className="bg-emerald-500 h-3 rounded-full transition-all"
                                         style={{ width: `${fitnessPercentage}%` }}
                                     />
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">{stats.fitSoldiers} of {stats.totalSoldiers} soldiers</p>
+                                <p className="text-xs text-slate-500 mt-1">{stats.fitSoldiers} of {stats.totalSoldiers} soldiers</p>
                             </div>
                             <div>
                                 <div className="flex justify-between mb-2">
-                                    <span className="text-sm font-medium text-gray-700">Unfit Soldiers</span>
-                                    <span className="text-sm font-medium text-red-600">{unfitnessPercentage}%</span>
+                                    <span className="text-sm font-medium text-slate-300">Unfit Soldiers</span>
+                                    <span className="text-sm font-medium text-red-400">{unfitnessPercentage}%</span>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-3">
+                                <div className="w-full bg-white/[0.08] rounded-full h-3">
                                     <div
-                                        className="bg-red-600 h-3 rounded-full transition-all"
+                                        className="bg-red-500 h-3 rounded-full transition-all"
                                         style={{ width: `${unfitnessPercentage}%` }}
                                     />
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">{stats.unfitSoldiers} soldiers need attention</p>
+                                <p className="text-xs text-slate-500 mt-1">{stats.unfitSoldiers} soldiers need attention</p>
                             </div>
                         </div>
                     </CardContent>

@@ -20,7 +20,7 @@ export function LogoutButton() {
     <Button 
       variant="outline" 
       size="sm" 
-      className="gap-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white cursor-pointer"
+      className="gap-2 border border-red-500/50 text-red-400 hover:bg-red-500/20 hover:text-red-300 hover:border-red-400/60 cursor-pointer rounded-xl backdrop-blur-sm"
       onClick={handleLogout}
     >
       <LogOut className="h-4 w-4" />

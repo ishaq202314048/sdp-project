@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+// Card imports removed - using custom glass layout
 
 export default function ForgotPasswordPage() {
     const [step, setStep] = useState<"email" | "otp" | "success">("email");
@@ -46,34 +46,36 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative">
-            <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{
-                    backgroundImage: "url('/auth-background.jpg')",
-                }}
-            >
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div className="min-h-screen flex items-center justify-center p-4 relative bg-slate-950">
+            {/* Animated background */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.08)_0%,_transparent_50%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(59,130,246,0.06)_0%,_transparent_50%)]" />
+                <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
             </div>
 
-            <Card className="w-full max-w-md relative z-10 shadow-2xl">
-                <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-center">
-                        {step === "email" && "Reset Password"}
-                        {step === "otp" && "Verify OTP"}
-                        {step === "success" && "Password Reset Successful"}
-                    </CardTitle>
-                    <CardDescription className="text-center">
-                        {step === "email" && "Enter your email address to receive a verification code"}
-                        {step === "otp" && "Enter the OTP sent to your email and set a new password"}
-                        {step === "success" && "Your password has been successfully reset"}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
+            <div className="w-full max-w-md relative z-10">
+                <div className="bg-white/[0.07] backdrop-blur-2xl border border-white/[0.12] rounded-3xl shadow-[0_8px_60px_-10px_rgba(0,0,0,0.5)] overflow-hidden">
+                    {/* Shimmer accent line */}
+                    <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
+                    
+                    <div className="p-8 space-y-1 text-center">
+                        <h2 className="text-2xl font-bold text-white">
+                            {step === "email" && "Reset Password"}
+                            {step === "otp" && "Verify OTP"}
+                            {step === "success" && "Password Reset Successful"}
+                        </h2>
+                        <p className="text-sm text-slate-400">
+                            {step === "email" && "Enter your email address to receive a verification code"}
+                            {step === "otp" && "Enter the OTP sent to your email and set a new password"}
+                            {step === "success" && "Your password has been successfully reset"}
+                        </p>
+                    </div>
+                    <div className="px-8 pb-6">
                     {step === "email" && (
                         <form onSubmit={handleEmailSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="email" className="text-xs font-semibold tracking-wide uppercase text-slate-400">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -85,7 +87,7 @@ export default function ForgotPasswordPage() {
                                 />
                             </div>
 
-                            <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
+                            <Button type="submit" className="w-full cursor-pointer h-12 rounded-xl text-white font-semibold" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }} disabled={isLoading}>
                                 {isLoading ? "Sending OTP..." : "Send OTP"}
                             </Button>
                         </form>
@@ -93,14 +95,14 @@ export default function ForgotPasswordPage() {
 
                     {step === "otp" && (
                         <form onSubmit={handleOtpSubmit} className="space-y-4">
-                            <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-3 border border-blue-200 dark:border-blue-800 mb-4">
-                                <p className="text-sm text-blue-800 dark:text-blue-200">
+                            <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-3 mb-4">
+                                <p className="text-sm text-emerald-400">
                                     OTP sent to <strong>{email}</strong>
                                 </p>
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="otp">OTP Code</Label>
+                                <Label htmlFor="otp" className="text-xs font-semibold tracking-wide uppercase text-slate-400">OTP Code</Label>
                                 <Input
                                     id="otp"
                                     type="text"
@@ -115,7 +117,7 @@ export default function ForgotPasswordPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="newPassword">New Password</Label>
+                                <Label htmlFor="newPassword" className="text-xs font-semibold tracking-wide uppercase text-slate-400">New Password</Label>
                                 <Input
                                     id="newPassword"
                                     type="password"
@@ -129,7 +131,7 @@ export default function ForgotPasswordPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                <Label htmlFor="confirmPassword" className="text-xs font-semibold tracking-wide uppercase text-slate-400">Confirm Password</Label>
                                 <Input
                                     id="confirmPassword"
                                     type="password"
@@ -143,7 +145,7 @@ export default function ForgotPasswordPage() {
                             </div>
 
                             <div className="flex gap-2">
-                                <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
+                                <Button type="submit" className="w-full cursor-pointer h-12 rounded-xl text-white font-semibold" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }} disabled={isLoading}>
                                     {isLoading ? "Resetting..." : "Reset Password"}
                                 </Button>
                             </div>
@@ -164,29 +166,30 @@ export default function ForgotPasswordPage() {
 
                     {step === "success" && (
                         <div className="space-y-4">
-                            <div className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-4 border border-emerald-200 dark:border-emerald-800">
-                                <p className="text-sm text-emerald-800 dark:text-emerald-200 text-center">
+                            <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-4">
+                                <p className="text-sm text-emerald-400 text-center">
                                     Your password has been successfully reset. You can now sign in with your new password.
                                 </p>
                             </div>
 
-                            <Button asChild className="w-full cursor-pointer">
+                            <Button asChild className="w-full cursor-pointer h-12 rounded-xl text-white font-semibold" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }}>
                                 <Link href="/auth/login">
                                     Go to Sign In
                                 </Link>
                             </Button>
                         </div>
                     )}
-                </CardContent>
-                <CardFooter className="flex justify-center">
-                    <p className="text-sm text-muted-foreground">
+                </div>
+                <div className="px-8 pb-8 flex justify-center">
+                    <p className="text-sm text-slate-500">
                         Remember your password?{" "}
-                        <Link href="/auth/login" className="text-primary hover:underline font-medium">
+                        <Link href="/auth/login" className="text-emerald-400 hover:text-emerald-300 hover:underline font-medium">
                             Sign in
                         </Link>
                     </p>
-                </CardFooter>
-            </Card>
+                </div>
+                </div>
+            </div>
         </div>
     );
 }

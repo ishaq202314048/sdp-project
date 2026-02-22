@@ -221,13 +221,13 @@ export default function FitnessPage() {
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 bg-[#020617] min-h-screen">
             <div>
-                <h1 className="text-3xl font-bold">Fitness Dashboard</h1>
-                <p className="text-gray-500 mt-1">Track your performance and progress</p>
+                <h1 className="text-3xl font-bold text-white">Fitness Dashboard</h1>
+                <p className="text-slate-400 mt-1">Track your performance and progress</p>
                 <div className="mt-4 flex items-center gap-4 flex-wrap">
-                    <span className="text-sm text-gray-600">Status:</span>
-                    <div className={`px-3 py-1 rounded-full shadow-sm text-sm ${fitnessStatus === 'Fit' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                    <span className="text-sm text-slate-400">Status:</span>
+                    <div className={`px-3 py-1 rounded-full shadow-sm text-sm ${fitnessStatus === 'Fit' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
                         {fitnessStatus}
                     </div>
                 </div>
@@ -242,13 +242,13 @@ export default function FitnessPage() {
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle>Your Weekly Routine</CardTitle>
-                                    <CardDescription>
+                                    <CardTitle className="text-white">Your Weekly Routine</CardTitle>
+                                    <CardDescription className="text-slate-400">
                                         {weeklyPlan ? `${weeklyPlan.title} for ${weeklyPlan.status} Soldiers` : `Routine for ${fitnessStatus} Soldiers`}
                                     </CardDescription>
                                 </div>
                                 {weeklyPlan && (
-                                    <Button variant="outline" size="sm" onClick={downloadWeeklyPlanPDF} className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm" onClick={downloadWeeklyPlanPDF} className="flex items-center gap-2 border-white/[0.1] text-slate-300 hover:bg-white/[0.05]">
                                         <Download className="w-4 h-4" />
                                         Download PDF
                                     </Button>
@@ -257,20 +257,20 @@ export default function FitnessPage() {
                         </CardHeader>
                         <CardContent>
                             {planLoading ? (
-                                <p className="text-sm text-gray-500">Loading routine...</p>
+                                <p className="text-sm text-slate-400">Loading routine...</p>
                             ) : weeklyPlan ? (
                                 <>
                                     {/* Day Selector - like Workout Plan */}
                                     <div className="mb-4 flex items-center gap-3">
                                         <div className="flex-1">
-                                            <label className="text-sm block mb-1">Select weekday</label>
+                                            <label className="text-sm block mb-1 text-slate-300">Select weekday</label>
                                             <select 
                                                 value={selectedDay} 
                                                 onChange={(e) => setSelectedDay(e.target.value)} 
-                                                className="border px-3 py-2 rounded-md shadow-sm w-full"
+                                                className="bg-white/[0.05] border border-white/[0.1] text-slate-200 px-3 py-2 rounded-xl shadow-sm w-full focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
                                             >
                                                 {days.map((d) => (
-                                                    <option key={d} value={d}>{d}</option>
+                                                    <option key={d} value={d} className="bg-[#0c1425] text-slate-200">{d}</option>
                                                 ))}
                                             </select>
                                         </div>
@@ -282,22 +282,22 @@ export default function FitnessPage() {
                                             (() => {
                                                 const dayPlan = weeklyPlan.exercises.find((d: Record<string, unknown>) => String(d.day).toLowerCase() === selectedDay.toLowerCase()) as { day: string; items: Array<Record<string, unknown>> } | undefined;
                                                 if (!dayPlan || !Array.isArray(dayPlan.items) || dayPlan.items.length === 0) {
-                                                    return <p className="text-center text-gray-500 py-6">Rest Day</p>;
+                                                    return <p className="text-center text-slate-500 py-6">Rest Day</p>;
                                                 }
                                                 return dayPlan.items.map((exercise: Record<string, unknown>, index: number) => (
                                                     <div key={index}>
                                                         <div className="flex items-center justify-between py-3">
                                                             <div className="flex items-center gap-4">
-                                                                <div className={`p-2 rounded-lg ${fitnessStatus === 'Fit' ? 'bg-linear-to-br from-green-50 to-green-100' : 'bg-linear-to-br from-orange-50 to-orange-100'}`}>
-                                                                    <Dumbbell className={`h-5 w-5 ${fitnessStatus === 'Fit' ? 'text-green-600' : 'text-orange-600'}`} />
+                                                                <div className={`p-2 rounded-xl ${fitnessStatus === 'Fit' ? 'bg-emerald-500/10' : 'bg-orange-500/10'}`}>
+                                                                    <Dumbbell className={`h-5 w-5 ${fitnessStatus === 'Fit' ? 'text-emerald-400' : 'text-orange-400'}`} />
                                                                 </div>
                                                                 <div>
-                                                                    <h3 className="font-semibold">{String(exercise.name)}</h3>
-                                                                    <p className="text-sm text-gray-500">{String(exercise.focus ?? '')}</p>
+                                                                    <h3 className="font-semibold text-white">{String(exercise.name)}</h3>
+                                                                    <p className="text-sm text-slate-400">{String(exercise.focus ?? '')}</p>
                                                                 </div>
                                                             </div>
                                                             <div className="text-right">
-                                                                <p className="text-sm text-gray-700">{String(exercise.duration ?? '')}</p>
+                                                                <p className="text-sm text-slate-300">{String(exercise.duration ?? '')}</p>
                                                             </div>
                                                         </div>
                                                         {index !== dayPlan.items.length - 1 && <Separator />}
@@ -305,14 +305,14 @@ export default function FitnessPage() {
                                                 ));
                                             })()
                                         ) : (
-                                            <p className="text-center text-gray-500 py-6">No exercises found</p>
+                                            <p className="text-center text-slate-500 py-6">No exercises found</p>
                                         )}
                                     </div>
                                 </>
                             ) : (
                                 <div className="text-center py-8">
-                                    <p className="text-gray-600 mb-3">No routine assigned yet for {fitnessStatus} soldiers.</p>
-                                    <p className="text-sm text-gray-500">Contact your adjutant to create and assign a weekly routine.</p>
+                                    <p className="text-slate-300 mb-3">No routine assigned yet for {fitnessStatus} soldiers.</p>
+                                    <p className="text-sm text-slate-500">Contact your adjutant to create and assign a weekly routine.</p>
                                 </div>
                             )}
                         </CardContent>
@@ -323,20 +323,20 @@ export default function FitnessPage() {
                     {overviewCards.map((card, index) => (
                         <Card key={index}>
                             <CardHeader className="pb-3">
-                                <CardTitle className="text-sm font-medium text-gray-600">{card.title}</CardTitle>
+                                <CardTitle className="text-sm font-medium text-slate-400">{card.title}</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <div className="text-2xl font-bold">{card.value}</div>
+                                        <div className="text-2xl font-bold text-white">{card.value}</div>
                                         {card.badgeColor ? (
-                                            <Badge className={`mt-2 ${card.badgeColor}`}>{card.subtitle}</Badge>
+                                            <Badge className={`mt-2 ${card.badgeColor === 'bg-green-500' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>{card.subtitle}</Badge>
                                         ) : (
-                                            <p className="text-sm text-gray-500 mt-2">{card.subtitle}</p>
+                                            <p className="text-sm text-slate-400 mt-2">{card.subtitle}</p>
                                         )}
                                     </div>
                                     {card.title === "Next IPFT" && ipftDate && (
-                                        <div className="text-sm text-gray-500">
+                                        <div className="text-sm text-slate-400">
                                             {daysRemaining} days left
                                         </div>
                                     )}

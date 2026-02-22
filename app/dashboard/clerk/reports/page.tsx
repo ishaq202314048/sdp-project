@@ -261,12 +261,12 @@ export default function ClarkReportsPage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
+		<div className="min-h-screen bg-[#020617] p-6">
 			<div className="max-w-6xl mx-auto space-y-6">
 				{/* Header */}
 				<div>
-					<h1 className="text-3xl font-bold">Reports</h1>
-					<p className="text-muted-foreground mt-1">Fitness reports and analytics</p>
+					<h1 className="text-3xl font-bold text-white">Reports</h1>
+					<p className="text-slate-400 mt-1">Fitness reports and analytics</p>
 				</div>
 
 				{/* Quick Report Templates */}
@@ -277,15 +277,15 @@ export default function ClarkReportsPage() {
 						</CardHeader>
 						<CardContent>
 							{fitnessTestData.length === 0 ? (
-								<p className="text-sm text-muted-foreground">No fitness test data available yet.</p>
+								<p className="text-sm text-slate-400">No fitness test data available yet.</p>
 							) : (
 								<ResponsiveContainer width="100%" height={250}>
 									<BarChart data={fitnessTestData}>
-										<CartesianGrid strokeDasharray="3 3" />
-										<XAxis dataKey="exercise" />
-										<YAxis />
-										<Tooltip />
-										<Legend />
+										<CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+										<XAxis dataKey="exercise" stroke="#94a3b8" />
+										<YAxis stroke="#94a3b8" />
+										<Tooltip contentStyle={{ backgroundColor: '#0c1425', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#e2e8f0' }} />
+										<Legend wrapperStyle={{ color: '#94a3b8' }} />
 										<Bar dataKey="pass" fill="#10b981" name="Pass" />
 										<Bar dataKey="fail" fill="#ef4444" name="Fail" />
 									</BarChart>
@@ -300,15 +300,15 @@ export default function ClarkReportsPage() {
 						</CardHeader>
 						<CardContent>
 							{quarterlyProgressData.length === 0 ? (
-								<p className="text-sm text-muted-foreground">No quarterly data available yet.</p>
+								<p className="text-sm text-slate-400">No quarterly data available yet.</p>
 							) : (
 								<ResponsiveContainer width="100%" height={250}>
 									<LineChart data={quarterlyProgressData}>
-										<CartesianGrid strokeDasharray="3 3" />
-										<XAxis dataKey="quarter" />
-										<YAxis />
-										<Tooltip />
-										<Legend />
+										<CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+										<XAxis dataKey="quarter" stroke="#94a3b8" />
+										<YAxis stroke="#94a3b8" />
+										<Tooltip contentStyle={{ backgroundColor: '#0c1425', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#e2e8f0' }} />
+										<Legend wrapperStyle={{ color: '#94a3b8' }} />
 										<Line type="monotone" dataKey="fit" stroke="#10b981" strokeWidth={2} name="Fit" />
 										<Line type="monotone" dataKey="unfit" stroke="#ef4444" strokeWidth={2} name="Unfit" />
 									</LineChart>
@@ -319,36 +319,36 @@ export default function ClarkReportsPage() {
 				</div>
 
 				{/* Send Report to Adjutant */}
-				<Card className="border-blue-200 dark:border-blue-800">
+				<Card className="border-emerald-500/30">
 					<CardHeader>
 						<CardTitle className="text-lg flex items-center gap-2">
-							<Send className="h-5 w-5 text-blue-600" />
+							<Send className="h-5 w-5 text-emerald-400" />
 							Send Report to Adjutant
 						</CardTitle>
 						<CardDescription>Send a report or message to the Adjutant. It will appear in their Alerts box.</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div>
-							<label className="text-sm font-medium mb-1 block">Title</label>
+							<label className="text-sm font-medium mb-1 block text-slate-300">Title</label>
 							<input
 								type="text"
-								className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+								className="w-full rounded-xl border border-white/[0.1] bg-white/[0.05] text-slate-200 placeholder-slate-500 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50"
 								placeholder="Report title..."
 								value={reportTitle}
 								onChange={(e) => setReportTitle(e.target.value)}
 							/>
 						</div>
 						<div>
-							<label className="text-sm font-medium mb-1 block">Message</label>
+							<label className="text-sm font-medium mb-1 block text-slate-300">Message</label>
 							<textarea
-								className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+								className="w-full rounded-xl border border-white/[0.1] bg-white/[0.05] text-slate-200 placeholder-slate-500 px-3 py-2 text-sm min-h-[100px] focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50"
 								placeholder="Write your report message..."
 								value={reportMessage}
 								onChange={(e) => setReportMessage(e.target.value)}
 							/>
 						</div>
 						<div>
-							<label className="text-sm font-medium mb-1 block">Attach PDF (optional)</label>
+							<label className="text-sm font-medium mb-1 block text-slate-300">Attach PDF (optional)</label>
 							<div className="flex items-center gap-3">
 								<input
 									ref={fileInputRef}
@@ -367,33 +367,33 @@ export default function ClarkReportsPage() {
 									{attachedFile ? 'Change File' : 'Choose PDF'}
 								</Button>
 								{attachedFile && (
-									<div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md px-3 py-1.5 text-sm">
-										<Paperclip className="h-3.5 w-3.5 text-blue-600" />
-										<span className="text-blue-700 dark:text-blue-300 max-w-[200px] truncate">{attachedFile.name}</span>
-										<button onClick={handleRemoveFile} className="text-blue-400 hover:text-red-500 ml-1">
+									<div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-3 py-1.5 text-sm">
+										<Paperclip className="h-3.5 w-3.5 text-emerald-400" />
+										<span className="text-emerald-300 max-w-[200px] truncate">{attachedFile.name}</span>
+										<button onClick={handleRemoveFile} className="text-slate-400 hover:text-red-400 ml-1">
 											<X className="h-3.5 w-3.5" />
 										</button>
 									</div>
 								)}
 							</div>
-							<p className="text-xs text-muted-foreground mt-1">Max 5MB, PDF only</p>
+							<p className="text-xs text-slate-500 mt-1">Max 5MB, PDF only</p>
 						</div>
 						<div className="flex items-center gap-3">
 							<Button
 								onClick={handleSendReport}
 								disabled={sendStatus === 'sending' || !reportTitle.trim() || !reportMessage.trim()}
-								className="bg-blue-600 hover:bg-blue-700 text-white"
+								className="bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
 							>
 								<Send className="h-4 w-4 mr-2" />
 								{sendStatus === 'sending' ? 'Sending...' : 'Send to Adjutant'}
 							</Button>
 							{sendStatus === 'sent' && (
-								<span className="text-sm text-green-600 flex items-center gap-1">
+								<span className="text-sm text-emerald-400 flex items-center gap-1">
 									<CheckCircle2 className="h-4 w-4" /> Report sent successfully!
 								</span>
 							)}
 							{sendStatus === 'error' && (
-								<span className="text-sm text-red-600 flex items-center gap-1">
+								<span className="text-sm text-red-400 flex items-center gap-1">
 									<AlertCircle className="h-4 w-4" /> Failed to send report
 								</span>
 							)}
@@ -402,10 +402,10 @@ export default function ClarkReportsPage() {
 				</Card>
 
 				{/* Generated Reports History */}
-				<Card className="border-emerald-200 dark:border-emerald-800">
+				<Card className="border-emerald-500/30">
 					<CardHeader>
 						<CardTitle className="text-lg flex items-center gap-2">
-							<FileText className="h-5 w-5 text-emerald-600" />
+							<FileText className="h-5 w-5 text-emerald-400" />
 							Generate Report
 						</CardTitle>
 						<CardDescription>Select a report type, generate the data, and download as PDF.</CardDescription>
@@ -414,14 +414,14 @@ export default function ClarkReportsPage() {
 						{/* Dropdown */}
 						<div className="flex flex-col sm:flex-row gap-3">
 							<select
-								className="flex-1 rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+								className="flex-1 rounded-xl border border-white/[0.1] bg-white/[0.05] text-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50"
 								value={genReportType}
 								onChange={(e) => { setGenReportType(e.target.value); setGenData([]); setGenIpftDate(null); }}
 							>
-								<option value="">Select Type</option>
-								<option value="fit-soldiers">Fit Soldiers</option>
-								<option value="unfit-soldiers">Unfit Soldiers</option>
-								<option value="ipft-report">IPFT Report</option>
+								<option value="" className="bg-[#0c1425] text-slate-200">Select Type</option>
+								<option value="fit-soldiers" className="bg-[#0c1425] text-slate-200">Fit Soldiers</option>
+								<option value="unfit-soldiers" className="bg-[#0c1425] text-slate-200">Unfit Soldiers</option>
+								<option value="ipft-report" className="bg-[#0c1425] text-slate-200">IPFT Report</option>
 							</select>
 							<Button
 								onClick={handleGenerateReport}
@@ -438,9 +438,9 @@ export default function ClarkReportsPage() {
 
 						{/* IPFT Date info */}
 						{genReportType === 'ipft-report' && genIpftDate && (
-							<div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-md px-4 py-2 text-sm">
-								<span className="font-medium text-amber-800 dark:text-amber-300">Next IPFT Date: </span>
-								<span className="text-amber-700 dark:text-amber-400">
+							<div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-2 text-sm">
+								<span className="font-medium text-amber-400">Next IPFT Date: </span>
+								<span className="text-amber-300">
 									{genIpftDate === 'Not Scheduled' ? genIpftDate : new Date(genIpftDate).toLocaleDateString()}
 								</span>
 							</div>
@@ -450,20 +450,20 @@ export default function ClarkReportsPage() {
 						{genData.length > 0 && (
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+									<p className="text-sm font-medium text-slate-400">
 										{genData.length} soldier{genData.length !== 1 ? 's' : ''} found
 									</p>
-									<Badge className="bg-emerald-100 text-emerald-800">
+									<Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
 										{genReportType === 'fit-soldiers' ? 'Fit' : genReportType === 'unfit-soldiers' ? 'Unfit' : 'IPFT'}
 									</Badge>
 								</div>
-								<div className="overflow-x-auto border rounded-lg">
+								<div className="overflow-x-auto border border-white/[0.1] rounded-xl">
 									<table className="w-full text-sm">
-										<thead className="bg-slate-100 dark:bg-slate-800">
+										<thead className="bg-white/[0.05]">
 											<tr>
-												<th className="px-3 py-2 text-left text-xs font-semibold text-slate-600 dark:text-slate-300">#</th>
+												<th className="px-3 py-2 text-left text-xs font-semibold text-slate-300">#</th>
 												{genColumns.map((col) => (
-													<th key={col.key} className="px-3 py-2 text-left text-xs font-semibold text-slate-600 dark:text-slate-300">
+													<th key={col.key} className="px-3 py-2 text-left text-xs font-semibold text-slate-300">
 														{col.label}
 													</th>
 												))}
@@ -471,16 +471,16 @@ export default function ClarkReportsPage() {
 										</thead>
 										<tbody>
 											{genData.map((row, idx) => (
-												<tr key={idx} className="border-t hover:bg-slate-50 dark:hover:bg-slate-900">
+												<tr key={idx} className="border-t border-white/[0.06] hover:bg-white/[0.04]">
 													<td className="px-3 py-2 text-xs text-slate-500">{idx + 1}</td>
 													{genColumns.map((col) => (
-														<td key={col.key} className="px-3 py-2 text-xs">
+														<td key={col.key} className="px-3 py-2 text-xs text-slate-300">
 															{col.key === 'fitnessStatus' ? (
-																<Badge className={row[col.key] === 'Fit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+																<Badge className={row[col.key] === 'Fit' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}>
 																	{String(row[col.key] || 'N/A')}
 																</Badge>
 															) : col.key === 'ipftResult' ? (
-																<Badge className={row[col.key] === 'Pass' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+																<Badge className={row[col.key] === 'Pass' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}>
 																	{String(row[col.key] || 'N/A')}
 																</Badge>
 															) : (
@@ -497,7 +497,7 @@ export default function ClarkReportsPage() {
 								{/* Download Button */}
 								<Button
 									onClick={handleDownloadGeneratedPdf}
-									className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white"
+									className="w-full sm:w-auto bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-500/25"
 								>
 									<Download className="h-4 w-4 mr-2" />
 									Download as PDF
@@ -507,7 +507,7 @@ export default function ClarkReportsPage() {
 
 						{/* Empty state after generate with no results */}
 						{!genLoading && genReportType && genData.length === 0 && genColumns.length > 0 && (
-							<div className="text-center py-8 text-muted-foreground">
+							<div className="text-center py-8 text-slate-500">
 								<FileText className="h-10 w-10 mx-auto mb-2 opacity-40" />
 								<p className="text-sm">No soldiers found for this report type.</p>
 							</div>

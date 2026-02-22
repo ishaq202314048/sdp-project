@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export default function SignupPage() {
     const router = useRouter();
-    const [userType, setUserType] = useState("");
+    const userType = "soldier";
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [serviceNo, setServiceNo] = useState("");
@@ -89,25 +89,6 @@ export default function SignupPage() {
                     height: userType === "soldier" ? height : undefined,
                     weight: userType === "soldier" ? weight : undefined,
                     medicalCategory: userType === "soldier" ? medicalCategory : undefined,
-                    // Clerk fields
-                    clerkServiceNo: userType === "clerk" ? clerkServiceNo : undefined,
-                    clerkRank: userType === "clerk" ? clerkRank : undefined,
-                    clerkUnit: userType === "clerk" ? clerkUnit : undefined,
-                    clerkRole: userType === "clerk" ? clerkRole : undefined,
-                    clerkDateOfJoining: userType === "clerk" ? clerkDateOfJoining : undefined,
-                    clerkPhone: userType === "clerk" ? clerkPhone : undefined,
-                    clerkAddress: userType === "clerk" ? clerkAddress : undefined,
-                    clerkEmergencyContactName: userType === "clerk" ? clerkEmergencyContactName : undefined,
-                    clerkEmergencyContact: userType === "clerk" ? clerkEmergencyContact : undefined,
-                    // Adjutant fields
-                    adjutantServiceNo: userType === "adjutant" ? adjutantServiceNo : undefined,
-                    adjutantRank: userType === "adjutant" ? adjutantRank : undefined,
-                    adjutantUnit: userType === "adjutant" ? adjutantUnit : undefined,
-                    adjutantDateOfJoining: userType === "adjutant" ? adjutantDateOfJoining : undefined,
-                    adjutantPhone: userType === "adjutant" ? adjutantPhone : undefined,
-                    adjutantAddress: userType === "adjutant" ? adjutantAddress : undefined,
-                    adjutantEmergencyContactName: userType === "adjutant" ? adjutantEmergencyContactName : undefined,
-                    adjutantEmergencyContact: userType === "adjutant" ? adjutantEmergencyContact : undefined,
                 }),
             });
 
@@ -116,6 +97,12 @@ export default function SignupPage() {
             if (!response.ok) {
                 setError(data.error || "Signup failed. Please try again.");
                 setIsLoading(false);
+                return;
+            }
+
+            // If soldier account is pending adjutant approval, redirect to login with message
+            if (data.pendingApproval) {
+                router.push("/auth/login?pending=true");
                 return;
             }
 
@@ -141,31 +128,33 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 relative">
+        <div className="min-h-screen flex items-center justify-center p-4 relative bg-slate-950">
             
-            <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{
-                    backgroundImage: "url('/auth-background.jpg')",
-                }}
-            >
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+            {/* Animated background */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.08)_0%,_transparent_50%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(59,130,246,0.06)_0%,_transparent_50%)]" />
+                <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
             </div>
 
             
-            <Card className="w-full max-w-md relative z-10 shadow-2xl">
-                <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold text-center">
-                        Create an account
-                    </CardTitle>
-                    <CardDescription className="text-center">
-                        Join TROOP TRACK to manage your fitness records
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
+            <div className="w-full max-w-md relative z-10">
+                <div className="bg-white/[0.07] backdrop-blur-2xl border border-white/[0.12] rounded-3xl shadow-[0_8px_60px_-10px_rgba(0,0,0,0.5)] overflow-hidden">
+                    {/* Shimmer accent line */}
+                    <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
+                    
+                    <div className="p-8 space-y-1 text-center">
+                        <h2 className="text-2xl font-bold text-white">
+                            Create an account
+                        </h2>
+                        <p className="text-sm text-slate-400">
+                            Join TROOP TRACK to manage your fitness records
+                        </p>
+                    </div>
+                    <div className="px-8 pb-6">
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="fullName">Full Name</Label>
+                            <Label htmlFor="fullName" className="text-xs font-semibold tracking-wide uppercase text-slate-400">Full Name</Label>
                             <Input
                                 id="fullName"
                                 type="text"
@@ -178,7 +167,7 @@ export default function SignupPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email" className="text-xs font-semibold tracking-wide uppercase text-slate-400">Email</Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -188,20 +177,6 @@ export default function SignupPage() {
                                 required
                                 disabled={isLoading}
                             />
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="userType">User Type</Label>
-                            <Select value={userType} onValueChange={setUserType} disabled={isLoading} required>
-                                <SelectTrigger id="userType">
-                                    <SelectValue placeholder="Select your role" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="soldier">Soldier</SelectItem>
-                                    <SelectItem value="clerk">Clerk</SelectItem>
-                                    <SelectItem value="adjutant">Adjutant</SelectItem>
-                                </SelectContent>
-                            </Select>
                         </div>
 
                         {userType === "soldier" && (
@@ -335,233 +310,6 @@ export default function SignupPage() {
                                 </div>
                             </>
                         )}
-
-                        {userType === "clerk" && (
-                            <>
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkServiceNo">Service Number</Label>
-                                    <Input
-                                        id="clerkServiceNo"
-                                        type="text"
-                                        placeholder="e.g., BA-1001"
-                                        value={clerkServiceNo}
-                                        onChange={(e) => setClerkServiceNo(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkRank">Rank</Label>
-                                    <Input
-                                        id="clerkRank"
-                                        type="text"
-                                        placeholder="e.g., Corporal, Lance Naib"
-                                        value={clerkRank}
-                                        onChange={(e) => setClerkRank(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkUnit">Unit</Label>
-                                    <Input
-                                        id="clerkUnit"
-                                        type="text"
-                                        placeholder="e.g., Headquarters, Dhaka"
-                                        value={clerkUnit}
-                                        onChange={(e) => setClerkUnit(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkRole">Role/Position</Label>
-                                    <Input
-                                        id="clerkRole"
-                                        type="text"
-                                        placeholder="e.g., Administrative Officer"
-                                        value={clerkRole}
-                                        onChange={(e) => setClerkRole(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkDateOfJoining">Date of Joining</Label>
-                                    <Input
-                                        id="clerkDateOfJoining"
-                                        type="date"
-                                        value={clerkDateOfJoining}
-                                        onChange={(e) => setClerkDateOfJoining(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkPhone">Phone Number</Label>
-                                    <Input
-                                        id="clerkPhone"
-                                        type="tel"
-                                        placeholder="+880-1700-000000"
-                                        value={clerkPhone}
-                                        onChange={(e) => setClerkPhone(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkAddress">Address</Label>
-                                    <Input
-                                        id="clerkAddress"
-                                        type="text"
-                                        placeholder="Your address"
-                                        value={clerkAddress}
-                                        onChange={(e) => setClerkAddress(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkEmergencyContactName">Emergency Contact Name</Label>
-                                    <Input
-                                        id="clerkEmergencyContactName"
-                                        type="text"
-                                        placeholder="Contact person name"
-                                        value={clerkEmergencyContactName}
-                                        onChange={(e) => setClerkEmergencyContactName(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="clerkEmergencyContact">Emergency Contact Number</Label>
-                                    <Input
-                                        id="clerkEmergencyContact"
-                                        type="tel"
-                                        placeholder="+880-1700-000000"
-                                        value={clerkEmergencyContact}
-                                        onChange={(e) => setClerkEmergencyContact(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        {userType === "adjutant" && (
-                            <>
-                                <div className="space-y-2">
-                                    <Label htmlFor="adjutantServiceNo">Service Number</Label>
-                                    <Input
-                                        id="adjutantServiceNo"
-                                        type="text"
-                                        placeholder="e.g., AD-2001"
-                                        value={adjutantServiceNo}
-                                        onChange={(e) => setAdjutantServiceNo(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="adjutantRank">Rank</Label>
-                                    <Input
-                                        id="adjutantRank"
-                                        type="text"
-                                        placeholder="e.g., Major, Captain"
-                                        value={adjutantRank}
-                                        onChange={(e) => setAdjutantRank(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="adjutantUnit">Unit</Label>
-                                    <Input
-                                        id="adjutantUnit"
-                                        type="text"
-                                        placeholder="e.g., Battalion Headquarters"
-                                        value={adjutantUnit}
-                                        onChange={(e) => setAdjutantUnit(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="adjutantDateOfJoining">Date of Joining</Label>
-                                    <Input
-                                        id="adjutantDateOfJoining"
-                                        type="date"
-                                        value={adjutantDateOfJoining}
-                                        onChange={(e) => setAdjutantDateOfJoining(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="adjutantPhone">Phone Number</Label>
-                                    <Input
-                                        id="adjutantPhone"
-                                        type="tel"
-                                        placeholder="+880-1700-000000"
-                                        value={adjutantPhone}
-                                        onChange={(e) => setAdjutantPhone(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="adjutantAddress">Address</Label>
-                                    <Input
-                                        id="adjutantAddress"
-                                        type="text"
-                                        placeholder="Your address"
-                                        value={adjutantAddress}
-                                        onChange={(e) => setAdjutantAddress(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="adjutantEmergencyContactName">Emergency Contact Name</Label>
-                                    <Input
-                                        id="adjutantEmergencyContactName"
-                                        type="text"
-                                        placeholder="Contact person name"
-                                        value={adjutantEmergencyContactName}
-                                        onChange={(e) => setAdjutantEmergencyContactName(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="adjutantEmergencyContact">Emergency Contact Number</Label>
-                                    <Input
-                                        id="adjutantEmergencyContact"
-                                        type="tel"
-                                        placeholder="+880-1700-000000"
-                                        value={adjutantEmergencyContact}
-                                        onChange={(e) => setAdjutantEmergencyContact(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                    />
-                                </div>
-                            </>
-                        )}
                         
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
@@ -592,25 +340,26 @@ export default function SignupPage() {
                         </div>
 
                         {error && (
-                            <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
+                            <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-xl">
                                 {error}
                             </div>
                         )}
 
-                        <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
+                        <Button type="submit" className="w-full cursor-pointer h-12 rounded-xl text-white font-semibold text-sm tracking-wide" style={{ background: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)' }} disabled={isLoading}>
                             {isLoading ? "Creating account..." : "Sign up"}
                         </Button>
                     </form>
-                </CardContent>
-                <CardFooter className="flex justify-center">
-                    <p className="text-sm text-muted-foreground">
+                </div>
+                <div className="px-8 pb-8 flex justify-center">
+                    <p className="text-sm text-slate-500">
                         Already have an account?{" "}
-                        <Link href="/auth/login" className="text-primary hover:underline font-medium">
+                        <Link href="/auth/login" className="text-emerald-400 hover:text-emerald-300 hover:underline font-medium">
                             Sign in
                         </Link>
                     </p>
-                </CardFooter>
-            </Card>
+                </div>
+                </div>
+            </div>
         </div>
     );
 }

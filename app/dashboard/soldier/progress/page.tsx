@@ -136,9 +136,9 @@ export default function ProgressPage() {
     const ExerciseTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; payload: { result: string } }>; label?: string }) => {
         if (active && payload && payload.length) {
             return (
-                <div className="bg-white dark:bg-slate-800 p-2 rounded shadow border text-sm">
-                    <p className="text-gray-600">{label}</p>
-                    <p className={payload[0].payload.result === "Pass" ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+                <div className="bg-[#0c1425] border border-white/[0.1] p-2 rounded-xl shadow text-sm">
+                    <p className="text-slate-400">{label}</p>
+                    <p className={payload[0].payload.result === "Pass" ? "text-emerald-400 font-semibold" : "text-red-400 font-semibold"}>
                         {payload[0].payload.result}
                     </p>
                 </div>
@@ -149,30 +149,30 @@ export default function ProgressPage() {
 
     if (loading) {
         return (
-            <div className="p-6">
-                <h1 className="text-3xl font-bold">Progress Tracking</h1>
-                <p className="text-gray-500 mt-4">Loading your progress data...</p>
+            <div className="p-6 bg-[#020617] min-h-screen">
+                <h1 className="text-3xl font-bold text-white">Progress Tracking</h1>
+                <p className="text-slate-400 mt-4">Loading your progress data...</p>
             </div>
         );
     }
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 bg-[#020617] min-h-screen">
             <div>
-                <h1 className="text-3xl font-bold">Progress Tracking</h1>
-                <p className="text-gray-500 mt-1">Monitor your fitness journey and achievements</p>
+                <h1 className="text-3xl font-bold text-white">Progress Tracking</h1>
+                <p className="text-slate-400 mt-1">Monitor your fitness journey and achievements</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {summaryCards.map((card, index) => (
                     <Card key={index}>
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium text-gray-600">{card.title}</CardTitle>
+                            <CardTitle className="text-sm font-medium text-slate-400">{card.title}</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div>
-                                <div className="text-2xl font-bold">{card.value}</div>
-                                <p className="text-xs text-gray-500 mt-2">{card.subtitle}</p>
+                                <div className="text-2xl font-bold text-white">{card.value}</div>
+                                <p className="text-xs text-slate-500 mt-2">{card.subtitle}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -184,8 +184,8 @@ export default function ProgressPage() {
                 <Card>
                     <CardHeader>
                         <div className="flex justify-between items-center">
-                            <CardTitle>Overall Pass Rate</CardTitle>
-                            <Badge className={passRate >= 50 ? "bg-green-500" : "bg-red-500"}>
+                            <CardTitle className="text-white">Overall Pass Rate</CardTitle>
+                            <Badge className={passRate >= 50 ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-red-500/20 text-red-400 border border-red-500/30"}>
                                 {passRate}% Pass Rate
                             </Badge>
                         </div>
@@ -195,18 +195,18 @@ export default function ProgressPage() {
                             <AreaChart data={overallScoreData}>
                                 <defs>
                                     <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                        <stop offset="5%" stopColor="#34d399" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" />
-                                <YAxis domain={[0, 100]} />
-                                <Tooltip />
+                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                                <XAxis dataKey="date" stroke="#94a3b8" />
+                                <YAxis domain={[0, 100]} stroke="#94a3b8" />
+                                <Tooltip contentStyle={{ backgroundColor: '#0c1425', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#e2e8f0' }} />
                                 <Area
                                     type="monotone"
                                     dataKey="score"
-                                    stroke="#3b82f6"
+                                    stroke="#34d399"
                                     fillOpacity={1}
                                     fill="url(#colorScore)"
                                 />
@@ -217,11 +217,11 @@ export default function ProgressPage() {
             ) : (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Overall Pass Rate</CardTitle>
+                        <CardTitle className="text-white">Overall Pass Rate</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="h-64 flex items-center justify-center">
-                            <p className="text-gray-500">No test data available yet. Complete fitness tests to see your progress.</p>
+                            <p className="text-slate-500">No test data available yet. Complete fitness tests to see your progress.</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -233,8 +233,8 @@ export default function ProgressPage() {
                     {exerciseCharts.map((exercise, index) => (
                         <Card key={index}>
                             <CardHeader>
-                                <CardTitle>{exercise.title}</CardTitle>
-                                <p className="text-sm text-gray-500">{exercise.subtitle}</p>
+                                <CardTitle className="text-white">{exercise.title}</CardTitle>
+                                <p className="text-sm text-slate-400">{exercise.subtitle}</p>
                             </CardHeader>
                             <CardContent>
                                 <ResponsiveContainer width="100%" height={250}>
@@ -245,9 +245,9 @@ export default function ProgressPage() {
                                                 <stop offset="95%" stopColor={exercise.color} stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="date" />
-                                        <YAxis domain={[0, 1]} ticks={[0, 1]} tickFormatter={(v) => v === 1 ? "Pass" : "Fail"} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                                        <XAxis dataKey="date" stroke="#94a3b8" />
+                                        <YAxis domain={[0, 1]} ticks={[0, 1]} tickFormatter={(v) => v === 1 ? "Pass" : "Fail"} stroke="#94a3b8" />
                                         <Tooltip content={<ExerciseTooltip />} />
                                         <Area
                                             type="stepAfter"
@@ -265,11 +265,11 @@ export default function ProgressPage() {
             ) : (
                 <Card>
                     <CardHeader>
-                        <CardTitle>Exercise Progress</CardTitle>
+                        <CardTitle className="text-white">Exercise Progress</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="h-32 flex items-center justify-center">
-                            <p className="text-gray-500">No exercise data available yet.</p>
+                            <p className="text-slate-500">No exercise data available yet.</p>
                         </div>
                     </CardContent>
                 </Card>

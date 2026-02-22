@@ -116,12 +116,12 @@ export default function ClarkOverviewPage() {
 		const latestUnfitPlan = plans.find(p => p.status === 'Unfit');
 
 		return (
-			<div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
+			<div className="min-h-screen bg-[#020617] p-6">
 				<div className="max-w-7xl mx-auto space-y-6">
 					{/* Header */}
 					<div>
-						<h1 className="text-3xl font-bold">Unit Overview</h1>
-						<p className="text-muted-foreground mt-1">Real-time fitness monitoring and analytics</p>
+						<h1 className="text-3xl font-bold text-white">Unit Overview</h1>
+						<p className="text-slate-400 mt-1">Real-time fitness monitoring and analytics</p>
 					</div>
 
 					{/* Stats Grid */}
@@ -139,12 +139,12 @@ export default function ClarkOverviewPage() {
 						<Card>
 							<CardHeader>
 								<CardDescription className="flex items-center gap-2">
-									<CheckCircle2 className="h-4 w-4 text-green-600" />
+									<CheckCircle2 className="h-4 w-4 text-emerald-400" />
 									Fit Soldiers
 								</CardDescription>
 								<div className="flex items-baseline justify-between">
-									<CardTitle className="text-3xl text-green-600">{fitSoldiers}</CardTitle>
-									<span className="text-sm text-muted-foreground">({fitnessRate}%)</span>
+									<CardTitle className="text-3xl text-emerald-400">{fitSoldiers}</CardTitle>
+									<span className="text-sm text-slate-400">({fitnessRate}%)</span>
 								</div>
 							</CardHeader>
 						</Card>
@@ -152,10 +152,10 @@ export default function ClarkOverviewPage() {
 						<Card>
 							<CardHeader>
 								<CardDescription className="flex items-center gap-2">
-									<AlertTriangle className="h-4 w-4 text-red-600" />
+									<AlertTriangle className="h-4 w-4 text-red-400" />
 									Unfit Soldiers
 								</CardDescription>
-								<CardTitle className="text-3xl text-red-600">{unfitSoldiers}</CardTitle>
+								<CardTitle className="text-3xl text-red-400">{unfitSoldiers}</CardTitle>
 							</CardHeader>
 						</Card>
 					</div>
@@ -166,7 +166,7 @@ export default function ClarkOverviewPage() {
 							<div className="flex items-center justify-between">
 								<div>
 									<CardTitle className="flex items-center gap-2">
-										<UserPlus className="h-5 w-5 text-blue-600" />
+										<UserPlus className="h-5 w-5 text-emerald-400" />
 										New Soldiers ({newSoldiers.length})
 									</CardTitle>
 									<CardDescription className="mt-1">Soldiers who signed up in the last 7 days</CardDescription>
@@ -202,24 +202,24 @@ export default function ClarkOverviewPage() {
 							) : (
 								<div className="overflow-x-auto">
 									<table className="w-full text-sm">
-										<thead className="border-b">
+										<thead className="border-b border-white/[0.1]">
 											<tr className="text-left">
-												<th className="pb-3 font-semibold">Name</th>
-												<th className="pb-3 font-semibold">Email</th>
-												<th className="pb-3 font-semibold">Service No</th>
-												<th className="pb-3 font-semibold">Rank</th>
-												<th className="pb-3 font-semibold">Joined</th>
+												<th className="pb-3 font-semibold text-slate-300">Name</th>
+												<th className="pb-3 font-semibold text-slate-300">Email</th>
+												<th className="pb-3 font-semibold text-slate-300">Service No</th>
+												<th className="pb-3 font-semibold text-slate-300">Rank</th>
+												<th className="pb-3 font-semibold text-slate-300">Joined</th>
 											</tr>
 										</thead>
 										<tbody>
 											{newSoldiers.map((soldier) => (
-												<tr key={soldier.id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-900">
-													<td className="py-3 font-medium">{soldier.name}</td>
-													<td className="py-3 text-muted-foreground">{soldier.email}</td>
-													<td className="py-3 font-mono text-xs">{soldier.serviceNo}</td>
-													<td className="py-3">{soldier.rank}</td>
+												<tr key={soldier.id} className="border-b border-white/[0.06] hover:bg-white/[0.04]">
+													<td className="py-3 font-medium text-white">{soldier.name}</td>
+													<td className="py-3 text-slate-400">{soldier.email}</td>
+													<td className="py-3 font-mono text-xs text-slate-300">{soldier.serviceNo}</td>
+													<td className="py-3 text-slate-300">{soldier.rank}</td>
 													<td className="py-3">
-														<Badge className="bg-blue-100 text-blue-800">
+														<Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
 															{new Date(soldier.joinedAt).toLocaleDateString()}
 														</Badge>
 													</td>
@@ -235,10 +235,10 @@ export default function ClarkOverviewPage() {
 					{/* Weekly Workout Plans (from Adjutant) — Fit left, Unfit right */}
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 						{/* Fit Soldiers Plan */}
-						<Card className="border-green-200">
+						<Card className="border-emerald-500/30">
 							<CardHeader>
 								<div className="flex items-center gap-2">
-									<Badge className="bg-green-100 text-green-800">Fit</Badge>
+									<Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Fit</Badge>
 									<CardTitle className="text-lg">
 										{latestFitPlan ? latestFitPlan.title : 'No Plan'}
 									</CardTitle>
@@ -251,15 +251,15 @@ export default function ClarkOverviewPage() {
 							</CardHeader>
 							<CardContent>
 								{!latestFitPlan ? (
-									<p className="text-sm text-muted-foreground">No fitness plan available for Fit soldiers.</p>
+									<p className="text-sm text-slate-400">No fitness plan available for Fit soldiers.</p>
 								) : (
 									<div className="space-y-2">
 										{Array.isArray(latestFitPlan.exercises) ? (
 											latestFitPlan.exercises.map((dayBlock: DayBlock) => (
-												<div key={dayBlock.day} className="border rounded p-2">
-													<p className="font-medium text-sm">{dayBlock.day}</p>
+												<div key={dayBlock.day} className="border border-white/[0.08] rounded-lg p-2">
+													<p className="font-medium text-sm text-slate-300">{dayBlock.day}</p>
 													{(dayBlock.items || []).length === 0 ? (
-														<p className="text-xs text-muted-foreground">No exercises</p>
+														<p className="text-xs text-slate-500">No exercises</p>
 													) : (
 														<ul className="text-sm list-disc ml-4">
 															{dayBlock.items.map((it: Exercise, i: number) => (
@@ -276,10 +276,10 @@ export default function ClarkOverviewPage() {
 						</Card>
 
 						{/* Unfit Soldiers Plan */}
-						<Card className="border-red-200">
+						<Card className="border-red-500/30">
 							<CardHeader>
 								<div className="flex items-center gap-2">
-									<Badge className="bg-red-100 text-red-800">Unfit</Badge>
+									<Badge className="bg-red-500/20 text-red-400 border border-red-500/30">Unfit</Badge>
 									<CardTitle className="text-lg">
 										{latestUnfitPlan ? latestUnfitPlan.title : 'No Plan'}
 									</CardTitle>
@@ -292,15 +292,15 @@ export default function ClarkOverviewPage() {
 							</CardHeader>
 							<CardContent>
 								{!latestUnfitPlan ? (
-									<p className="text-sm text-muted-foreground">No fitness plan available for Unfit soldiers.</p>
+									<p className="text-sm text-slate-400">No fitness plan available for Unfit soldiers.</p>
 								) : (
 									<div className="space-y-2">
 										{Array.isArray(latestUnfitPlan.exercises) ? (
 											latestUnfitPlan.exercises.map((dayBlock: DayBlock) => (
-												<div key={dayBlock.day} className="border rounded p-2">
-													<p className="font-medium text-sm">{dayBlock.day}</p>
+												<div key={dayBlock.day} className="border border-white/[0.08] rounded-lg p-2">
+													<p className="font-medium text-sm text-slate-300">{dayBlock.day}</p>
 													{(dayBlock.items || []).length === 0 ? (
-														<p className="text-xs text-muted-foreground">No exercises</p>
+														<p className="text-xs text-slate-500">No exercises</p>
 													) : (
 														<ul className="text-sm list-disc ml-4">
 															{dayBlock.items.map((it: Exercise, i: number) => (
@@ -329,11 +329,11 @@ export default function ClarkOverviewPage() {
 							) : (
 								<ResponsiveContainer width="100%" height={350}>
 									<LineChart data={monthlyFitnessData}>
-										<CartesianGrid strokeDasharray="3 3" />
-										<XAxis dataKey="month" />
-										<YAxis />
-										<Tooltip />
-										<Legend />
+										<CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+										<XAxis dataKey="month" stroke="#94a3b8" />
+										<YAxis stroke="#94a3b8" />
+										<Tooltip contentStyle={{ backgroundColor: '#0c1425', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#e2e8f0' }} />
+										<Legend wrapperStyle={{ color: '#94a3b8' }} />
 										<Line type="monotone" dataKey="fit" stroke="#10b981" strokeWidth={2} name="Fit Soldiers" dot={{ fill: "#10b981", r: 5 }} />
 										<Line type="monotone" dataKey="unfit" stroke="#ef4444" strokeWidth={2} name="Unfit Soldiers" dot={{ fill: "#ef4444", r: 5 }} />
 									</LineChart>
@@ -345,7 +345,7 @@ export default function ClarkOverviewPage() {
 					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
-								<Users className="h-5 w-5 text-blue-600" />
+								<Users className="h-5 w-5 text-emerald-400" />
 								Soldiers Fitness Status ({allSoldiers.length})
 							</CardTitle>
 							<CardDescription>Current fitness status of all soldiers — Fit or Unfit</CardDescription>
@@ -356,27 +356,27 @@ export default function ClarkOverviewPage() {
 							) : (
 							<div className="overflow-x-auto">
 								<table className="w-full text-sm">
-									<thead className="border-b">
+									<thead className="border-b border-white/[0.1]">
 										<tr className="text-left">
-											<th className="pb-3 font-semibold">#</th>
-											<th className="pb-3 font-semibold">Name</th>
-											<th className="pb-3 font-semibold">Service No</th>
-											<th className="pb-3 font-semibold">Rank</th>
-											<th className="pb-3 font-semibold">Fitness Status</th>
+											<th className="pb-3 font-semibold text-slate-300">#</th>
+											<th className="pb-3 font-semibold text-slate-300">Name</th>
+											<th className="pb-3 font-semibold text-slate-300">Service No</th>
+											<th className="pb-3 font-semibold text-slate-300">Rank</th>
+											<th className="pb-3 font-semibold text-slate-300">Fitness Status</th>
 										</tr>
 									</thead>
 									<tbody>
 										{allSoldiers.map((soldier, idx) => (
-											<tr key={soldier.id} className="border-b hover:bg-slate-50 dark:hover:bg-slate-900">
-												<td className="py-3 text-muted-foreground">{idx + 1}</td>
-												<td className="py-3 font-medium">{soldier.name}</td>
-												<td className="py-3 font-mono text-xs">{soldier.serviceNo}</td>
-												<td className="py-3">{soldier.rank}</td>
+											<tr key={soldier.id} className="border-b border-white/[0.06] hover:bg-white/[0.04]">
+												<td className="py-3 text-slate-400">{idx + 1}</td>
+												<td className="py-3 font-medium text-white">{soldier.name}</td>
+												<td className="py-3 font-mono text-xs text-slate-300">{soldier.serviceNo}</td>
+												<td className="py-3 text-slate-300">{soldier.rank}</td>
 												<td className="py-3">
 													<Badge className={
 														soldier.fitnessStatus === 'Fit'
-															? 'bg-green-100 text-green-800'
-															: 'bg-red-100 text-red-800'
+															? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+															: 'bg-red-500/20 text-red-400 border border-red-500/30'
 													}>
 														{soldier.fitnessStatus === 'Fit' ? '✓ Fit' : '✗ Unfit'}
 													</Badge>

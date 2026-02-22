@@ -30,15 +30,15 @@ export default function SoldierLayout({
     ];
 
     return (
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col bg-[#020617]">
 
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+            <header className="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-white/[0.03] backdrop-blur-2xl">
                 <div className="container flex h-16 items-center justify-between px-4">
 
                     <div className="flex items-center gap-2">
                         <Logo size={36} />
-                        <div className="font-bold text-xl">TROOP TRACK</div>
-                        <div className="text-sm text-muted-foreground hidden sm:block">
+                        <div className="font-bold text-xl text-white tracking-wide">TROOP TRACK</div>
+                        <div className="text-sm text-slate-400 hidden sm:block">
                             | Adjutant Dashboard
                         </div>
                     </div>
