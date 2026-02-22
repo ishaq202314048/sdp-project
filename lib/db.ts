@@ -1,5 +1,6 @@
-// Switched to Prisma + SQLite instead of JSON file storage.
-import { PrismaClient } from "@prisma/client";
+// Switched to SQLite Cloud (@sqlitecloud/drivers) instead of Prisma.
+import { randomUUID } from "crypto";
+import { getDb } from "./sqlitecloud-client";
 
 export type UserType = "soldier" | "clerk" | "adjutant";
 
@@ -50,64 +51,121 @@ export interface UserRecord {
   adjutantEmergencyContact?: string | null;
   
   createdAt: string;
+  approved?: boolean | null;
 }
 
-const prisma = new PrismaClient();
+// ---------------------------------------------------------------------------
+// Helper: map a raw DB row → UserRecord
+// ---------------------------------------------------------------------------
+function rowToUserRecord(row: Record<string, unknown>): UserRecord {
+  return {
+    id: row.id as string,
+    email: row.email as string,
+    password: row.password as string,
+    fullName: row.fullName as string,
+    userType: row.userType as UserType,
+    serviceNo: (row.serviceNo as string | null) ?? null,
+    rank: (row.rank as string | null) ?? null,
+    unit: (row.unit as string | null) ?? null,
+    phone: (row.phone as string | null) ?? null,
+    address: (row.address as string | null) ?? null,
+    emergencyContactName: (row.emergencyContactName as string | null) ?? null,
+    emergencyContact: (row.emergencyContact as string | null) ?? null,
+    fitnessStatus: (row.fitnessStatus as string | null) ?? null,
+    dateOfBirth: row.dateOfBirth ? new Date(row.dateOfBirth as string) : null,
+    dateOfJoining: row.dateOfJoining ? new Date(row.dateOfJoining as string) : null,
+    bloodGroup: (row.bloodGroup as string | null) ?? null,
+    height: (row.height as number | null) ?? null,
+    weight: (row.weight as number | null) ?? null,
+    bmi: (row.bmi as number | null) ?? null,
+    medicalCategory: (row.medicalCategory as string | null) ?? null,
+    clerkServiceNo: (row.clerkServiceNo as string | null) ?? null,
+    clerkRank: (row.clerkRank as string | null) ?? null,
+    clerkUnit: (row.clerkUnit as string | null) ?? null,
+    clerkRole: (row.clerkRole as string | null) ?? null,
+    clerkDateOfJoining: row.clerkDateOfJoining ? new Date(row.clerkDateOfJoining as string) : null,
+    clerkPhone: (row.clerkPhone as string | null) ?? null,
+    clerkAddress: (row.clerkAddress as string | null) ?? null,
+    clerkEmergencyContactName: (row.clerkEmergencyContactName as string | null) ?? null,
+    clerkEmergencyContact: (row.clerkEmergencyContact as string | null) ?? null,
+    adjutantServiceNo: (row.adjutantServiceNo as string | null) ?? null,
+    adjutantRank: (row.adjutantRank as string | null) ?? null,
+    adjutantUnit: (row.adjutantUnit as string | null) ?? null,
+    adjutantDateOfJoining: row.adjutantDateOfJoining ? new Date(row.adjutantDateOfJoining as string) : null,
+    adjutantPhone: (row.adjutantPhone as string | null) ?? null,
+    adjutantAddress: (row.adjutantAddress as string | null) ?? null,
+    adjutantEmergencyContactName: (row.adjutantEmergencyContactName as string | null) ?? null,
+    adjutantEmergencyContact: (row.adjutantEmergencyContact as string | null) ?? null,
+    createdAt: row.createdAt as string,
+    approved: row.approved != null ? Boolean(row.approved) : null,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Public helpers
+// ---------------------------------------------------------------------------
 
 export async function getUserByEmail(email: string): Promise<UserRecord | undefined> {
+  const db = getDb();
   const normalized = email.trim().toLowerCase();
-  const user = await prisma.user.findUnique({ where: { email: normalized } });
-  if (!user) return undefined;
-  return {
-    id: user.id,
-    email: user.email,
-    password: user.password,
-    fullName: user.fullName,
-    userType: user.userType as UserType,
-    serviceNo: user.serviceNo ?? undefined,
-    createdAt: user.createdAt.toISOString(),
-  };
+  const rows = await db.sql`SELECT * FROM User WHERE email = ${normalized} LIMIT 1`;
+  if (!rows || rows.length === 0) return undefined;
+  return rowToUserRecord(rows[0] as Record<string, unknown>);
 }
 
 export async function getUserById(id: string): Promise<UserRecord | undefined> {
-  const user = await prisma.user.findUnique({ where: { id } });
-  if (!user) return undefined;
-  return {
-    id: user.id,
-    email: user.email,
-    password: user.password,
-    fullName: user.fullName,
-    userType: user.userType as UserType,
-    serviceNo: user.serviceNo ?? undefined,
-    createdAt: user.createdAt.toISOString(),
-  };
+  const db = getDb();
+  const rows = await db.sql`SELECT * FROM User WHERE id = ${id} LIMIT 1`;
+  if (!rows || rows.length === 0) return undefined;
+  return rowToUserRecord(rows[0] as Record<string, unknown>);
 }
 
 export async function emailExists(email: string): Promise<boolean> {
+  const db = getDb();
   const normalized = email.trim().toLowerCase();
-  const user = await prisma.user.findUnique({ where: { email: normalized } });
-  return !!user;
+  const rows = await db.sql`SELECT id FROM User WHERE email = ${normalized} LIMIT 1`;
+  return rows != null && rows.length > 0;
 }
 
 export async function serviceNoExists(serviceNo: string): Promise<boolean> {
+  const db = getDb();
   const trimmed = serviceNo.trim();
-  const user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { serviceNo: trimmed },
-        { clerkServiceNo: trimmed },
-        { adjutantServiceNo: trimmed },
-      ],
-    },
-  });
-  return !!user;
+  const rows = await db.sql`SELECT id FROM User WHERE serviceNo = ${trimmed} OR clerkServiceNo = ${trimmed} OR adjutantServiceNo = ${trimmed} LIMIT 1`;
+  return rows != null && rows.length > 0;
 }
 
 export async function createUser(input: Omit<UserRecord, "id" | "createdAt">): Promise<UserRecord> {
+  const db = getDb();
+  const id = randomUUID();
+  const now = new Date().toISOString();
   const normalizedEmail = input.email.trim().toLowerCase();
-  
-  // Build the data object with all fields
-  const userData: Record<string, unknown> = {
+
+  // Convert Date objects to ISO strings for storage
+  const dateOfBirth = input.dateOfBirth instanceof Date ? input.dateOfBirth.toISOString() : (input.dateOfBirth ?? null);
+  const dateOfJoining = input.dateOfJoining instanceof Date ? input.dateOfJoining.toISOString() : (input.dateOfJoining ?? null);
+  const clerkDateOfJoining = input.clerkDateOfJoining instanceof Date ? input.clerkDateOfJoining.toISOString() : (input.clerkDateOfJoining ?? null);
+  const adjutantDateOfJoining = input.adjutantDateOfJoining instanceof Date ? input.adjutantDateOfJoining.toISOString() : (input.adjutantDateOfJoining ?? null);
+
+  await db.sql`
+    INSERT INTO User (
+      id, email, password, fullName, userType,
+      serviceNo, rank, unit, phone, address, emergencyContactName, emergencyContact, fitnessStatus,
+      dateOfBirth, dateOfJoining, bloodGroup, height, weight, bmi, medicalCategory,
+      clerkServiceNo, clerkRank, clerkUnit, clerkRole, clerkDateOfJoining, clerkPhone, clerkAddress, clerkEmergencyContactName, clerkEmergencyContact,
+      adjutantServiceNo, adjutantRank, adjutantUnit, adjutantDateOfJoining, adjutantPhone, adjutantAddress, adjutantEmergencyContactName, adjutantEmergencyContact,
+      approved, createdAt, updatedAt
+    ) VALUES (
+      ${id}, ${normalizedEmail}, ${input.password}, ${input.fullName}, ${input.userType},
+      ${input.serviceNo ?? null}, ${input.rank ?? null}, ${input.unit ?? null}, ${input.phone ?? null}, ${input.address ?? null}, ${input.emergencyContactName ?? null}, ${input.emergencyContact ?? null}, ${input.fitnessStatus ?? null},
+      ${dateOfBirth}, ${dateOfJoining}, ${input.bloodGroup ?? null}, ${input.height ?? null}, ${input.weight ?? null}, ${input.bmi ?? null}, ${input.medicalCategory ?? null},
+      ${input.clerkServiceNo ?? null}, ${input.clerkRank ?? null}, ${input.clerkUnit ?? null}, ${input.clerkRole ?? null}, ${clerkDateOfJoining}, ${input.clerkPhone ?? null}, ${input.clerkAddress ?? null}, ${input.clerkEmergencyContactName ?? null}, ${input.clerkEmergencyContact ?? null},
+      ${input.adjutantServiceNo ?? null}, ${input.adjutantRank ?? null}, ${input.adjutantUnit ?? null}, ${adjutantDateOfJoining}, ${input.adjutantPhone ?? null}, ${input.adjutantAddress ?? null}, ${input.adjutantEmergencyContactName ?? null}, ${input.adjutantEmergencyContact ?? null},
+      ${input.userType === 'soldier' ? 0 : 1}, ${now}, ${now}
+    )
+  `;
+
+  return {
+    id,
     email: normalizedEmail,
     password: input.password,
     fullName: input.fullName,
@@ -122,14 +180,13 @@ export async function createUser(input: Omit<UserRecord, "id" | "createdAt">): P
     emergencyContactName: input.emergencyContactName ?? null,
     emergencyContact: input.emergencyContact ?? null,
     fitnessStatus: input.fitnessStatus ?? null,
-    // Soldier fields
     dateOfBirth: input.dateOfBirth ?? null,
     dateOfJoining: input.dateOfJoining ?? null,
     bloodGroup: input.bloodGroup ?? null,
     height: input.height ?? null,
     weight: input.weight ?? null,
+    bmi: input.bmi ?? null,
     medicalCategory: input.medicalCategory ?? null,
-    // Clerk fields
     clerkServiceNo: input.clerkServiceNo ?? null,
     clerkRank: input.clerkRank ?? null,
     clerkUnit: input.clerkUnit ?? null,
@@ -139,7 +196,6 @@ export async function createUser(input: Omit<UserRecord, "id" | "createdAt">): P
     clerkAddress: input.clerkAddress ?? null,
     clerkEmergencyContactName: input.clerkEmergencyContactName ?? null,
     clerkEmergencyContact: input.clerkEmergencyContact ?? null,
-    // Adjutant fields
     adjutantServiceNo: input.adjutantServiceNo ?? null,
     adjutantRank: input.adjutantRank ?? null,
     adjutantUnit: input.adjutantUnit ?? null,
@@ -148,63 +204,9 @@ export async function createUser(input: Omit<UserRecord, "id" | "createdAt">): P
     adjutantAddress: input.adjutantAddress ?? null,
     adjutantEmergencyContactName: input.adjutantEmergencyContactName ?? null,
     adjutantEmergencyContact: input.adjutantEmergencyContact ?? null,
-  };
-
-  const created = await prisma.user.create({
-    data: userData as Parameters<typeof prisma.user.create>[0]['data'],
-  });
-
-  return {
-    id: created.id,
-    email: created.email,
-    password: created.password,
-    fullName: created.fullName,
-    userType: created.userType as UserType,
-    // Common fields
-    serviceNo: created.serviceNo ?? undefined,
-    rank: (created as Record<string, unknown>).rank as string | null | undefined,
-    unit: (created as Record<string, unknown>).unit as string | null | undefined,
-    phone: (created as Record<string, unknown>).phone as string | null | undefined,
-    address: (created as Record<string, unknown>).address as string | null | undefined,
-    emergencyContactName: (created as Record<string, unknown>).emergencyContactName as string | null | undefined,
-    emergencyContact: (created as Record<string, unknown>).emergencyContact as string | null | undefined,
-    fitnessStatus: (created as Record<string, unknown>).fitnessStatus as string | null | undefined,
-    // Soldier fields
-    dateOfBirth: (created as Record<string, unknown>).dateOfBirth as Date | null | undefined,
-    dateOfJoining: (created as Record<string, unknown>).dateOfJoining as Date | null | undefined,
-    bloodGroup: (created as Record<string, unknown>).bloodGroup as string | null | undefined,
-    height: (created as Record<string, unknown>).height as number | null | undefined,
-    weight: (created as Record<string, unknown>).weight as number | null | undefined,
-    medicalCategory: (created as Record<string, unknown>).medicalCategory as string | null | undefined,
-    // Clerk fields
-    clerkServiceNo: (created as Record<string, unknown>).clerkServiceNo as string | null | undefined,
-    clerkRank: (created as Record<string, unknown>).clerkRank as string | null | undefined,
-    clerkUnit: (created as Record<string, unknown>).clerkUnit as string | null | undefined,
-    clerkRole: (created as Record<string, unknown>).clerkRole as string | null | undefined,
-    clerkDateOfJoining: (created as Record<string, unknown>).clerkDateOfJoining as Date | null | undefined,
-    clerkPhone: (created as Record<string, unknown>).clerkPhone as string | null | undefined,
-    clerkAddress: (created as Record<string, unknown>).clerkAddress as string | null | undefined,
-    clerkEmergencyContactName: (created as Record<string, unknown>).clerkEmergencyContactName as string | null | undefined,
-    clerkEmergencyContact: (created as Record<string, unknown>).clerkEmergencyContact as string | null | undefined,
-    // Adjutant fields
-    adjutantServiceNo: (created as Record<string, unknown>).adjutantServiceNo as string | null | undefined,
-    adjutantRank: (created as Record<string, unknown>).adjutantRank as string | null | undefined,
-    adjutantUnit: (created as Record<string, unknown>).adjutantUnit as string | null | undefined,
-    adjutantDateOfJoining: (created as Record<string, unknown>).adjutantDateOfJoining as Date | null | undefined,
-    adjutantPhone: (created as Record<string, unknown>).adjutantPhone as string | null | undefined,
-    adjutantAddress: (created as Record<string, unknown>).adjutantAddress as string | null | undefined,
-    adjutantEmergencyContactName: (created as Record<string, unknown>).adjutantEmergencyContactName as string | null | undefined,
-    adjutantEmergencyContact: (created as Record<string, unknown>).adjutantEmergencyContact as string | null | undefined,
-    createdAt: created.createdAt.toISOString(),
+    createdAt: now,
   };
 }
 
-// Prevent multiple PrismaClients in development hot-reload environments
-declare global {
-  var prisma: PrismaClient | undefined;
-}
-
-if (!global.prisma) {
-  global.prisma = prisma;
-}
-export { prisma };
+// Re-export getDb so routes can use it directly
+export { getDb } from "./sqlitecloud-client";

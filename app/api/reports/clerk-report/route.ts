@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { getDb } from '@/lib/sqlitecloud-client';
+import { randomUUID } from 'crypto';
 
 // POST — clerk sends a report/message to adjutant
 export async function POST(request: NextRequest) {
   try {
+    const db = getDb();
     const body = await request.json();
     const { title, message, sentBy, sentByName, fileName, fileData } = body;
 
@@ -20,21 +22,15 @@ export async function POST(request: NextRequest) {
     const contentObj: Record<string, string> = { message: message.trim() };
     if (fileName && fileData) {
       contentObj.fileName = fileName;
-      contentObj.fileData = fileData; // base64 encoded PDF
+      contentObj.fileData = fileData;
     }
 
-    const report = await prisma.report.create({
-      data: {
-        title: title.trim(),
-        type: 'clerk-report',
-        content: JSON.stringify(contentObj),
-        sentBy,
-        sentByName: sentByName || 'Clerk',
-        sentTo: 'adjutant',
-        status: 'sent',
-      },
-    });
+    const id = randomUUID();
+    const createdAt = new Date().toISOString();
+    const content = JSON.stringify(contentObj);
+    await db.sql`INSERT INTO Report (id, title, type, content, sentBy, sentByName, sentTo, status, createdAt) VALUES (${id}, ${title.trim()}, 'clerk-report', ${content}, ${sentBy}, ${sentByName || 'Clerk'}, 'adjutant', 'sent', ${createdAt})`;
 
+    const report = { id, title: title.trim(), type: 'clerk-report', content, sentBy, sentByName: sentByName || 'Clerk', sentTo: 'adjutant', status: 'sent', createdAt };
     return NextResponse.json({ message: 'Report sent to adjutant', report }, { status: 201 });
   } catch (error) {
     console.error('[POST /api/reports/clerk-report]', error);
@@ -45,15 +41,13 @@ export async function POST(request: NextRequest) {
 // GET — fetch all clerk reports (for adjutant alerts)
 export async function GET() {
   try {
-    const reports = await prisma.report.findMany({
-      where: { type: 'clerk-report' },
-      orderBy: { createdAt: 'desc' },
-    });
+    const db = getDb();
+    const reports = await db.sql`SELECT * FROM Report WHERE type = 'clerk-report' ORDER BY createdAt DESC` as Array<Record<string, unknown>>;
 
     return NextResponse.json(
       reports.map((r) => ({
         ...r,
-        content: JSON.parse(r.content),
+        content: JSON.parse(r.content as string),
       }))
     );
   } catch (error) {

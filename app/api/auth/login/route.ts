@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserByEmail, prisma } from "@/lib/db";
+import { getUserByEmail } from "@/lib/db";
 import { comparePassword } from "@/lib/auth";
 import { generateToken } from "@/lib/jwt";
+import { getDb } from "@/lib/sqlitecloud-client";
+import { randomUUID } from "crypto";
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,8 +42,9 @@ export async function POST(request: NextRequest) {
 
     // Check if soldier account is approved by adjutant
     if (user.userType === "soldier") {
-      const fullUser = await prisma.user.findUnique({ where: { id: user.id }, select: { approved: true } });
-      if (!fullUser?.approved) {
+      const db = getDb();
+      const approvedRows = await db.sql`SELECT approved FROM User WHERE id = ${user.id} LIMIT 1` as Array<{ approved: number }>;
+      if (!approvedRows?.[0]?.approved) {
         return NextResponse.json(
           { error: "Your account is pending approval by the Adjutant. Please wait until your account is approved before logging in." },
           { status: 403 }
@@ -61,15 +64,10 @@ export async function POST(request: NextRequest) {
                       "unknown";
     const userAgent = request.headers.get("user-agent") || "unknown";
     
-    await prisma.loginSession.create({
-      data: {
-        userId: user.id,
-        email: user.email,
-        userType: user.userType,
-        ipAddress,
-        userAgent,
-      },
-    });
+    const db = getDb();
+    const sessionId = randomUUID();
+    const loginAt = new Date().toISOString();
+    await db.sql`INSERT INTO LoginSession (id, userId, email, userType, ipAddress, userAgent, loginAt) VALUES (${sessionId}, ${user.id}, ${user.email}, ${user.userType}, ${ipAddress}, ${userAgent}, ${loginAt})`;
 
     return NextResponse.json(
       {

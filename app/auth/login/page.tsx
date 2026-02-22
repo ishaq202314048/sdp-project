@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -106,7 +106,7 @@ function LoginWelcome({ onFinish }: { onFinish: () => void }) {
     );
 }
 
-export default function LoginPage() {
+function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showWelcome, setShowWelcome] = useState(true);
@@ -390,5 +390,13 @@ export default function LoginPage() {
             <div className="absolute z-[5] w-[420px] h-[500px] rounded-3xl bg-emerald-500/5 blur-3xl pointer-events-none" />
         </div>
         </>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense>
+            <LoginContent />
+        </Suspense>
     );
 }

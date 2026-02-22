@@ -1,46 +1,26 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { getDb } from '@/lib/sqlitecloud-client';
 
 // GET — fetch all IPFT fitness test results joined with soldier info
 export async function GET() {
   try {
-    // Find all fitness tests where exerciseName contains 'ipft' (case-insensitive)
-    const ipftTests = await prisma.fitnessTest.findMany({
-      where: {
-        exerciseName: {
-          contains: 'ipft',
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    const db = getDb();
 
-    // Get unique soldier IDs from the tests
-    const soldierIds = [...new Set(ipftTests.map((t: { soldierUserId: string }) => t.soldierUserId))];
+    // Find all fitness tests where exerciseName contains 'ipft'
+    const ipftTests = await db.sql`SELECT * FROM FitnessTest WHERE LOWER(exerciseName) LIKE '%ipft%' ORDER BY createdAt DESC` as Array<{ id: string; soldierUserId: string; exerciseName: string; result: string; createdAt: string; [key: string]: unknown }>;
 
-    // Fetch soldier details
-    const soldiers = await prisma.user.findMany({
-      where: {
-        id: { in: soldierIds },
-        userType: 'soldier',
-      },
-      select: {
-        id: true,
-        fullName: true,
-        serviceNo: true,
-        rank: true,
-        unit: true,
-        fitnessStatus: true,
-        bmi: true,
-        medicalCategory: true,
-      },
-    });
+    // Get unique soldier IDs
+    const soldierIds = [...new Set(ipftTests.map((t) => t.soldierUserId))];
 
-    // Build a map of soldier details
+    let soldiers: Array<{ id: string; fullName: string; serviceNo: string | null; rank: string | null; unit: string | null; fitnessStatus: string | null; bmi: number | null; medicalCategory: string | null }> = [];
+    if (soldierIds.length > 0) {
+      const placeholders = soldierIds.map(() => '?').join(', ');
+      soldiers = await db.sql(`SELECT id, fullName, serviceNo, rank, unit, fitnessStatus, bmi, medicalCategory FROM User WHERE id IN (${placeholders}) AND userType = 'soldier'`, ...soldierIds) as typeof soldiers;
+    }
+
     const soldierMap = new Map(soldiers.map((s) => [s.id, s]));
 
-    // Combine test results with soldier info — show latest test per soldier
+    // Show latest test per soldier
     const latestTests = new Map<string, typeof ipftTests[0]>();
     for (const test of ipftTests) {
       if (!latestTests.has(test.soldierUserId)) {
@@ -64,14 +44,12 @@ export async function GET() {
       };
     });
 
-    // Fetch the scheduled IPFT date
-    const ipftDate = await prisma.ipftDate.findFirst({
-      orderBy: { createdAt: 'desc' },
-    });
+    const ipftDateRows = await db.sql`SELECT * FROM IpftDate ORDER BY createdAt DESC LIMIT 1` as Array<{ date: string }>;
+    const ipftDate = ipftDateRows?.[0];
 
     return NextResponse.json({
       results,
-      scheduledDate: ipftDate ? ipftDate.date.toISOString().split('T')[0] : null,
+      scheduledDate: ipftDate ? ipftDate.date.split('T')[0] : null,
       totalTests: ipftTests.length,
     });
   } catch (error) {

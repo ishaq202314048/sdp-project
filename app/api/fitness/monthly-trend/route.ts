@@ -1,24 +1,14 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { getDb } from '@/lib/sqlitecloud-client';
 
 export async function GET() {
     try {
-        // Get all soldiers with their current fitness status
-        const soldiers = await prisma.user.findMany({
-            where: { userType: 'soldier' },
-            select: {
-                id: true,
-                fitnessStatus: true,
-            },
-        });
+        const db = getDb();
+        const soldiers = await db.sql`SELECT id, fitnessStatus FROM User WHERE userType = 'soldier'` as Array<{ id: string; fitnessStatus: string | null }>;
 
-        // Current counts from actual fitnessStatus field
         const currentFit = soldiers.filter(s => s.fitnessStatus === 'Fit').length;
         const currentUnfit = soldiers.filter(s => s.fitnessStatus !== 'Fit').length;
 
-        // Build month labels for last 6 months
         const months: { key: string; label: string }[] = [];
         const now = new Date();
         for (let i = 5; i >= 0; i--) {
@@ -27,8 +17,6 @@ export async function GET() {
             months.push({ key: String(i), label });
         }
 
-        // Use current soldier fitnessStatus for all months
-        // (historical tracking not available — shows current snapshot as baseline)
         const trendData = months.map((m) => ({
             month: m.label,
             fit: currentFit,

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { getDb } from '@/lib/sqlitecloud-client';
 
 export async function GET(request: NextRequest) {
     try {
+        const db = getDb();
         const { searchParams } = new URL(request.url);
         const soldierUserId = searchParams.get('userId');
 
@@ -12,43 +11,27 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'userId is required' }, { status: 400 });
         }
 
-        // Get tomorrow's day name
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         const tomorrowName = dayNames[tomorrow.getDay()];
 
-        // Get soldier's fitness status
-        const soldier = await prisma.user.findUnique({
-            where: { id: soldierUserId },
-            select: { fitnessStatus: true },
-        });
+        const soldierRows = await db.sql`SELECT fitnessStatus FROM User WHERE id = ${soldierUserId} LIMIT 1` as Array<{ fitnessStatus: string | null }>;
+        const status = soldierRows?.[0]?.fitnessStatus || 'Unfit';
 
-        const status = soldier?.fitnessStatus || 'Unfit';
-
-        // Fetch the latest fitness plan matching the soldier's status
-        const latestPlan = await prisma.fitnessPlan.findFirst({
-            where: { status },
-            orderBy: { createdAt: 'desc' },
-        });
-
-        if (!latestPlan?.exercises) {
+        const planRows = await db.sql`SELECT * FROM FitnessPlan WHERE status = ${status} ORDER BY createdAt DESC LIMIT 1` as Array<{ exercises: string }>;
+        if (!planRows || planRows.length === 0 || !planRows[0].exercises) {
             return NextResponse.json({ exercises: [] });
         }
 
-        const exercisesData: Array<{ day: string; items: Array<{ name: string; duration?: string; focus?: string }> }> = JSON.parse(latestPlan.exercises);
-
-        // Find exercises for tomorrow
-        const tomorrowExercises = exercisesData.find(
-            (dayPlan) => dayPlan.day.toLowerCase() === tomorrowName.toLowerCase()
-        );
+        const exercisesData: Array<{ day: string; items: Array<{ name: string; duration?: string; focus?: string }> }> = JSON.parse(planRows[0].exercises);
+        const tomorrowExercises = exercisesData.find((dp) => dp.day.toLowerCase() === tomorrowName.toLowerCase());
 
         if (!tomorrowExercises || !tomorrowExercises.items || tomorrowExercises.items.length === 0) {
             return NextResponse.json({ exercises: [] });
         }
 
         const exerciseNames = tomorrowExercises.items.map((ex) => ex.name);
-
         return NextResponse.json({ exercises: exerciseNames });
     } catch (error) {
         console.error('Error fetching tomorrow exercises:', error);

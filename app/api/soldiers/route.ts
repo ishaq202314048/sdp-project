@@ -1,76 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { getDb } from '@/lib/sqlitecloud-client';
 
 export async function GET(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
-        const pending = searchParams.get('pending');
+        const db = getDb();
+        const soldiers = await db.sql`SELECT id, fullName, email, serviceNo, rank, unit, fitnessStatus, dateOfBirth, height, weight, bmi, medicalCategory, approved, createdAt FROM User WHERE userType = 'soldier'` as Array<Record<string, unknown>>;
 
-        // Build where clause
-        const whereClause: Record<string, unknown> = { userType: 'soldier' };
-        if (pending === 'true') {
-            whereClause.approved = false;
-        } else if (pending === 'false') {
-            whereClause.approved = true;
-        }
-        // If pending is not specified, return all soldiers
-
-        const soldiers = await prisma.user.findMany({
-            where: whereClause,
-            select: {
-                id: true,
-                fullName: true,
-                email: true,
-                serviceNo: true,
-                rank: true,
-                unit: true,
-                fitnessStatus: true,
-                dateOfBirth: true,
-                height: true,
-                weight: true,
-                bmi: true,
-                medicalCategory: true,
-                approved: true,
-                createdAt: true,
-            },
-        });
-
-        // Calculate age from dateOfBirth
-        const getAge = (dob: Date | null) => {
+        const getAge = (dob: string | null) => {
             if (!dob) return null;
             const today = new Date();
-            let age = today.getFullYear() - dob.getFullYear();
-            const m = today.getMonth() - dob.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+            const d = new Date(dob);
+            let age = today.getFullYear() - d.getFullYear();
+            const m = today.getMonth() - d.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
             return age;
         };
 
         const formattedSoldiers = soldiers.map((soldier) => ({
-            id: soldier.id,
-            name: soldier.fullName,
-            email: soldier.email,
-            serviceNo: soldier.serviceNo || 'N/A',
-            rank: soldier.rank || 'N/A',
-            unit: soldier.unit || 'N/A',
-            fitnessStatus: (soldier.fitnessStatus || 'Unfit') as 'Fit' | 'Unfit',
-            age: getAge(soldier.dateOfBirth),
-            height: soldier.height,
-            weight: soldier.weight,
-            bmi: soldier.bmi,
-            medicalCategory: soldier.medicalCategory || null,
-            approved: (soldier as Record<string, unknown>).approved ?? false,
-            joinedAt: soldier.createdAt?.toISOString() || null,
+            id: soldier.id as string,
+            name: soldier.fullName as string,
+            email: soldier.email as string,
+            serviceNo: (soldier.serviceNo as string) || 'N/A',
+            rank: (soldier.rank as string) || 'N/A',
+            unit: (soldier.unit as string) || 'N/A',
+            fitnessStatus: ((soldier.fitnessStatus as string) || 'Unfit') as 'Fit' | 'Unfit',
+            age: getAge(soldier.dateOfBirth as string | null),
+            height: soldier.height as number | null,
+            weight: soldier.weight as number | null,
+            bmi: soldier.bmi as number | null,
+            medicalCategory: (soldier.medicalCategory as string | null) || null,
+            approved: Boolean(soldier.approved),
+            joinedAt: soldier.createdAt ? String(soldier.createdAt) : null,
         }));
 
         return NextResponse.json(formattedSoldiers);
     } catch (error) {
         console.error('[GET /api/soldiers]', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch soldiers' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to fetch soldiers' }, { status: 500 });
     }
 }
 
@@ -82,11 +48,11 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'Soldier ID is required' }, { status: 400 });
         }
 
+        const db = getDb();
+
         // Verify the soldier exists and is actually a soldier
-        const soldier = await prisma.user.findUnique({
-            where: { id: soldierId },
-            select: { id: true, userType: true, fullName: true },
-        });
+        const rows = await db.sql`SELECT id, userType, fullName FROM User WHERE id = ${soldierId} LIMIT 1` as Array<{ id: string; userType: string; fullName: string }>;
+        const soldier = rows?.[0];
 
         if (!soldier) {
             return NextResponse.json({ error: 'Soldier not found' }, { status: 404 });
@@ -97,12 +63,10 @@ export async function DELETE(request: NextRequest) {
         }
 
         // Delete all related records first, then the user
-        await prisma.$transaction([
-            prisma.assignedPlan.deleteMany({ where: { userId: soldierId } }),
-            prisma.loginSession.deleteMany({ where: { userId: soldierId } }),
-            prisma.fitnessTest.deleteMany({ where: { soldierUserId: soldierId } }),
-            prisma.user.delete({ where: { id: soldierId } }),
-        ]);
+        await db.sql`DELETE FROM AssignedPlan WHERE userId = ${soldierId}`;
+        await db.sql`DELETE FROM LoginSession WHERE userId = ${soldierId}`;
+        await db.sql`DELETE FROM FitnessTest WHERE soldierUserId = ${soldierId}`;
+        await db.sql`DELETE FROM User WHERE id = ${soldierId}`;
 
         return NextResponse.json({ message: `Soldier "${soldier.fullName}" has been removed successfully` });
     } catch (error) {

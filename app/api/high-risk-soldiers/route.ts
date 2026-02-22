@@ -1,31 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextResponse } from 'next/server';
+import { getDb } from '@/lib/sqlitecloud-client';
 
-const prisma = new PrismaClient();
-
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
-        // Fetch all soldiers with 'Unfit' status from the database
-        const unfitSoldiers = await prisma.User.findMany({
-            where: {
-                userType: 'soldier',
-                fitnessStatus: 'Unfit',
-            },
-            select: {
-                id: true,
-                fullName: true,
-                email: true,
-                rank: true,
-                serviceNo: true,
-                fitnessStatus: true,
-            },
-            orderBy: {
-                fullName: 'asc',
-            },
-        });
+        const db = getDb();
+        const unfitSoldiers = await db.sql`SELECT id, fullName, email, rank, serviceNo, fitnessStatus FROM User WHERE userType = 'soldier' AND fitnessStatus = 'Unfit' ORDER BY fullName ASC` as Array<{ id: string; fullName: string; email: string; rank: string | null; serviceNo: string | null; fitnessStatus: string | null }>;
 
-        // Transform to HighRiskSoldier format
-        // Unfit soldiers are considered "high risk" and need immediate attention
         const highRiskSoldiers = unfitSoldiers.map((soldier) => ({
             id: soldier.id,
             name: soldier.fullName || 'Unknown Soldier',
@@ -37,7 +17,7 @@ export async function GET(request: NextRequest) {
         }));
 
         return NextResponse.json({
-            highRiskSoldiers: highRiskSoldiers,
+            highRiskSoldiers,
             totalRiskCount: highRiskSoldiers.length,
         });
     } catch (error) {

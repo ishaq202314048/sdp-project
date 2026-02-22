@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { getDb } from "@/lib/sqlitecloud-client";
 
 // POST /api/soldiers/approve — approve or reject a pending soldier
 export async function POST(request: NextRequest) {
   try {
+    const db = getDb();
     const body = await request.json();
     const { soldierId, action } = body; // action: "approve" | "reject"
 
@@ -24,9 +23,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the soldier
-    const soldier = await prisma.user.findUnique({
-      where: { id: soldierId },
-    });
+    const rows = await db.sql`SELECT id, userType, fullName, serviceNo FROM User WHERE id = ${soldierId} LIMIT 1` as Array<{ id: string; userType: string; fullName: string; serviceNo: string | null }>;
+    const soldier = rows?.[0];
 
     if (!soldier) {
       return NextResponse.json(
@@ -43,10 +41,8 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "approve") {
-      await prisma.user.update({
-        where: { id: soldierId },
-        data: { approved: true },
-      });
+      const now = new Date().toISOString();
+      await db.sql`UPDATE User SET approved = 1, updatedAt = ${now} WHERE id = ${soldierId}`;
 
       return NextResponse.json({
         message: `Soldier ${soldier.fullName} has been approved successfully.`,
@@ -60,10 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "reject") {
-      // Delete the soldier account entirely
-      await prisma.user.delete({
-        where: { id: soldierId },
-      });
+      await db.sql`DELETE FROM User WHERE id = ${soldierId}`;
 
       return NextResponse.json({
         message: `Soldier ${soldier.fullName} has been rejected and removed.`,

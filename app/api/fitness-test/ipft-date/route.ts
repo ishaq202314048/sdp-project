@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { getDb } from "@/lib/sqlitecloud-client";
+import { randomUUID } from "crypto";
 
 // GET - fetch the latest IPFT date
 export async function GET() {
   try {
-    const latest = await prisma.ipftDate.findFirst({
-      orderBy: { createdAt: "desc" },
-    });
-
-    if (!latest) {
+    const db = getDb();
+    const rows = await db.sql`SELECT * FROM IpftDate ORDER BY createdAt DESC LIMIT 1`;
+    if (!rows || rows.length === 0) {
       return NextResponse.json({ date: null });
     }
-
-    return NextResponse.json({ date: latest.date.toISOString().split("T")[0] });
+    const latest = rows[0] as { date: string };
+    return NextResponse.json({ date: latest.date.split('T')[0] });
   } catch (error) {
     console.error("Error fetching IPFT date:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -24,6 +21,7 @@ export async function GET() {
 // POST - save a new IPFT date
 export async function POST(request: NextRequest) {
   try {
+    const db = getDb();
     const body = await request.json();
     const { date } = body;
 
@@ -31,14 +29,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Date is required" }, { status: 400 });
     }
 
-    const ipftDate = await prisma.ipftDate.create({
-      data: {
-        date: new Date(date),
-        setBy: "adjutant", // In production, extract from JWT
-      },
-    });
+    const id = randomUUID();
+    const createdAt = new Date().toISOString();
+    const dateStr = new Date(date).toISOString();
+    await db.sql`INSERT INTO IpftDate (id, date, setBy, createdAt) VALUES (${id}, ${dateStr}, 'adjutant', ${createdAt})`;
 
-    return NextResponse.json({ message: "IPFT date saved", date: ipftDate.date.toISOString().split("T")[0] }, { status: 201 });
+    return NextResponse.json({ message: "IPFT date saved", date: dateStr.split('T')[0] }, { status: 201 });
   } catch (error) {
     console.error("Error saving IPFT date:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

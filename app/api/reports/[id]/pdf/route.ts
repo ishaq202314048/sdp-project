@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { getDb } from '@/lib/sqlitecloud-client';
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
 export async function GET(
@@ -9,7 +9,9 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const report = await prisma.report.findUnique({ where: { id } });
+    const db = getDb();
+    const rows = await db.sql`SELECT * FROM Report WHERE id = ${id} LIMIT 1`;
+    const report = rows?.[0] as Record<string, string> | undefined;
     if (!report) {
       return NextResponse.json({ error: 'Report not found' }, { status: 404 });
     }
