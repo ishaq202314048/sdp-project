@@ -1,6 +1,3 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,122 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/Logo";
 import { Activity, Shield, Users, Bell, TrendingUp, FileText, Target, Heart, Database } from "lucide-react";
 
-function WelcomeScreen({ onFinish }: { onFinish: () => void }) {
-	const [phase, setPhase] = useState(0); // 0=logo, 1=title, 2=subtitle, 3=bars, 4=fadeout
-
-	useEffect(() => {
-		const timers = [
-			setTimeout(() => setPhase(1), 600),
-			setTimeout(() => setPhase(2), 1400),
-			setTimeout(() => setPhase(3), 2200),
-			setTimeout(() => setPhase(4), 3800),
-			setTimeout(() => onFinish(), 4600),
-		];
-		return () => timers.forEach(clearTimeout);
-	}, [onFinish]);
-
-	return (
-		<div
-			className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950 transition-opacity duration-700 ${phase >= 4 ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-		>
-			{/* Animated background grid */}
-			<div className="absolute inset-0 overflow-hidden">
-				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.1)_0%,transparent_70%)]" />
-				{/* Floating particles */}
-				{[
-					{ left: "10%", top: "15%", delay: "0s", dur: "3s" },
-					{ left: "25%", top: "30%", delay: "0.5s", dur: "4s" },
-					{ left: "45%", top: "10%", delay: "1s", dur: "2.5s" },
-					{ left: "70%", top: "25%", delay: "1.5s", dur: "3.5s" },
-					{ left: "85%", top: "45%", delay: "0.3s", dur: "4.5s" },
-					{ left: "15%", top: "60%", delay: "2s", dur: "3s" },
-					{ left: "55%", top: "70%", delay: "0.8s", dur: "2s" },
-					{ left: "80%", top: "80%", delay: "1.2s", dur: "3.8s" },
-					{ left: "35%", top: "85%", delay: "0.6s", dur: "4.2s" },
-					{ left: "60%", top: "50%", delay: "1.8s", dur: "2.8s" },
-					{ left: "5%", top: "40%", delay: "2.5s", dur: "3.2s" },
-					{ left: "90%", top: "15%", delay: "0.2s", dur: "4s" },
-					{ left: "40%", top: "40%", delay: "1.3s", dur: "3.6s" },
-					{ left: "20%", top: "75%", delay: "0.9s", dur: "2.2s" },
-					{ left: "75%", top: "60%", delay: "1.7s", dur: "3.4s" },
-				].map((p, i) => (
-					<div
-						key={i}
-						className="absolute w-1 h-1 rounded-full bg-emerald-500/30 animate-pulse"
-						style={{
-							left: p.left,
-							top: p.top,
-							animationDelay: p.delay,
-							animationDuration: p.dur,
-						}}
-					/>
-				))}
-			</div>
-
-			{/* Logo */}
-			<div
-				className={`relative transition-all duration-700 ease-out ${phase >= 0 ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
-			>
-				<div className="relative">
-					{/* Glow ring */}
-					<div className={`absolute -inset-4 rounded-full bg-emerald-500/20 blur-xl transition-all duration-1000 ${phase >= 1 ? "scale-110 opacity-100" : "scale-75 opacity-0"}`} />
-					<div className={`absolute -inset-2 rounded-full border-2 border-emerald-500/30 transition-all duration-1000 ${phase >= 1 ? "scale-100 opacity-100" : "scale-75 opacity-0"}`}
-						style={{ animation: phase >= 1 ? "spin 8s linear infinite" : "none" }}
-					/>
-					<Logo size={100} />
-				</div>
-			</div>
-
-			{/* Title */}
-			<div className={`mt-8 transition-all duration-700 ease-out ${phase >= 1 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-				<h1 className="text-5xl md:text-7xl font-black tracking-wider text-transparent bg-clip-text bg-linear-to-r from-emerald-400 via-green-300 to-emerald-500">
-					TROOP TRACK
-				</h1>
-			</div>
-
-			{/* Subtitle */}
-			<div className={`mt-4 transition-all duration-700 ease-out ${phase >= 2 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-				<p className="text-lg md:text-xl text-slate-400 tracking-[0.3em] uppercase font-light">
-					Soldier&apos;s Fitness Assessment & Monitoring
-				</p>
-			</div>
-
-			{/* Loading bars */}
-			<div className={`mt-12 w-64 transition-all duration-700 ${phase >= 3 ? "opacity-100" : "opacity-0"}`}>
-				<div className="flex gap-1.5 justify-center">
-					{[...Array(5)].map((_, i) => (
-						<div
-							key={i}
-							className="w-10 h-1 rounded-full bg-emerald-500/80"
-							style={{
-								animation: "pulse 1s ease-in-out infinite",
-								animationDelay: `${i * 0.15}s`,
-							}}
-						/>
-					))}
-				</div>
-				<p className="text-center text-xs text-slate-500 mt-4 tracking-widest uppercase">Initializing System</p>
-			</div>
-
-			{/* Military badge */}
-			<div className={`absolute bottom-12 transition-all duration-700 ${phase >= 2 ? "opacity-100" : "opacity-0"}`}>
-				<div className="flex items-center gap-2 text-slate-600">
-					<Shield className="w-4 h-4" />
-					<span className="text-xs tracking-[0.2em] uppercase">Military Grade Fitness Solution</span>
-					<Shield className="w-4 h-4" />
-				</div>
-			</div>
-		</div>
-	);
-}
-
 export default function HomePage() {
-	const [showWelcome, setShowWelcome] = useState(true);
-
 	return (
-		<>
-			{showWelcome && <WelcomeScreen onFinish={() => setShowWelcome(false)} />}
-			<div className={`min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 transition-opacity duration-500 ${showWelcome ? "opacity-0" : "opacity-100"}`}>
+		<div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-900 to-slate-950">
 			{/* Hero Section */}
 			<section className="container mx-auto px-4 py-20 md:py-32">
 				<div className="text-center space-y-6">
@@ -348,6 +232,5 @@ export default function HomePage() {
 				</div>
 			</footer>
 		</div>
-		</>
 	);
 }
