@@ -47,10 +47,10 @@ export default function AdjudantHomePage() {
 	};
 
 	return (
-		<div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
+		<div className="min-h-screen bg-[#020617] p-6">
 			<div className="max-w-7xl mx-auto space-y-6">
 				<div>
-					<h1 className="text-3xl font-bold">Adjutant Dashboard</h1>
+					<h1 className="text-3xl font-bold text-white">Adjutant Dashboard</h1>
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -224,57 +224,57 @@ function PlanForm() {
 	return (
 		<div className="space-y-6">
 			{/* Status Selection */}
-			<div className="bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4">
-				<h3 className="font-bold text-lg mb-3">Select Soldier Category</h3>
+			<div className="bg-white/[0.05] border border-white/[0.1] rounded-xl p-4">
+				<h3 className="font-bold text-lg mb-3 text-white">Select Soldier Category</h3>
 				<div className="grid grid-cols-2 gap-3">
 					<button
 						onClick={() => {
 							setStatus("Fit");
 							setMessage(null);
 						}}
-						className={`p-4 rounded-lg border-2 transition ${
-							status === "Fit" ? "border-green-500 bg-green-100 text-green-700" : "border-gray-300 bg-white text-gray-700 hover:bg-green-50"
+						className={`p-4 rounded-xl border-2 transition ${
+							status === "Fit" ? "border-emerald-500 bg-emerald-500/10 text-emerald-400" : "border-white/[0.1] bg-white/[0.03] text-slate-300 hover:bg-emerald-500/5"
 						}`}
 					>
 						<div className="font-semibold">Fit Soldiers</div>
-						<div className="text-xs text-gray-600">High-intensity training</div>
+						<div className="text-xs text-slate-500">High-intensity training</div>
 					</button>
 					<button
 						onClick={() => {
 							setStatus("Unfit");
 							setMessage(null);
 						}}
-						className={`p-4 rounded-lg border-2 transition ${
-							status === "Unfit" ? "border-orange-500 bg-orange-100 text-orange-700" : "border-gray-300 bg-white text-gray-700 hover:bg-orange-50"
+						className={`p-4 rounded-xl border-2 transition ${
+							status === "Unfit" ? "border-orange-500 bg-orange-500/10 text-orange-400" : "border-white/[0.1] bg-white/[0.03] text-slate-300 hover:bg-orange-500/5"
 						}`}
 					>
 						<div className="font-semibold">Unfit Soldiers</div>
-						<div className="text-xs text-gray-600">Moderate-intensity training</div>
+						<div className="text-xs text-slate-500">Moderate-intensity training</div>
 					</button>
 				</div>
 			</div>
 
 			{/* Plan Title Input */}
 			<div>
-				<label className="block text-sm font-semibold mb-2">Plan Title</label>
+				<label className="block text-sm font-semibold mb-2 text-slate-300">Plan Title</label>
 				<input
 					value={title}
 					onChange={(e) => setTitle(e.target.value)}
 					placeholder={`e.g., Weekly ${status} Training Program`}
-					className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+					className="w-full border border-white/[0.1] bg-white/[0.05] text-slate-200 placeholder-slate-500 px-3 py-2 rounded-xl focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
 				/>
 			</div>
 
 			{/* Weekly Day Selection */}
 			<div>
-				<label className="block text-sm font-semibold mb-2">Select Day to Add Exercises</label>
+				<label className="block text-sm font-semibold mb-2 text-slate-300">Select Day to Add Exercises</label>
 				<select
 					value={selectedDay}
 					onChange={(e) => setSelectedDay(e.target.value)}
-					className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+					className="w-full border border-white/[0.1] bg-white/[0.05] text-slate-200 px-3 py-2 rounded-xl focus:ring-2 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
 				>
 					{days.map((day) => (
-						<option key={day} value={day}>
+						<option key={day} value={day} className="bg-[#0c1425] text-slate-200">
 							{day}
 						</option>
 					))}
@@ -282,16 +282,16 @@ function PlanForm() {
 			</div>
 
 			{/* Weekly Preview */}
-			<div className="bg-gray-50 rounded-lg p-3">
-				<div className="text-sm font-semibold text-gray-700 mb-2">Week Overview (exercises added)</div>
+			<div className="bg-white/[0.03] rounded-xl p-3 border border-white/[0.06]">
+				<div className="text-sm font-semibold text-slate-400 mb-2">Week Overview (exercises added)</div>
 				<div className="grid grid-cols-7 gap-1">
 					{days.map((day) => {
 						const hasExercises = exercisesByDay[day].some((e) => e.name.trim() !== "");
 						return (
 							<div
 								key={day}
-								className={`p-2 rounded text-center text-xs font-semibold ${
-									hasExercises ? (day === selectedDay ? "bg-blue-500 text-white" : "bg-green-500 text-white") : day === selectedDay ? "bg-blue-300 text-white" : "bg-gray-200 text-gray-600"
+								className={`p-2 rounded-lg text-center text-xs font-semibold ${
+									hasExercises ? (day === selectedDay ? "bg-emerald-500 text-white" : "bg-emerald-500/40 text-emerald-300") : day === selectedDay ? "bg-white/[0.12] text-white" : "bg-white/[0.05] text-slate-500"
 								}`}
 							>
 								{day.slice(0, 3)}
@@ -303,12 +303,12 @@ function PlanForm() {
 			</div>
 
 			{/* Exercise Editor */}
-			<div className="border rounded-lg p-4 bg-white">
+			<div className="border border-white/[0.1] rounded-xl p-4 bg-white/[0.05]">
 				<div className="flex items-center justify-between mb-3">
-					<h4 className="font-semibold text-lg">Exercises for {selectedDay}</h4>
+					<h4 className="font-semibold text-lg text-white">Exercises for {selectedDay}</h4>
 					<button
 						type="button"
-						className="text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+						className="text-sm bg-emerald-600 text-white px-3 py-1 rounded-lg hover:bg-emerald-500 transition"
 						onClick={() => addExerciseForDay(selectedDay)}
 					>
 						+ Add Exercise
@@ -316,40 +316,40 @@ function PlanForm() {
 				</div>
 				<div className="space-y-3">
 					{exercisesByDay[selectedDay].map((ex, idx) => (
-						<div key={idx} className="border rounded p-3 bg-gray-50">
+						<div key={idx} className="border border-white/[0.08] rounded-xl p-3 bg-white/[0.03]">
 							<div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
 								<div>
-									<label className="text-xs font-semibold text-gray-600">Exercise Name</label>
+									<label className="text-xs font-semibold text-slate-400">Exercise Name</label>
 									<input
 										value={ex.name}
 										onChange={(e) => updateExerciseForDay(selectedDay, idx, "name", e.target.value)}
 										placeholder="e.g., Push-ups, Running"
-										className="w-full border px-2 py-1 rounded"
+										className="w-full border border-white/[0.1] bg-white/[0.05] text-slate-200 placeholder-slate-500 px-2 py-1 rounded-lg focus:ring-1 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
 									/>
 								</div>
 								<div>
-									<label className="text-xs font-semibold text-gray-600">Duration</label>
+									<label className="text-xs font-semibold text-slate-400">Duration</label>
 									<input
 										value={ex.duration}
 										onChange={(e) => updateExerciseForDay(selectedDay, idx, "duration", e.target.value)}
 										placeholder="e.g., 30 min"
-										className="w-full border px-2 py-1 rounded"
+										className="w-full border border-white/[0.1] bg-white/[0.05] text-slate-200 placeholder-slate-500 px-2 py-1 rounded-lg focus:ring-1 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
 									/>
 								</div>
 								<div className="flex gap-2 items-end">
 									<div className="flex-1">
-										<label className="text-xs font-semibold text-gray-600">Focus Area</label>
+										<label className="text-xs font-semibold text-slate-400">Focus Area</label>
 										<input
 											value={ex.focus}
 											onChange={(e) => updateExerciseForDay(selectedDay, idx, "focus", e.target.value)}
 											placeholder="e.g., Cardio, Strength"
-											className="w-full border px-2 py-1 rounded"
+											className="w-full border border-white/[0.1] bg-white/[0.05] text-slate-200 placeholder-slate-500 px-2 py-1 rounded-lg focus:ring-1 focus:ring-emerald-400/30 focus:border-emerald-400/50 outline-none"
 										/>
 									</div>
 									{exercisesByDay[selectedDay].length > 1 && (
 										<button
 											type="button"
-											className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 whitespace-nowrap"
+											className="px-3 py-1 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 hover:text-red-300 whitespace-nowrap transition"
 											onClick={() => removeExerciseForDay(selectedDay, idx)}
 										>
 											Remove
@@ -363,13 +363,13 @@ function PlanForm() {
 			</div>
 
 			{/* Messages */}
-			{message && <div className="text-sm text-red-600 bg-red-50 border border-red-200 p-3 rounded">{message}</div>}
+			{message && <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 p-3 rounded-xl">{message}</div>}
 
 			{/* Submit Button */}
 			<div>
 				<button
-					className={`w-full py-2 rounded-lg font-semibold text-white transition ${
-						submitting ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+					className={`w-full py-2.5 rounded-xl font-semibold text-white transition ${
+						submitting ? "bg-slate-700 cursor-not-allowed" : "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 shadow-lg shadow-emerald-500/20"
 					}`}
 					onClick={submit}
 					disabled={submitting}
@@ -379,9 +379,9 @@ function PlanForm() {
 			</div>
 
 			{/* Saved Plans Summary */}
-			<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-				<div className="text-sm text-gray-600">
-					<p className="font-semibold mb-1">💡 Tip:</p>
+			<div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+				<div className="text-sm text-slate-400">
+					<p className="font-semibold mb-1 text-emerald-400">💡 Tip:</p>
 					<p>Create separate plans for Fit and Unfit soldiers. The weekly routine will repeat monthly for each soldier group.</p>
 				</div>
 			</div>

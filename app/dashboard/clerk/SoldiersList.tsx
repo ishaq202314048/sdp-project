@@ -81,7 +81,7 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
     }, [list]);
 
     if (!list || list.length === 0) {
-        return <p className="text-sm text-gray-600">No soldiers found.</p>;
+        return <p className="text-sm text-slate-400">No soldiers found.</p>;
     }
 
     const submitMark = async (soldier: Item) => {
@@ -153,16 +153,16 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
     return (
         <div className="space-y-2">
             {list.map((s) => (
-                <div key={s.id} className="border rounded-lg p-3 hover:bg-gray-50 transition-colors">
+                <div key={s.id} className="border border-white/[0.08] rounded-xl p-3 hover:bg-white/[0.04] transition-colors">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="font-semibold">{s.name} <span className="ml-2 text-sm text-gray-500">({s.rank})</span></h3>
-                            <p className="text-sm text-gray-600">Service No: {s.serviceNo}</p>
+                            <h3 className="font-semibold text-white">{s.name} <span className="ml-2 text-sm text-slate-400">({s.rank})</span></h3>
+                            <p className="text-sm text-slate-400">Service No: {s.serviceNo}</p>
                         </div>
                         <div className="text-right">
-                            <p className="text-sm">{s.fitnessStatus}</p>
+                            <p className="text-sm text-slate-300">{s.fitnessStatus}</p>
                             <div className="mt-2 flex justify-end gap-2">
-                                <button className="px-2 py-1 rounded bg-blue-600 text-white text-sm" onClick={() => setOpenFor(openFor === s.id ? null : s.id)}>Add Exercise Mark</button>
+                                <button className="px-2 py-1 rounded-lg bg-emerald-600 text-white text-sm hover:bg-emerald-500 transition" onClick={() => setOpenFor(openFor === s.id ? null : s.id)}>Add Exercise Mark</button>
                             </div>
                         </div>
                     </div>
@@ -171,20 +171,20 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
                     {openFor === s.id && (
                         <div className="mt-3 space-y-2">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                <select value={form[s.id]?.name || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', customName: '', duration: '', result: '' }), name: e.target.value, customName: '' } }))} className="border px-2 py-1 rounded">
-                                    <option value="">Select exercise</option>
+                                <select value={form[s.id]?.name || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', customName: '', duration: '', result: '' }), name: e.target.value, customName: '' } }))} className="border border-white/[0.1] bg-white/[0.05] text-slate-200 px-2 py-1 rounded-lg outline-none focus:ring-1 focus:ring-emerald-400/30">
+                                    <option value="" className="bg-[#0c1425] text-slate-200">Select exercise</option>
                                     {loadingExercises[s.id] ? (
-                                        <option disabled>Loading exercises...</option>
+                                        <option disabled className="bg-[#0c1425] text-slate-400">Loading exercises...</option>
                                     ) : allocatedExercises[s.id] && allocatedExercises[s.id].length > 0 ? (
                                         allocatedExercises[s.id].map((ex) => (
-                                            <option key={ex} value={ex}>{ex}</option>
+                                            <option key={ex} value={ex} className="bg-[#0c1425] text-slate-200">{ex}</option>
                                         ))
                                     ) : (
                                         (s.fitnessStatus === 'Fit' ? FIT_EXERCISES : UNFIT_EXERCISES).map((ex) => (
-                                            <option key={ex} value={ex}>{ex}</option>
+                                            <option key={ex} value={ex} className="bg-[#0c1425] text-slate-200">{ex}</option>
                                         ))
                                     )}
-                                    <option value="__custom__">-- Custom --</option>
+                                    <option value="__custom__" className="bg-[#0c1425] text-slate-200">-- Custom --</option>
                                 </select>
                                 {/* Custom exercise name input — only shown when Custom is selected */}
                                 {form[s.id]?.name === '__custom__' && (
@@ -192,19 +192,19 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
                                         value={form[s.id]?.customName || ''}
                                         onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '__custom__', customName: '', duration: '', result: '' }), customName: e.target.value } }))}
                                         placeholder="Enter custom exercise name"
-                                        className="border px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="border border-white/[0.1] bg-white/[0.05] text-slate-200 placeholder-slate-500 px-2 py-1 rounded-lg outline-none focus:ring-1 focus:ring-emerald-400/30"
                                         autoFocus
                                     />
                                 )}
-                                <select value={form[s.id]?.result || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), result: e.target.value } }))} className="border px-2 py-1 rounded">
-                                    <option value="">Result</option>
-                                    <option value="Pass">Pass</option>
-                                    <option value="Fail">Fail</option>
+                                <select value={form[s.id]?.result || ''} onChange={(e) => setForm(p => ({ ...p, [s.id]: { ...(p[s.id] || { name: '', duration: '', result: '' }), result: e.target.value } }))} className="border border-white/[0.1] bg-white/[0.05] text-slate-200 px-2 py-1 rounded-lg outline-none focus:ring-1 focus:ring-emerald-400/30">
+                                    <option value="" className="bg-[#0c1425] text-slate-200">Result</option>
+                                    <option value="Pass" className="bg-[#0c1425] text-slate-200">Pass</option>
+                                    <option value="Fail" className="bg-[#0c1425] text-slate-200">Fail</option>
                                 </select>
                             </div>
                             <div className="flex gap-2">
-                                <button className="px-3 py-1 rounded bg-green-600 text-white" onClick={() => submitMark(s)} disabled={loadingFor === s.id}>{loadingFor === s.id ? 'Saving...' : 'Save Mark'}</button>
-                                <button className="px-3 py-1 rounded border" onClick={() => setOpenFor(null)}>Cancel</button>
+                                <button className="px-3 py-1 rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 transition" onClick={() => submitMark(s)} disabled={loadingFor === s.id}>{loadingFor === s.id ? 'Saving...' : 'Save Mark'}</button>
+                                <button className="px-3 py-1 rounded-lg border border-white/[0.1] text-slate-300 hover:bg-white/[0.05] transition" onClick={() => setOpenFor(null)}>Cancel</button>
                             </div>
                         </div>
                     )}
@@ -212,10 +212,10 @@ export default function SoldiersList({ items, limit }: { items: Item[]; limit?: 
                     {/* marks list */}
                     {marks[s.id] && marks[s.id].length > 0 && (
                         <div className="mt-3">
-                            <h4 className="text-sm font-medium">Exercise Marks</h4>
-                            <ul className="mt-2 text-sm list-disc ml-5">
+                            <h4 className="text-sm font-medium text-slate-300">Exercise Marks</h4>
+                            <ul className="mt-2 text-sm list-disc ml-5 text-slate-400">
                                 {marks[s.id].map(m => (
-                                    <li key={m.id}>{m.name} {m.duration ? `• ${m.duration}` : ''} {m.result ? `• ${m.result}` : ''} <span className="text-xs text-gray-400">({new Date(m.createdAt).toLocaleString()})</span></li>
+                                    <li key={m.id}>{m.name} {m.duration ? `• ${m.duration}` : ''} {m.result ? `• ${m.result}` : ''} <span className="text-xs text-slate-500">({new Date(m.createdAt).toLocaleString()})</span></li>
                                 ))}
                             </ul>
                         </div>

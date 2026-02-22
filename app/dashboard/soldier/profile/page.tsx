@@ -129,10 +129,10 @@ export default function ProfilePage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-6 flex items-center justify-center">
+            <div className="min-h-screen bg-[#020617] p-6 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader className="w-8 h-8 text-blue-600 animate-spin" />
-                    <p className="text-slate-600 dark:text-slate-400">Loading profile...</p>
+                    <Loader className="w-8 h-8 text-emerald-400 animate-spin" />
+                    <p className="text-slate-400">Loading profile...</p>
                 </div>
             </div>
         );
@@ -140,11 +140,11 @@ export default function ProfilePage() {
 
     if (!soldierProfile) {
         return (
-            <div className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-6">
+            <div className="min-h-screen bg-[#020617] p-6">
                 <div className="max-w-6xl mx-auto">
-                    <Card className="bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800">
+                    <Card className="bg-red-500/10 border-red-500/30">
                         <CardContent className="pt-6">
-                            <p className="text-red-600 dark:text-red-400">Failed to load profile. Please try again.</p>
+                            <p className="text-red-400">Failed to load profile. Please try again.</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -207,20 +207,20 @@ export default function ProfilePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-6">
+        <div className="min-h-screen bg-[#020617] p-6">
             <div className="max-w-6xl mx-auto space-y-6">
                 
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                        <h1 className="text-3xl font-bold text-white">
                             Profile
                         </h1>
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">
+                        <p className="text-slate-400 mt-1">
                             View and manage your profile information
                         </p>
                     </div>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                        <DialogTrigger asChild className="bg-blue-500 hover:bg-blue-600 border border-blue-700 cursor-pointer">
+                        <DialogTrigger asChild className="bg-emerald-600 hover:bg-emerald-500 border border-emerald-500/30 cursor-pointer">
                             <Button className="gap-2">
                                 <Edit className="w-4 h-4" />
                                 Edit Profile
@@ -287,7 +287,7 @@ export default function ProfilePage() {
                                 <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isSaving}>
                                     Cancel
                                 </Button>
-                                <Button onClick={handleSaveChanges} className="bg-green-500 hover:bg-green-600 border border-green-700 cursor-pointer" disabled={isSaving}>
+                                <Button onClick={handleSaveChanges} className="bg-emerald-600 hover:bg-emerald-500 border border-emerald-500/30 cursor-pointer" disabled={isSaving}>
                                     {isSaving ? "Saving..." : "Save Changes"}
                                 </Button>
                             </DialogFooter>
@@ -296,7 +296,7 @@ export default function ProfilePage() {
                 </div>
 
                 
-                <Card className="bg-linear-to-br from-blue-500 to-blue-700 text-white border-none">
+                <Card className="bg-linear-to-br from-emerald-600 to-emerald-800 text-white border-none">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                             <div className="relative">
@@ -314,7 +314,7 @@ export default function ProfilePage() {
                                     <Badge className="bg-white/20 hover:bg-white/30 text-white border-white/30">
                                         {soldierProfile.serviceNo || "N/A"}
                                     </Badge>
-                                    <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white border-none">
+                                    <Badge className="bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-100 border-emerald-400/30">
                                         Medical Category {soldierProfile.medicalCategory || "N/A"}
                                     </Badge>
                                 </div>
@@ -337,11 +337,11 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Shield className="w-5 h-5 text-blue-600" />
+                            <CardTitle className="flex items-center gap-2 text-white">
+                                <Shield className="w-5 h-5 text-emerald-400" />
                                 Service Details
                             </CardTitle>
-                            <CardDescription>Your military service information</CardDescription>
+                            <CardDescription className="text-slate-400">Your military service information</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
@@ -351,18 +351,18 @@ export default function ProfilePage() {
                                         <div key={index}>
                                             <div className="flex items-center justify-between py-2">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                                                        <Icon className="w-4 h-4 text-blue-600" />
+                                                    <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                                        <Icon className="w-4 h-4 text-emerald-400" />
                                                     </div>
-                                                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                                                    <span className="text-sm text-slate-400">
                                                         {detail.label}
                                                     </span>
                                                 </div>
-                                                <span className="font-semibold text-slate-900 dark:text-white">
+                                                <span className="font-semibold text-white">
                                                     {detail.value}
                                                 </span>
                                             </div>
-                                            {index < serviceDetails.length - 1 && <Separator />}
+                                            {index < serviceDetails.length - 1 && <Separator className="bg-white/[0.06]" />}
                                         </div>
                                     );
                                 })}
@@ -372,11 +372,11 @@ export default function ProfilePage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <User className="w-5 h-5 text-purple-600" />
+                            <CardTitle className="flex items-center gap-2 text-white">
+                                <User className="w-5 h-5 text-purple-400" />
                                 Personal Details
                             </CardTitle>
-                            <CardDescription>Your personal information</CardDescription>
+                            <CardDescription className="text-slate-400">Your personal information</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
@@ -386,18 +386,18 @@ export default function ProfilePage() {
                                         <div key={index}>
                                             <div className="flex items-center justify-between py-2">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                                                        <Icon className="w-4 h-4 text-purple-600" />
+                                                    <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                                                        <Icon className="w-4 h-4 text-purple-400" />
                                                     </div>
-                                                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                                                    <span className="text-sm text-slate-400">
                                                         {detail.label}
                                                     </span>
                                                 </div>
-                                                <span className="font-semibold text-slate-900 dark:text-white text-right max-w-[60%] truncate">
+                                                <span className="font-semibold text-white text-right max-w-[60%] truncate">
                                                     {detail.value}
                                                 </span>
                                             </div>
-                                            {index < personalDetails.length - 1 && <Separator />}
+                                            {index < personalDetails.length - 1 && <Separator className="bg-white/[0.06]" />}
                                         </div>
                                     );
                                 })}
@@ -410,11 +410,11 @@ export default function ProfilePage() {
                     
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-emerald-600" />
+                            <CardTitle className="flex items-center gap-2 text-white">
+                                <Activity className="w-5 h-5 text-emerald-400" />
                                 Physical Statistics
                             </CardTitle>
-                            <CardDescription>Your physical measurements and fitness data</CardDescription>
+                            <CardDescription className="text-slate-400">Your physical measurements and fitness data</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-2 gap-4">
@@ -423,15 +423,15 @@ export default function ProfilePage() {
                                     return (
                                         <div
                                             key={index}
-                                            className="p-4 rounded-lg bg-linear-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/10 border border-emerald-200 dark:border-emerald-800"
+                                            className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20"
                                         >
                                             <div className="flex items-center gap-2 mb-2">
-                                                <Icon className="w-4 h-4 text-emerald-600" />
-                                                <span className="text-xs text-slate-600 dark:text-slate-400">
+                                                <Icon className="w-4 h-4 text-emerald-400" />
+                                                <span className="text-xs text-slate-400">
                                                     {stat.label}
                                                 </span>
                                             </div>
-                                            <div className="text-xl font-bold text-slate-900 dark:text-white">
+                                            <div className="text-xl font-bold text-white">
                                                 {stat.value}
                                             </div>
                                         </div>
@@ -443,25 +443,25 @@ export default function ProfilePage() {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Phone className="w-5 h-5 text-red-600" />
+                            <CardTitle className="flex items-center gap-2 text-white">
+                                <Phone className="w-5 h-5 text-red-400" />
                                 Emergency Contact
                             </CardTitle>
-                            <CardDescription>Contact information for emergencies</CardDescription>
+                            <CardDescription className="text-slate-400">Contact information for emergencies</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
                                 {emergencyInfo.map((info, index) => (
                                     <div key={index}>
                                         <div className="py-2">
-                                            <span className="text-sm text-slate-600 dark:text-slate-400 block mb-1">
+                                            <span className="text-sm text-slate-400 block mb-1">
                                                 {info.label}
                                             </span>
-                                            <span className="font-semibold text-slate-900 dark:text-white text-lg">
+                                            <span className="font-semibold text-white text-lg">
                                                 {info.value}
                                             </span>
                                         </div>
-                                        {index < emergencyInfo.length - 1 && <Separator />}
+                                        {index < emergencyInfo.length - 1 && <Separator className="bg-white/[0.06]" />}
                                     </div>
                                 ))}
                             </div>

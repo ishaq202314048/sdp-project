@@ -193,20 +193,20 @@ export default function SoldierHomePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-6">
+        <div className="min-h-screen bg-[#020617] p-6">
             <div className="max-w-7xl mx-auto space-y-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                        <h1 className="text-3xl font-bold text-white">
                             Welcome back, {profile?.fullName || "Soldier"}
                         </h1>
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">
+                        <p className="text-slate-400 mt-1">
                             Service No: {profile?.serviceNo || "—"} | Rank: {profile?.rank || "—"}
                         </p>
                     </div>
                     <Badge
                         variant={profile?.fitnessStatus === "Fit" ? "default" : "destructive"}
-                        className={`px-4 py-2 text-lg bg-white border hover:text-white cursor-pointer ${profile?.fitnessStatus === 'Fit' ? 'border-green-500 text-green-600 hover:bg-green-600' : 'border-red-600 text-red-600 hover:bg-red-600'}`}
+                        className={`px-4 py-2 text-lg border ${profile?.fitnessStatus === 'Fit' ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' : 'bg-red-500/20 border-red-500/30 text-red-400'}`}
                     >
                         {profile?.fitnessStatus || "—"}
                     </Badge>
@@ -216,16 +216,16 @@ export default function SoldierHomePage() {
                     {quickStats.map((stat, index) => {
                         const Icon = stat.icon;
                         return (
-                            <Card key={index} className={`bg-linear-to-br ${stat.gradient} text-white border-none`}>
+                            <Card key={index} className="bg-white/[0.07] backdrop-blur-2xl border border-white/[0.1] text-white">
                                 <CardHeader className="pb-3">
-                                    <CardTitle className="text-sm font-medium flex items-center gap-2">
-                                        <Icon className="w-4 h-4" />
+                                    <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                                        <Icon className="w-4 h-4 text-emerald-400" />
                                         {stat.title}
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">{stat.value}</div>
-                                    <p className="text-sm opacity-90">{stat.subtitle}</p>
+                                    <div className="text-2xl font-bold text-white">{stat.value}</div>
+                                    <p className="text-sm text-slate-400">{stat.subtitle}</p>
                                 </CardContent>
                             </Card>
                         );
@@ -240,10 +240,10 @@ export default function SoldierHomePage() {
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <Trophy className="w-5 h-5 text-emerald-600" />
+                                        <Trophy className="w-5 h-5 text-emerald-400" />
                                         <div>
-                                            <CardTitle>Recent Fitness Tests</CardTitle>
-                                            <CardDescription>Tests justified by clerk</CardDescription>
+                                            <CardTitle className="text-white">Recent Fitness Tests</CardTitle>
+                                            <CardDescription className="text-slate-400">Tests justified by clerk</CardDescription>
                                         </div>
                                     </div>
                                     <Button
@@ -251,6 +251,7 @@ export default function SoldierHomePage() {
                                         size="sm"
                                         onClick={() => fetchFitnessTests()}
                                         disabled={loading}
+                                        className="border-white/[0.1] text-slate-300 hover:bg-white/[0.05]"
                                     >
                                         {loading ? 'Refreshing...' : 'Refresh'}
                                     </Button>
@@ -259,22 +260,22 @@ export default function SoldierHomePage() {
                             <CardContent>
                                 <div className="space-y-3">
                                     {loading ? (
-                                        <p className="text-sm text-gray-600">Loading fitness tests...</p>
+                                        <p className="text-sm text-slate-400">Loading fitness tests...</p>
                                     ) : fitnessTests.length === 0 ? (
-                                        <p className="text-sm text-gray-600">No justified fitness tests yet.</p>
+                                        <p className="text-sm text-slate-400">No justified fitness tests yet.</p>
                                     ) : (
                                         fitnessTests.map((test) => (
                                             <div
                                                 key={test.id}
-                                                className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 transition-colors"
+                                                className="flex items-center justify-between p-3 rounded-lg bg-white/[0.05] hover:bg-white/[0.08] transition-colors border border-white/[0.06]"
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                                        <Dumbbell className="w-5 h-5 text-emerald-600" />
+                                                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                                        <Dumbbell className="w-5 h-5 text-emerald-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-semibold text-slate-900 dark:text-white">{test.exerciseName}</p>
-                                                        <p className="text-sm text-slate-600 dark:text-slate-400">{new Date(test.createdAt).toLocaleDateString()}</p>
+                                                        <p className="font-semibold text-white">{test.exerciseName}</p>
+                                                        <p className="text-sm text-slate-400">{new Date(test.createdAt).toLocaleDateString()}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
@@ -286,7 +287,7 @@ export default function SoldierHomePage() {
                                         ))
                                     )}
                                 </div>
-                                <Button className="w-full mt-4" variant="outline">
+                                <Button className="w-full mt-4 border-white/[0.1] text-slate-300 hover:bg-white/[0.05]" variant="outline">
                                     View All Test Results
                                 </Button>
                             </CardContent>
@@ -294,17 +295,17 @@ export default function SoldierHomePage() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <TrendingUp className="w-5 h-5 text-blue-600" />
+                                <CardTitle className="flex items-center gap-2 text-white">
+                                    <TrendingUp className="w-5 h-5 text-blue-400" />
                                     Fitness Progress
                                 </CardTitle>
-                                <CardDescription>Track your performance over time</CardDescription>
+                                <CardDescription className="text-slate-400">Track your performance over time</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-64 bg-linear-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-lg flex items-center justify-center">
+                                <div className="h-64 bg-white/[0.05] rounded-xl flex items-center justify-center border border-white/[0.06]">
                                     <div className="text-center">
-                                        <TrendingUp className="w-12 h-12 text-slate-400 mx-auto mb-2" />
-                                        <p className="text-slate-600 dark:text-slate-400">Performance chart will be displayed here</p>
+                                        <TrendingUp className="w-12 h-12 text-slate-500 mx-auto mb-2" />
+                                        <p className="text-slate-400">Performance chart will be displayed here</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -314,33 +315,33 @@ export default function SoldierHomePage() {
                     <div className="space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <AlertCircle className="w-5 h-5 text-yellow-600" />
+                                <CardTitle className="flex items-center gap-2 text-white">
+                                    <AlertCircle className="w-5 h-5 text-amber-400" />
                                     Notifications
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-3">
                                     {ipftDate && (
-                                        <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <Calendar className="w-5 h-5 text-slate-600 dark:text-slate-400 mt-0.5" />
-                                            <p className="text-sm text-slate-700 dark:text-slate-300">
+                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.05] border border-white/[0.06]">
+                                            <Calendar className="w-5 h-5 text-slate-400 mt-0.5" />
+                                            <p className="text-sm text-slate-300">
                                                 IPFT scheduled for {new Date(ipftDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                                             </p>
                                         </div>
                                     )}
                                     {fitnessTests.length > 0 && (
-                                        <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <Trophy className="w-5 h-5 text-slate-600 dark:text-slate-400 mt-0.5" />
-                                            <p className="text-sm text-slate-700 dark:text-slate-300">
+                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.05] border border-white/[0.06]">
+                                            <Trophy className="w-5 h-5 text-slate-400 mt-0.5" />
+                                            <p className="text-sm text-slate-300">
                                                 You have {fitnessTests.filter(t => t.result === "Pass").length}/{fitnessTests.length} tests passed
                                             </p>
                                         </div>
                                     )}
                                     {profile?.fitnessStatus === "Fit" && (
-                                        <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <Heart className="w-5 h-5 text-slate-600 dark:text-slate-400 mt-0.5" />
-                                            <p className="text-sm text-slate-700 dark:text-slate-300">
+                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.05] border border-white/[0.06]">
+                                            <Heart className="w-5 h-5 text-slate-400 mt-0.5" />
+                                            <p className="text-sm text-slate-300">
                                                 Maintain your excellent fitness record
                                             </p>
                                         </div>
@@ -354,8 +355,8 @@ export default function SoldierHomePage() {
 
                         <Card>
                             <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Timer className="w-5 h-5 text-blue-600" />
+                                <CardTitle className="flex items-center gap-2 text-white">
+                                    <Timer className="w-5 h-5 text-blue-400" />
                                     Upcoming Activities
                                 </CardTitle>
                             </CardHeader>
@@ -363,16 +364,16 @@ export default function SoldierHomePage() {
                                 <div className="space-y-3">
                                     {/* IPFT Date */}
                                     {ipftDate && (
-                                        <div className="p-3 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950">
+                                        <div className="p-3 rounded-xl border border-red-500/30 bg-red-500/10">
                                             <div className="flex items-center justify-between mb-1">
-                                                <p className="font-semibold text-slate-900 dark:text-white text-sm">
+                                                <p className="font-semibold text-white text-sm">
                                                     IPFT (Fitness Test)
                                                 </p>
-                                                <Badge variant="destructive" className="text-xs">
+                                                <Badge variant="destructive" className="text-xs bg-red-500/20 text-red-400 border border-red-500/30">
                                                     Required
                                                 </Badge>
                                             </div>
-                                            <p className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                                            <p className="text-sm text-slate-400 flex items-center gap-1">
                                                 <Calendar className="w-3 h-3" />
                                                 {new Date(ipftDate).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
                                             </p>
@@ -381,26 +382,26 @@ export default function SoldierHomePage() {
 
                                     {/* Tomorrow's Exercises */}
                                     {tomorrowExercises.length > 0 ? (
-                                        <div className="p-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950">
+                                        <div className="p-3 rounded-xl border border-blue-500/30 bg-blue-500/10">
                                             <div className="flex items-center justify-between mb-2">
-                                                <p className="font-semibold text-slate-900 dark:text-white text-sm">
+                                                <p className="font-semibold text-white text-sm">
                                                     Tomorrow&apos;s Exercises
                                                 </p>
-                                                <Badge variant="outline" className="text-xs">
+                                                <Badge variant="outline" className="text-xs border-blue-500/30 text-blue-400">
                                                     Scheduled
                                                 </Badge>
                                             </div>
                                             <div className="space-y-1">
                                                 {tomorrowExercises.map((ex, i) => (
-                                                    <p key={i} className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                                                        <Dumbbell className="w-3 h-3 text-blue-500" />
+                                                    <p key={i} className="text-sm text-slate-400 flex items-center gap-2">
+                                                        <Dumbbell className="w-3 h-3 text-blue-400" />
                                                         {ex}
                                                     </p>
                                                 ))}
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                                        <div className="p-3 rounded-xl border border-white/[0.08]">
                                             <p className="text-sm text-slate-500">No exercises scheduled for tomorrow</p>
                                         </div>
                                     )}

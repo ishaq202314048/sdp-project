@@ -278,6 +278,24 @@ export async function POST(request: NextRequest) {
       userType: user.userType,
     });
 
+    // For soldiers, inform them they need adjutant approval
+    if (userType === "soldier") {
+      return NextResponse.json(
+        {
+          message: "Account created successfully. Please wait for the Adjutant to approve your account before you can log in.",
+          pendingApproval: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            fullName: user.fullName,
+            userType: user.userType,
+            serviceNo: user.serviceNo,
+          },
+        },
+        { status: 201 }
+      );
+    }
+
     return NextResponse.json(
       {
         message: "User created successfully",

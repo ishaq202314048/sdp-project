@@ -38,6 +38,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if soldier account is approved by adjutant
+    if (user.userType === "soldier") {
+      const fullUser = await prisma.user.findUnique({ where: { id: user.id }, select: { approved: true } });
+      if (!fullUser?.approved) {
+        return NextResponse.json(
+          { error: "Your account is pending approval by the Adjutant. Please wait until your account is approved before logging in." },
+          { status: 403 }
+        );
+      }
+    }
+
     const token = generateToken({
       userId: user.id,
       email: user.email,

@@ -112,6 +112,8 @@ export async function createUser(input: Omit<UserRecord, "id" | "createdAt">): P
     password: input.password,
     fullName: input.fullName,
     userType: input.userType,
+    // Soldiers need adjutant approval; clerks/adjutants are auto-approved
+    approved: input.userType === 'soldier' ? false : true,
     serviceNo: input.serviceNo ?? null,
     rank: input.rank ?? null,
     unit: input.unit ?? null,

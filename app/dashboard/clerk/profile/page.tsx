@@ -126,16 +126,16 @@ export default function ClerkProfilePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
-                <p className="text-lg text-gray-600">Loading profile...</p>
+            <div className="min-h-screen bg-[#020617] p-6 flex items-center justify-center">
+                <p className="text-lg text-slate-400">Loading profile...</p>
             </div>
         );
     }
 
     if (error || !profile) {
         return (
-            <div className="min-h-screen bg-slate-50 p-6 flex items-center justify-center">
-                <p className="text-lg text-red-600">{error || 'Profile not found'}</p>
+            <div className="min-h-screen bg-[#020617] p-6 flex items-center justify-center">
+                <p className="text-lg text-red-400">{error || 'Profile not found'}</p>
             </div>
         );
     }
@@ -161,19 +161,19 @@ export default function ClerkProfilePage() {
     ];
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-6">
+        <div className="min-h-screen bg-[#020617] p-6">
             <div className="max-w-6xl mx-auto space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Profile</h1>
-                        <p className="text-slate-600 dark:text-slate-400 mt-1">
+                        <h1 className="text-3xl font-bold text-white">Profile</h1>
+                        <p className="text-slate-400 mt-1">
                             View and manage your profile information
                         </p>
                     </div>
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                         <DialogTrigger asChild className="cursor-pointer">
-                            <Button className="gap-2 bg-blue-500 hover:bg-blue-600">
+                            <Button className="gap-2 bg-emerald-600 hover:bg-emerald-500">
                                 <Edit className="w-4 h-4" />
                                 Edit Profile
                             </Button>
@@ -229,7 +229,7 @@ export default function ClerkProfilePage() {
                                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                                     Cancel
                                 </Button>
-                                <Button onClick={handleSaveChanges} className="bg-green-500 hover:bg-green-600">
+                                <Button onClick={handleSaveChanges} className="bg-emerald-600 hover:bg-emerald-500">
                                     Save Changes
                                 </Button>
                             </DialogFooter>
@@ -238,7 +238,7 @@ export default function ClerkProfilePage() {
                 </div>
 
                 {/* Profile Hero Card */}
-                <Card className="bg-linear-to-br from-blue-500 to-blue-700 text-white border-none">
+                <Card className="bg-linear-to-br from-emerald-600 to-emerald-800 text-white border-none">
                     <CardContent className="pt-6">
                         <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                             <div className="w-32 h-32 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/30">
@@ -280,7 +280,7 @@ export default function ClerkProfilePage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Shield className="w-5 h-5 text-blue-600" />
+                                <Shield className="w-5 h-5 text-emerald-400" />
                                 Service Details
                             </CardTitle>
                             <CardDescription>Your military service information</CardDescription>
@@ -293,8 +293,8 @@ export default function ClerkProfilePage() {
                                         <div key={index} className="flex items-start gap-3">
                                             <Icon className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
                                             <div>
-                                                <p className="text-sm text-slate-500 dark:text-slate-400">{detail.label}</p>
-                                                <p className="font-semibold text-slate-900 dark:text-white">{detail.value}</p>
+                                                <p className="text-sm text-slate-400">{detail.label}</p>
+                                                <p className="font-semibold text-white">{detail.value}</p>
                                             </div>
                                         </div>
                                     );
@@ -307,7 +307,7 @@ export default function ClerkProfilePage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <User className="w-5 h-5 text-blue-600" />
+                                <User className="w-5 h-5 text-emerald-400" />
                                 Personal Details
                             </CardTitle>
                             <CardDescription>Your contact and personal information</CardDescription>
@@ -320,8 +320,8 @@ export default function ClerkProfilePage() {
                                         <div key={index} className="flex items-start gap-3">
                                             <Icon className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
                                             <div>
-                                                <p className="text-sm text-slate-500 dark:text-slate-400">{detail.label}</p>
-                                                <p className="font-semibold text-slate-900 dark:text-white">{detail.value}</p>
+                                                <p className="text-sm text-slate-400">{detail.label}</p>
+                                                <p className="font-semibold text-white">{detail.value}</p>
                                             </div>
                                         </div>
                                     );
@@ -335,7 +335,7 @@ export default function ClerkProfilePage() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Shield className="w-5 h-5 text-red-600" />
+                            <Shield className="w-5 h-5 text-red-400" />
                             Emergency Information
                         </CardTitle>
                         <CardDescription>Emergency contact details</CardDescription>
@@ -344,8 +344,8 @@ export default function ClerkProfilePage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {emergencyInfo.map((info, index) => (
                                 <div key={index} className="space-y-2">
-                                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{info.label}</p>
-                                    <p className="text-slate-600 dark:text-slate-300">{info.value}</p>
+                                    <p className="text-sm font-semibold text-white">{info.label}</p>
+                                    <p className="text-slate-400">{info.value}</p>
                                 </div>
                             ))}
                         </div>

@@ -33,6 +33,9 @@ model User {
   bmi                  Float?
   medicalCategory      String?
   
+  // Approval field — new soldiers must be approved by adjutant before login
+  approved             Boolean  @default(false)
+  
   // Clerk-specific fields
   clerkServiceNo       String?   @unique
   clerkRank            String?

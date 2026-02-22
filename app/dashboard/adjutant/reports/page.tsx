@@ -325,15 +325,15 @@ export default function AdjutantReportsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6">
+    <div className="min-h-screen bg-[#020617] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <FileText className="h-8 w-8 text-blue-600" />
+          <h1 className="text-3xl font-bold flex items-center gap-2 text-white">
+            <FileText className="h-8 w-8 text-emerald-400" />
             Reports
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-slate-400 mt-1">
             Reports sent by clerks — download as PDF
           </p>
         </div>
@@ -358,7 +358,7 @@ export default function AdjutantReportsPage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle className="flex items-center gap-2 text-lg">
-                            <UserPlus className="h-5 w-5 text-blue-600" />
+                            <UserPlus className="h-5 w-5 text-emerald-400" />
                             {report.title}
                           </CardTitle>
                           <CardDescription className="flex items-center gap-2 mt-1">
@@ -368,7 +368,7 @@ export default function AdjutantReportsPage() {
                             {new Date(report.createdAt).toLocaleString()}
                           </CardDescription>
                         </div>
-                        <Badge className="bg-blue-100 text-blue-800">
+                        <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                           {report.content.length} new soldier{report.content.length !== 1 ? "s" : ""}
                         </Badge>
                       </div>
@@ -377,7 +377,7 @@ export default function AdjutantReportsPage() {
                       <Button
                         onClick={() => handleDownload(report.id, report.title)}
                         disabled={downloading === report.id}
-                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+                        className="w-full sm:w-auto bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white"
                       >
                         <Download className="h-4 w-4 mr-2" />
                         {downloading === report.id ? "Downloading..." : "Download PDF"}
@@ -391,47 +391,47 @@ export default function AdjutantReportsPage() {
 
           {/* Alerts - Right Side */}
           <div>
-            <Card className="border-amber-200 dark:border-amber-800 sticky top-20">
+            <Card className="border-amber-500/30 sticky top-20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  <AlertTriangle className="h-5 w-5 text-amber-400" />
                   Notifications
                 </CardTitle>
                 <CardDescription>Notifications requiring attention</CardDescription>
               </CardHeader>
               <CardContent>
                 {alertsLoading ? (
-                  <p className="text-sm text-muted-foreground">Checking alerts...</p>
+                  <p className="text-sm text-slate-400">Checking alerts...</p>
                 ) : (
                   <div className="space-y-3">
                     {alerts.filter((a) => !acknowledgedAlerts.has(a.id)).length === 0 ? (
-                      <div className="flex items-center gap-3 p-3 rounded-lg border bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800">
-                        <ShieldAlert className="w-5 h-5 text-green-500 shrink-0" />
-                        <p className="text-sm text-slate-700 dark:text-slate-300">All alerts acknowledged</p>
+                      <div className="flex items-center gap-3 p-3 rounded-xl border bg-emerald-500/10 border-emerald-500/20">
+                        <ShieldAlert className="w-5 h-5 text-emerald-400 shrink-0" />
+                        <p className="text-sm text-slate-300">All alerts acknowledged</p>
                       </div>
                     ) : (
                       alerts.filter((a) => !acknowledgedAlerts.has(a.id)).map((alert) => {
                         const bgColor =
                           alert.severity === "red"
-                            ? "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800"
+                            ? "bg-red-500/10 border-red-500/20"
                             : alert.severity === "yellow"
-                            ? "bg-yellow-50 border-yellow-200 dark:bg-yellow-950 dark:border-yellow-800"
-                            : "bg-blue-50 border-blue-200 dark:bg-blue-950 dark:border-blue-800";
+                            ? "bg-yellow-500/10 border-yellow-500/20"
+                            : "bg-blue-500/10 border-blue-500/20";
                         return (
-                          <div key={alert.id} className={`rounded-lg border ${bgColor}`}>
+                          <div key={alert.id} className={`rounded-xl border ${bgColor}`}>
                             {/* Alert message */}
                             <div className="flex items-center gap-3 p-3">
                               {alert.icon}
-                              <p className="text-sm text-slate-700 dark:text-slate-300 flex-1">{alert.message}</p>
+                              <p className="text-sm text-slate-300 flex-1">{alert.message}</p>
                             </div>
 
                             {/* Expanded list */}
                             {expandedAlerts.has(alert.id) && alert.details.length > 0 && (
                               <div className="px-3 pb-2">
-                                <div className="bg-white dark:bg-slate-900 rounded-md border p-2 space-y-1 max-h-40 overflow-y-auto">
+                                <div className="bg-white/[0.05] rounded-lg border border-white/[0.08] p-2 space-y-1 max-h-40 overflow-y-auto">
                                   {alert.details.map((item, i) => (
-                                    <p key={i} className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
+                                    <p key={i} className="text-xs text-slate-400 flex items-center gap-2">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-slate-500 shrink-0" />
                                       {item}
                                     </p>
                                   ))}
@@ -444,7 +444,7 @@ export default function AdjutantReportsPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 px-2 text-xs text-green-600 hover:text-green-700 hover:bg-green-50"
+                                className="h-7 px-2 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
                                 onClick={() => handleAcknowledge(alert.id)}
                               >
                                 <Check className="w-3 h-3 mr-1" />
@@ -454,7 +454,7 @@ export default function AdjutantReportsPage() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 px-2 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                  className="h-7 px-2 text-xs text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
                                   onClick={() => handleToggleList(alert.id)}
                                 >
                                   <List className="w-3 h-3 mr-1" />
@@ -465,7 +465,7 @@ export default function AdjutantReportsPage() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="h-7 px-2 text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                                  className="h-7 px-2 text-xs text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
                                   onClick={() => handleAlertDownload(alert)}
                                 >
                                   <Download className="w-3 h-3 mr-1" />
