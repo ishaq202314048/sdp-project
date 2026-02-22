@@ -38,9 +38,9 @@ export default function ProfilePage() {
     
     // Mock data - replace with actual data from your backend
     const [soldierProfile, setSoldierProfile] = useState({
-        name: "Lt. John Doe",
+        name: "Sgt John Doe",
         serviceNo: "BD-12345",
-        rank: "Lieutenant",
+        rank: "Sergeant",
         unit: "3rd Infantry Battalion",
         age: 28,
         dateOfBirth: "1997-05-15",

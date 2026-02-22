@@ -3,13 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-    Activity,
-    Trophy,
-    Calendar,
-    CheckCircle,
-    Dumbbell,
-} from "lucide-react";
+import { useState } from "react";
+import { Dumbbell } from "lucide-react";
 
 export default function FitnessPage() {
     const fitnessTests = [
@@ -21,35 +16,43 @@ export default function FitnessPage() {
         { name: "Swimming", score: "3:45 min", status: "Pass", date: "2025-12-05" },
     ];
 
+    // IPFT date state and picker
+    const [ipftDate, setIpftDate] = useState<string>("2026-02-15");
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+    const getDaysRemaining = (dateStr: string) => {
+        const target = new Date(dateStr);
+        const now = new Date();
+        // reset time to midnight for rough day diff
+        const t = Date.UTC(target.getFullYear(), target.getMonth(), target.getDate());
+        const n = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+        const diff = Math.ceil((t - n) / (1000 * 60 * 60 * 24));
+        return diff > 0 ? diff : 0;
+    };
+
+    const daysRemaining = getDaysRemaining(ipftDate);
+
     const overviewCards = [
         {
             title: "Fitness Status",
             value: "Fit",
             subtitle: "Active",
-            icon: Activity,
-            iconColor: "text-green-600",
             badgeColor: "bg-green-500"
         },
         {
             title: "Overall Score",
             value: "87%",
-            subtitle: "Above Average",
-            icon: Trophy,
-            iconColor: "text-yellow-600"
+            subtitle: "Above Average"
         },
         {
             title: "Tests Passed",
             value: "6/6",
-            subtitle: "Last Month",
-            icon: CheckCircle,
-            iconColor: "text-blue-600"
+            subtitle: "Last Month"
         },
         {
             title: "Next IPFT",
-            value: "41",
-            subtitle: "Days Remaining",
-            icon: Calendar,
-            iconColor: "text-purple-600"
+            value: `${daysRemaining}`,
+            subtitle: ipftDate
         }
     ];
 
@@ -103,7 +106,43 @@ export default function FitnessPage() {
 
                 <div className="space-y-4">
                     {overviewCards.map((card, index) => {
-                        const Icon = card.icon;
+                        if (card.title === "Next IPFT") {
+                            return (
+                                <Card key={index}>
+                                    <CardHeader className="pb-3">
+                                        <CardTitle className="text-sm font-medium text-gray-600">{card.title}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <div className="text-2xl font-bold">{card.value}</div>
+                                                <p className="text-sm text-gray-500 mt-2">{card.subtitle}</p>
+                                            </div>
+                                            <div className="relative">
+                                                <button
+                                                    className="text-sm text-blue-600 underline"
+                                                    onClick={() => setShowDatePicker((v) => !v)}
+                                                >
+                                                    Edit
+                                                </button>
+                                                {showDatePicker && (
+                                                    <div className="absolute right-0 mt-2 bg-white p-2 rounded shadow z-10">
+                                                        <input
+                                                            type="date"
+                                                            value={ipftDate}
+                                                            onChange={(e) => setIpftDate(e.target.value)}
+                                                            className="border px-2 py-1 rounded"
+                                                        />
+                                                        <div className="text-xs text-gray-500 mt-1">Select IPFT date</div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            );
+                        }
+
                         return (
                             <Card key={index}>
                                 <CardHeader className="pb-3">
@@ -119,12 +158,30 @@ export default function FitnessPage() {
                                                 <p className="text-sm text-gray-500 mt-2">{card.subtitle}</p>
                                             )}
                                         </div>
-                                        <Icon className={`h-8 w-8 ${card.iconColor}`} />
                                     </div>
                                 </CardContent>
                             </Card>
                         );
                     })}
+
+                    {/* Upcoming tests list with IPFT highlighted */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Upcoming Tests</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                                {upcomingTests.map((t) => (
+                                    <div key={t.name} className="flex items-center justify-between">
+                                        <div className="text-sm text-gray-700">{t.name}</div>
+                                        <div className={`text-sm ${t.name === 'IPFT' ? 'text-red-600 font-semibold' : 'text-gray-600'}`}>
+                                            {t.name === 'IPFT' ? ipftDate : t.date}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>
