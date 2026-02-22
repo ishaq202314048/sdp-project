@@ -32,7 +32,7 @@ export default function SoldierLayout({
     return (
         <div className="min-h-screen flex flex-col bg-[#020617]">
 
-            <header className="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-white/[0.03] backdrop-blur-2xl">
+            <header className="sticky top-0 z-50 w-full border-b border-white/8 bg-white/3 backdrop-blur-2xl">
                 <div className="container flex h-16 items-center justify-between px-4">
 
                     <div className="flex items-center gap-2">
