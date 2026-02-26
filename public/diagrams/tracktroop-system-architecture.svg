@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" role="img"
+    aria-label="TROOP TRACK - System Architecture">
+    <defs>
+        <style>
+            .title {
+                font: 700 26px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+                fill: #ffffff;
+                letter-spacing: 0.5px
+            }
+
+            .layerTitle {
+                font: 800 18px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+                fill: #ffffff;
+                letter-spacing: 0.4px
+            }
+
+            .boxTitle {
+                font: 800 16px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+                fill: #0b1220
+            }
+
+            .boxText {
+                font: 500 13px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+                fill: #0b1220
+            }
+
+            .pill {
+                font: 800 12px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+                fill: #0b1220
+            }
+
+            .small {
+                font: 600 12px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+                fill: #0b1220
+            }
+
+            .bg {
+                fill: #0b1220
+            }
+
+            .header {
+                fill: #0f766e
+            }
+
+            .layerStroke {
+                stroke: #0f766e;
+                stroke-width: 3;
+                fill: none
+            }
+
+            .layerFill {
+                fill: #0b1220
+            }
+
+            .role1 {
+                fill: #dbeafe;
+                stroke: #93c5fd;
+                stroke-width: 2
+            }
+
+            .role2 {
+                fill: #fef9c3;
+                stroke: #fde047;
+                stroke-width: 2
+            }
+
+            .role3 {
+                fill: #dcfce7;
+                stroke: #86efac;
+                stroke-width: 2
+            }
+
+            .tech {
+                fill: #e9d5ff;
+                stroke: #c4b5fd;
+                stroke-width: 2
+            }
+
+            .side {
+                fill: #ffffff;
+                opacity: 0.08;
+                stroke: #ffffff;
+                stroke-opacity: 0.12;
+                stroke-width: 2
+            }
+
+            .dataBox {
+                fill: #fed7aa;
+                stroke: #fdba74;
+                stroke-width: 2
+            }
+
+            .db {
+                fill: #ffffff;
+                opacity: 0.08;
+                stroke: #ffffff;
+                stroke-opacity: 0.12;
+                stroke-width: 2
+            }
+
+            .external {
+                fill: #c7d2fe;
+                stroke: #a5b4fc;
+                stroke-width: 2
+            }
+
+            .arrow {
+                stroke: #94a3b8;
+                stroke-width: 3;
+                fill: none;
+                marker-end: url(#arrowHead)
+            }
+
+            .dash {
+                stroke: #94a3b8;
+                stroke-width: 3;
+                fill: none;
+                stroke-dasharray: 7 7;
+                marker-end: url(#arrowHead)
+            }
+
+            .connectorLabel {
+                font: 800 12px system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+                fill: #0b1220
+            }
+        </style>
+
+        <marker id="arrowHead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8"
+            orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8" />
+        </marker>
+
+        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.35" />
+        </filter>
+    </defs>
+
+    <!-- Background -->
+    <rect class="bg" x="0" y="0" width="1400" height="900" />
+
+    <!-- Header -->
+    <rect class="header" x="0" y="0" width="1400" height="70" />
+    <text class="title" x="700" y="45" text-anchor="middle">TROOP TRACK - SYSTEM ARCHITECTURE</text>
+
+    <!-- ===== Client Layer ===== -->
+    <g filter="url(#softShadow)">
+        <rect class="layerFill" x="70" y="95" width="1260" height="200" rx="18" />
+        <rect class="layerStroke" x="70" y="95" width="1260" height="200" rx="18" />
+    </g>
+    <rect class="header" x="520" y="85" width="360" height="30" rx="8" />
+    <text class="layerTitle" x="700" y="106" text-anchor="middle">CLIENT LAYER (Users)</text>
+
+    <!-- Roles -->
+    <g filter="url(#softShadow)">
+        <rect class="role1" x="140" y="140" width="340" height="130" rx="16" />
+        <rect class="role2" x="530" y="140" width="340" height="130" rx="16" />
+        <rect class="role3" x="920" y="140" width="340" height="130" rx="16" />
+    </g>
+
+    <text class="boxTitle" x="310" y="168" text-anchor="middle">Adjutant (Admin)</text>
+    <text class="boxText" x="165" y="192">• Manage Soldiers</text>
+    <text class="boxText" x="165" y="212">• Approve/Reject Signups</text>
+    <text class="boxText" x="165" y="232">• Create Weekly Fitness Plans</text>
+    <text class="boxText" x="165" y="252">• Set IPFT Date / View Reports</text>
+
+    <text class="boxTitle" x="700" y="168" text-anchor="middle">Clerk (Support)</text>
+    <text class="boxText" x="555" y="192">• Record Fitness Test Scores</text>
+    <text class="boxText" x="555" y="212">• Justify Test Results</text>
+    <text class="boxText" x="555" y="232">• Send Reports to Adjutant</text>
+    <text class="boxText" x="555" y="252">• View Soldier Records</text>
+
+    <text class="boxTitle" x="1090" y="168" text-anchor="middle">Soldier (End User)</text>
+    <text class="boxText" x="945" y="192">• View Fitness Status</text>
+    <text class="boxText" x="945" y="212">• View Assigned Plans</text>
+    <text class="boxText" x="945" y="232">• View Test Results</text>
+    <text class="boxText" x="945" y="252">• Update Profile</text>
+
+    <!-- HTTP/HTTPS pill -->
+    <g filter="url(#softShadow)">
+        <rect x="650" y="303" width="100" height="26" rx="13" fill="#fef3c7" stroke="#fde68a" stroke-width="2" />
+    </g>
+    <text class="pill" x="700" y="321" text-anchor="middle">HTTP/HTTPS</text>
+
+    <!-- Arrow Client -> Presentation -->
+    <path class="arrow" d="M 700 330 L 700 355" />
+
+    <!-- ===== Presentation Layer ===== -->
+    <g filter="url(#softShadow)">
+        <rect class="layerFill" x="70" y="360" width="1260" height="160" rx="18" />
+        <rect class="layerStroke" x="70" y="360" width="1260" height="160" rx="18" />
+    </g>
+    <rect class="header" x="510" y="350" width="380" height="30" rx="8" />
+    <text class="layerTitle" x="700" y="371" text-anchor="middle">PRESENTATION LAYER (Frontend)</text>
+
+    <!-- Left tech box -->
+    <g filter="url(#softShadow)">
+        <rect class="side" x="140" y="405" width="420" height="95" rx="14" />
+        <rect class="side" x="840" y="405" width="420" height="95" rx="14" />
+        <rect class="tech" x="600" y="420" width="200" height="60" rx="14" />
+    </g>
+
+    <text class="small" x="165" y="432">• Next.js App Router</text>
+    <text class="small" x="165" y="452">• React 19 Components</text>
+    <text class="small" x="165" y="472">• Tailwind CSS (Dark + Emerald)</text>
+
+    <text class="boxTitle" x="700" y="455" text-anchor="middle">Next.js + React</text>
+
+    <text class="small" x="865" y="432">• Radix UI (Select/Dialog/etc.)</text>
+    <text class="small" x="865" y="452">• Recharts (Charts)</text>
+    <text class="small" x="865" y="472">• PDF-Lib (Export)</text>
+
+    <!-- REST API pill -->
+    <g filter="url(#softShadow)">
+        <rect x="665" y="528" width="70" height="26" rx="13" fill="#fef3c7" stroke="#fde68a" stroke-width="2" />
+    </g>
+    <text class="pill" x="700" y="546" text-anchor="middle">REST API</text>
+
+    <!-- Arrow Presentation -> Application -->
+    <path class="arrow" d="M 700 555 L 700 580" />
+
+    <!-- ===== Application Layer ===== -->
+    <g filter="url(#softShadow)">
+        <rect class="layerFill" x="70" y="585" width="1260" height="170" rx="18" />
+        <rect class="layerStroke" x="70" y="585" width="1260" height="170" rx="18" />
+    </g>
+    <rect class="header" x="505" y="575" width="390" height="30" rx="8" />
+    <text class="layerTitle" x="700" y="596" text-anchor="middle">APPLICATION LAYER (Backend)</text>
+
+    <g filter="url(#softShadow)">
+        <rect class="side" x="140" y="630" width="420" height="105" rx="14" />
+        <rect class="side" x="840" y="630" width="420" height="105" rx="14" />
+        <rect class="tech" x="600" y="647" width="200" height="70" rx="14" />
+    </g>
+
+    <text class="small" x="165" y="655">• Next.js API Routes (route.ts)</text>
+    <text class="small" x="165" y="675">• JWT Auth (jsonwebtoken)</text>
+    <text class="small" x="165" y="695">• Password Hashing (bcryptjs)</text>
+    <text class="small" x="165" y="715">• Validation + Error Handling</text>
+
+    <text class="boxTitle" x="700" y="681" text-anchor="middle">Next.js API</text>
+    <text class="boxText" x="700" y="703" text-anchor="middle">(REST endpoints)</text>
+
+    <text class="small" x="865" y="655">• /api/soldiers, /approve</text>
+    <text class="small" x="865" y="675">• /api/fitness, /plans, /assign</text>
+    <text class="small" x="865" y="695">• /api/profile, /reports</text>
+    <text class="small" x="865" y="715">• /api/high-risk-soldiers</text>
+
+    <!-- SQLite Cloud SDK pill -->
+    <g filter="url(#softShadow)">
+        <rect x="620" y="762" width="160" height="26" rx="13" fill="#dbeafe" stroke="#93c5fd" stroke-width="2" />
+    </g>
+    <text class="pill" x="700" y="780" text-anchor="middle">SQLite Cloud SDK</text>
+
+    <!-- Arrow Application -> Data Layer -->
+    <path class="arrow" d="M 700 788 L 700 810" />
+
+    <!-- ===== Data + External Services Layer ===== -->
+    <g filter="url(#softShadow)">
+        <rect class="layerFill" x="70" y="815" width="820" height="70" rx="18" />
+        <rect class="layerStroke" x="70" y="815" width="820" height="70" rx="18" />
+    </g>
+    <g filter="url(#softShadow)">
+        <rect class="layerFill" x="910" y="815" width="420" height="70" rx="18" />
+        <rect class="layerStroke" x="910" y="815" width="420" height="70" rx="18" />
+    </g>
+
+    <rect class="header" x="310" y="805" width="340" height="30" rx="8" />
+    <text class="layerTitle" x="480" y="826" text-anchor="middle">DATA LAYER (Database)</text>
+
+    <rect class="header" x="980" y="805" width="280" height="30" rx="8" />
+    <text class="layerTitle" x="1120" y="826" text-anchor="middle">EXTERNAL SERVICES</text>
+
+    <!-- Data layer contents -->
+    <g filter="url(#softShadow)">
+        <rect class="dataBox" x="110" y="840" width="250" height="35" rx="12" />
+        <rect class="db" x="380" y="840" width="180" height="35" rx="12" />
+        <rect class="dataBox" x="580" y="840" width="270" height="35" rx="12" />
+
+        <rect class="external" x="950" y="840" width="340" height="35" rx="12" />
+    </g>
+
+    <text class="pill" x="235" y="862" text-anchor="middle">Tables: User, Plans, Tests, Reports…</text>
+    <text class="small" x="470" y="862" text-anchor="middle" fill="#ffffff">SQLite Cloud DB</text>
+    <text class="pill" x="715" y="862" text-anchor="middle">Prisma Schema + Migrations</text>
+
+    <text class="pill" x="1120" y="862" text-anchor="middle">@sqlitecloud/drivers + Hosting</text>
+
+</svg>

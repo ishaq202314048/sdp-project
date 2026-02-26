@@ -1,0 +1,150 @@
+// Prisma schema for SQLite database
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                   String   @id @default(uuid())
+  email                String   @unique
+  password             String
+  fullName             String
+  userType             String
+  // Common fields
+  serviceNo            String?   @unique
+  rank                 String?
+  unit                 String?
+  phone                String?
+  address              String?
+  emergencyContactName String?
+  emergencyContact     String?
+  fitnessStatus        String?
+  
+  // Soldier-specific fields
+  dateOfBirth          DateTime?
+  dateOfJoining        DateTime?
+  bloodGroup           String?
+  height               Int?      // in cm
+  weight               Int?      // in kg
+  bmi                  Float?
+  medicalCategory      String?
+  
+  // Approval field — new soldiers must be approved by adjutant before login
+  approved             Boolean  @default(false)
+  
+  // Clerk-specific fields
+  clerkServiceNo       String?   @unique
+  clerkRank            String?
+  clerkUnit            String?
+  clerkRole            String?
+  clerkDateOfJoining   DateTime?
+  clerkPhone           String?
+  clerkAddress         String?
+  clerkEmergencyContactName String?
+  clerkEmergencyContact String?
+  
+  // Adjutant-specific fields
+  adjutantServiceNo    String?   @unique
+  adjutantRank         String?
+  adjutantUnit         String?
+  adjutantDateOfJoining DateTime?
+  adjutantPhone        String?
+  adjutantAddress      String?
+  adjutantEmergencyContactName String?
+  adjutantEmergencyContact String?
+  
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model FitnessPlan {
+  id         String   @id @default(uuid())
+  title      String
+  status     String   // 'Fit' or 'Unfit'
+  exercises  String   // JSON stringified array of exercise objects { name, duration, focus }
+  createdBy  String
+  createdAt  DateTime @default(now())
+
+  @@index([status])
+}
+
+model AssignedPlan {
+  id         String   @id @default(uuid())
+  userId     String
+  planId     String
+  assignedBy String?
+  assignedAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([planId])
+}
+
+model LoginSession {
+  id        String   @id @default(uuid())
+  userId    String
+  email     String
+  userType  String
+  ipAddress String?
+  userAgent String?
+  loginAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([email])
+  @@index([loginAt])
+}
+
+model FitnessTest {
+  id              String   @id @default(uuid())
+  soldierUserId   String   // Soldier's user ID
+  exerciseName    String
+  duration        String?
+  result          String   // Pass/Fail
+  score           Int?
+  justifiedBy     String?  // Clerk's user ID who justified it
+  justifiedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([soldierUserId])
+  @@index([justifiedBy])
+  @@index([createdAt])
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  title       String
+  type        String   // 'new-soldiers', 'fitness-summary', etc.
+  content     String   // JSON stringified report data
+  sentBy      String   // Clerk user ID who sent
+  sentByName  String   // Clerk's name
+  sentTo      String   // 'adjutant'
+  status      String   @default("sent") // 'sent', 'read'
+  createdAt   DateTime @default(now())
+
+  @@index([sentBy])
+  @@index([sentTo])
+  @@index([createdAt])
+}
+
+model IpftDate {
+  id        String   @id @default(uuid())
+  date      DateTime
+  setBy     String   // Adjutant user ID
+  createdAt DateTime @default(now())
+}
+
+model AcknowledgedAlert {
+  id              String   @id @default(uuid())
+  alertId         String   // The alert identifier (e.g., "unfit-soldiers", "clerk-report-123")
+  acknowledgedBy  String   // User ID who acknowledged
+  acknowledgedAt  DateTime @default(now())
+
+  @@unique([alertId, acknowledgedBy])
+  @@index([acknowledgedBy])
+  @@index([alertId])
+}
+

@@ -1,0 +1,7 @@
+-- CreateTable
+CREATE TABLE "IpftDate" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "date" DATETIME NOT NULL,
+    "setBy" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

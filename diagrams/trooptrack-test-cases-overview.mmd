@@ -1,0 +1,34 @@
+---
+title: TROOP TRACK - TEST CASES (EXCLUDING LOGIN)
+---
+flowchart TB
+
+subgraph TC[TEST CASES]
+  direction TB
+  TC1["TC-001 Approve/Reject Soldier\nAdjutant → /api/soldiers/approve"]
+  TC2["TC-002 Create Weekly Plan\nAdjutant → /api/fitness/plans"]
+  TC3["TC-003 Clerk Sends Report\nClerk → /api/reports/clerk-report"]
+  TC4["TC-004 Update Profile + BMI\nSoldier → /api/profile"]
+  TC5["TC-005 View High-Risk Soldiers\nAdjutant/Clerk → /api/high-risk-soldiers"]
+end
+
+subgraph LAYERS[DATA-CENTERED CONTEXT]
+  direction TB
+  FE[Presentation: Next.js UI]
+  API[Application: Next.js API Routes]
+  DB[Data: SQLite Cloud]
+end
+
+TC1 --> FE --> API --> DB
+TC2 --> FE
+TC3 --> FE
+TC4 --> FE
+TC5 --> FE
+
+classDef layer fill:#0f172a,stroke:#10b981,color:#e2e8f0,stroke-width:2px;
+classDef box fill:#111827,stroke:#334155,color:#e5e7eb;
+classDef tc fill:#052e1f,stroke:#10b981,color:#e2e8f0;
+
+class LAYERS layer;
+class FE,API,DB box;
+class TC,TC1,TC2,TC3,TC4,TC5 tc;

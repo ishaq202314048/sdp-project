@@ -1,0 +1,33 @@
+%% TroopTrack - DFD Level 0 (Context Diagram)
+%% Goal: one process, external entities, and a single central data store.
+flowchart LR
+  %% External entities
+  Soldier["External Entity<br/>Soldier"]
+  Clerk["External Entity<br/>Clerk"]
+  Adjutant["External Entity<br/>Adjutant"]
+
+  %% System
+  P0(("P0<br/>TroopTrack System"))
+
+  %% Data store
+  D0[("D0<br/>Operational Database<br/>Users, LoginSessions, FitnessPlans<br/>AssignedPlans, FitnessTests, Reports, IpftDates")]
+
+  %% Flows
+  Soldier -- "Credentials, Fitness Data" --> P0
+  Clerk -- "Soldier Records, Plans" --> P0
+  Adjutant -- "Approvals, Reports" --> P0
+
+  P0 -- "Auth Result, Plan Assignments, Status" --> Soldier
+  P0 -- "Lists, Status, Reports" --> Clerk
+  P0 -- "Dashboards, Reports" --> Adjutant
+
+  P0 <--> D0
+
+  %% Styling
+  classDef ext fill:#ffffff,stroke:#6b7280,stroke-width:1px,color:#111827;
+  classDef proc fill:#eef2ff,stroke:#3730a3,stroke-width:1.5px,color:#111827;
+  classDef store fill:#ecfeff,stroke:#0e7490,stroke-width:1.5px,color:#111827;
+
+  class Soldier,Clerk,Adjutant ext;
+  class P0 proc;
+  class D0 store;

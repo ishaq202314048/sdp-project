@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TroopTrack — Data-Centered Architecture</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #0b1220;
+      --panel: #0f172a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #243244;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0));
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 650;
+      letter-spacing: 0.2px;
+    }
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    main {
+      padding: 20px 24px 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      overflow: auto;
+    }
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+    .caption {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    code {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 6px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TroopTrack — Data-Centered Architecture</h1>
+    <p>
+      This page embeds the generated diagram so you can see the image and the description together.
+      Source: <code>diagrams/trooptrack-data-centered-architecture.mmd</code>
+    </p>
+  </header>
+
+  <main>
+    <div class="card">
+      <!-- Use PNG by default for maximum compatibility when opening the file directly -->
+      <img
+        src="./trooptrack-data-centered-architecture.png"
+        alt="TroopTrack data-centered architecture diagram"
+      />
+
+      <div class="caption">
+        <strong>How to read:</strong> The central repository is the SQLite/SQLiteCloud database. Around it are independent modules
+        (Auth, Soldier, Clerk, Adjutant, Fitness/Plans, Reports, High-Risk, Batch scripts, and file exports) that communicate by
+        reading and writing through that shared data store.
+
+        <div style="margin-top: 8px;">
+          Prefer a crisp, zoomable version? Open:
+          <a href="./trooptrack-data-centered-architecture.svg" style="color:#93c5fd;">trooptrack-data-centered-architecture.svg</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+---
+title: TROOP TRACK - DATA FLOW ARCHITECTURE (DFD)
+---
+
+%% Simple DFD-style view: external entities -> processes -> central data store
+flowchart LR
+
+%% =========================================================
+%% Styling
+%% =========================================================
+classDef entity fill:#d7f7df,stroke:#22c55e,stroke-width:1.5px,color:#052e16;
+classDef process fill:#cfe6ff,stroke:#3b82f6,stroke-width:1.5px,color:#0b1f33;
+classDef store fill:#f6d78b,stroke:#c08b00,stroke-width:2px,color:#111827;
+classDef ext fill:#ffe4e6,stroke:#fb7185,stroke-width:1.5px,color:#4c0519;
+classDef note fill:#f3f4f6,stroke:#6b7280,stroke-dasharray: 4 3,color:#111827;
+
+%% =========================================================
+%% External Entities (Actors)
+%% =========================================================
+Soldier[Soldier]:::entity
+Clerk[Clerk]:::entity
+Adjutant[Adjutant]:::entity
+
+UI[Next.js UI<br/>Dashboards + Forms]:::process
+
+Soldier -->|HTTP/HTTPS| UI
+Clerk -->|HTTP/HTTPS| UI
+Adjutant -->|HTTP/HTTPS| UI
+
+%% =========================================================
+%% Processes (merge route groups to keep it readable)
+%% =========================================================
+P1[Auth<br/>Login + Signup]:::process
+P2[Soldier & Profile Mgmt<br/>Profile read/update<br/>Soldiers list/approve/delete]:::process
+P3[Fitness Plans & Assignments<br/>Create plans + assign plans<br/>Fetch exercises]:::process
+P4[Fitness Tests & IPFT<br/>Create/justify tests<br/>IPFT date + results]:::process
+P5[Reports & Analytics<br/>Reports + PDF<br/>Charts + trends<br/>High-risk list]:::process
+
+UI -->|REST| P1
+UI -->|REST| P2
+UI -->|REST| P3
+UI -->|REST| P4
+UI -->|REST| P5
+
+%% =========================================================
+%% Data Store (collapsed)
+%% =========================================================
+DB[(SQLite / SQLiteCloud<br/>DATABASE_URL<br/><br/>Tables:<br/>User, LoginSession,<br/>FitnessPlan, AssignedPlan,<br/>FitnessTest, Report, IpftDate)]:::store
+
+%% =========================================================
+%% Data flows (read/write) between processes and the store
+%% =========================================================
+
+P1 <--> |read/write| DB
+P2 <--> |read/write| DB
+P3 <--> |read/write| DB
+P4 <--> |read/write| DB
+P5 <--> |read/write| DB
+
+%% =========================================================
+%% Notes
+%% =========================================================
+JWTNote["Notes:<br/>• Auth uses JWT (lib/jwt.ts) + bcrypt (lib/auth.ts)<br/>• DB access uses @sqlitecloud/drivers (lib/sqlitecloud-client.ts)"]:::note
+JWTNote --- P1

@@ -1,0 +1,53 @@
+---
+title: TROOP TRACK - SYSTEM ARCHITECTURE
+---
+flowchart TB
+
+%% LAYERS
+subgraph CLIENT[CLIENT LAYER (Users)]
+  direction LR
+  A["Adjutant\n(Admin)\n\n• Manage Soldiers\n• Approve/Reject Signups\n• Create Weekly Plans\n• Set IPFT Date\n• View Reports"]
+  C["Clerk\n(Support)\n\n• Record Test Scores\n• Justify Fitness Tests\n• Send Reports\n• View Soldier Records"]
+  S["Soldier\n(End User)\n\n• View Fitness Status\n• View Assigned Plans\n• View Test Results\n• Update Profile"]
+end
+
+subgraph UI[PRESENTATION LAYER (Frontend)]
+  direction TB
+  FE["Next.js (App Router) + React + TypeScript\n\n• Tailwind CSS (Dark + Emerald)\n• Radix UI\n• Recharts\n• PDF-Lib\n• LocalStorage JWT"]
+end
+
+subgraph API[APPLICATION LAYER (Backend)]
+  direction TB
+  BE["Next.js API Routes (REST)\n\n• JWT (jsonwebtoken)\n• Hashing (bcryptjs)\n• Validation + Error Handling\n• Fitness/BMI Computation\n• Singleton DB Client"]
+  ROUTES["Core Routes\n\n• /api/soldiers, /approve\n• /api/fitness, /plans, /assign\n• /api/profile\n• /api/reports\n• /api/high-risk-soldiers\n• /api/soldier-fitness-tests"]
+end
+
+subgraph DATA[DATA LAYER (Database)]
+  direction TB
+  DB["SQLite Cloud (Prisma Schema)\n\nTables:\n• User\n• FitnessPlan\n• AssignedPlan\n• FitnessTest\n• Report\n• LoginSession\n• IpftDate"]
+end
+
+subgraph EXT[EXTERNAL SERVICES]
+  direction TB
+  SQLC["SQLite Cloud Hosting\n(@sqlitecloud/drivers)"]
+  FUT["Future Integrations\n• Email\n• Push Notifications\n• File Storage\n• SMS Alerts"]
+end
+
+%% CONNECTIONS
+A -->|HTTP/HTTPS| FE
+C -->|HTTP/HTTPS| FE
+S -->|HTTP/HTTPS| FE
+
+FE -->|REST API| BE
+BE -->|calls| ROUTES
+BE -->|SQLite Cloud SDK| DB
+DB --- SQLC
+
+%% SIMPLE STYLING (keeps things readable when rendered)
+classDef layer fill:#0f172a,stroke:#10b981,color:#e2e8f0,stroke-width:2px;
+classDef box fill:#111827,stroke:#334155,color:#e5e7eb;
+classDef ext fill:#0b3b2e,stroke:#10b981,color:#e2e8f0;
+
+class CLIENT,UI,API,DATA layer;
+class A,C,S,FE,BE,ROUTES,DB box;
+class EXT,SQLC,FUT ext;

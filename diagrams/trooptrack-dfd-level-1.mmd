@@ -1,0 +1,95 @@
+%% TroopTrack - DFD Level 1 (Organized, reference-style layout)
+%% Standard style: top = client apps, middle = API server services, right = database stores.
+flowchart TB
+
+  %% Client apps (acts like the green/blue regions in your reference)
+  subgraph CLIENTS["Client Apps"]
+    direction LR
+    Soldier["Soldier App"]
+    Clerk["Clerk App"]
+    Adjutant["Adjutant App"]
+  end
+
+  %% API Server (acts like the pink region in your reference)
+  subgraph API["API Server"]
+    direction LR
+    P1(("P1<br/>Authentication"))
+    P2(("P2<br/>Soldier Service"))
+    P3(("P3<br/>Plan Service"))
+    P4(("P4<br/>Fitness Test Service"))
+    P5(("P5<br/>Report Service"))
+  end
+
+  %% Database (right side like the cylinder in reference)
+  subgraph DATA["Database"]
+    direction TB
+    D1[("Users")]
+    D2[("LoginSessions")]
+    D3[("FitnessPlans")]
+    D4[("AssignedPlans")]
+    D5[("FitnessTests")]
+    D7[("IpftDates")]
+    D6[("Reports")]
+  end
+
+  %% Client -> API flows
+  Soldier -- "Login" --> P1
+  Clerk -- "Login" --> P1
+  Adjutant -- "Login" --> P1
+
+  Clerk -- "Manage Soldiers" --> P2
+  Adjutant -- "Approve Soldiers" --> P2
+
+  Clerk -- "Create / Assign Plans" --> P3
+  Soldier -- "View Assigned Plans" --> P3
+
+  Soldier -- "Submit Test" --> P4
+  Clerk -- "Enter Test" --> P4
+
+  Clerk -- "Request Reports" --> P5
+  Adjutant -- "Request Reports" --> P5
+
+  %% API -> Client responses
+  P1 -- "JWT" --> Soldier
+  P1 -- "JWT" --> Clerk
+  P1 -- "JWT" --> Adjutant
+
+  P2 -- "Soldier List / Status" --> Clerk
+  P2 -- "Approval Status" --> Adjutant
+
+  P3 -- "Plans / Assignments" --> Soldier
+  P3 -- "Plan List" --> Clerk
+
+  P4 -- "Test History" --> Soldier
+  P4 -- "Test History" --> Clerk
+
+  P5 -- "Report Output" --> Clerk
+  P5 -- "Report Output" --> Adjutant
+
+  %% API <-> Database flows (clean, minimal labels to reduce clutter)
+  P1 <--> D1
+  P1 --> D2
+
+  P2 <--> D1
+
+  P3 <--> D3
+  P3 <--> D4
+
+  P4 <--> D5
+  P4 <--> D7
+
+  P5 <--> D6
+  P5 --> D1
+  P5 --> D3
+  P5 --> D4
+  P5 --> D5
+
+  %% Styling
+  classDef client fill:#d1fae5,stroke:#065f46,stroke-width:1px,color:#111827;
+  classDef api fill:#ffe4e6,stroke:#9f1239,stroke-width:1.2px,color:#111827;
+  classDef store fill:#fef3c7,stroke:#92400e,stroke-width:1.2px,color:#111827;
+  classDef box fill:#ffffff,stroke:#6b7280,stroke-width:1px,color:#111827;
+
+  class Soldier,Clerk,Adjutant client;
+  class P1,P2,P3,P4,P5 api;
+  class D1,D2,D3,D4,D5,D6,D7 store;

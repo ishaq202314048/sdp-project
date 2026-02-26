@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TrackTroop — Title Slide</title>
+  <style>
+    :root {
+      --bg1: #0b1020;
+      --bg2: #0c1b33;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.14);
+      --text: #eaf0ff;
+      --muted: rgba(234,240,255,.72);
+      --accent: #7cc4ff;
+    }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: radial-gradient(1200px 700px at 20% 20%, #143a70 0%, transparent 60%),
+                  radial-gradient(900px 600px at 85% 25%, #2a0f52 0%, transparent 55%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
+      display: grid;
+      place-items: center;
+    }
+    .frame {
+      width: min(1100px, 92vw);
+      height: min(620px, 78vh);
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      box-shadow: 0 30px 80px rgba(0,0,0,.45);
+      border-radius: 18px;
+      padding: 48px 54px;
+      position: relative;
+      overflow: hidden;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--stroke);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: .3px;
+      backdrop-filter: blur(8px);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 25px rgba(124,196,255,.7); }
+    h1 {
+      margin: 18px 0 10px;
+      font-size: 56px;
+      line-height: 1.02;
+      letter-spacing: -1px;
+    }
+    .subtitle {
+      margin: 0 0 22px;
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 72ch;
+    }
+    .grid {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 22px;
+    }
+    .card {
+      border: 1px solid var(--stroke);
+      border-radius: 14px;
+      padding: 18px 18px;
+      background: rgba(0,0,0,.18);
+    }
+    .card h3 { margin: 0 0 10px; font-size: 16px; color: var(--text); }
+    .list { margin: 0; padding-left: 18px; color: var(--muted); }
+    .list li { margin: 6px 0; }
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .meta b { color: var(--text); font-weight: 600; }
+    .footer {
+      position: absolute;
+      left: 54px;
+      right: 54px;
+      bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(234,240,255,.55);
+      font-size: 13px;
+      letter-spacing: .2px;
+    }
+    .hint { color: rgba(234,240,255,.55); }
+    @media (max-width: 860px) {
+      h1 { font-size: 42px; }
+      .grid { grid-template-columns: 1fr; }
+      .frame { padding: 28px; height: auto; }
+      .footer { left: 28px; right: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="frame">
+    <div class="badge"><span class="dot"></span> Software Development Project — Live Demo</div>
+
+    <h1>TrackTroop</h1>
+    <p class="subtitle">
+      A role‑based troop fitness tracking web app to manage soldiers, record fitness tests (IPFT), assign training plans, and generate analytics & reports.
+    </p>
+
+    <section class="grid">
+      <div class="card">
+        <h3>Core modules</h3>
+        <ul class="list">
+          <li>Authentication & role routing (Soldier / Clerk / Adjutant)</li>
+          <li>Soldier onboarding & approval workflow</li>
+          <li>Fitness tests + fitness status calculation</li>
+          <li>Fitness plans assignment + progress dashboards</li>
+          <li>Reports, analytics charts, and PDF exports</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Presenter</h3>
+        <div class="meta">
+          <div><b>Name:</b> <span class="hint">(your name)</span></div>
+          <div><b>ID:</b> <span class="hint">(your student id)</span></div>
+          <div><b>Course / Section:</b> <span class="hint">(optional)</span></div>
+          <div><b>Date:</b> February 24, 2026</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <span>Tech: Next.js • TypeScript • SQLiteCloud • JWT</span>
+      <span>Tip: show this slide for 5 seconds at the start.</span>
+    </div>
+  </main>
+</body>
+</html>

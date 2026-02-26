@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TroopTrack — Data Flow Diagram (DFD)</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #0b1220;
+      --panel: #0f172a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #243244;
+      --link: #93c5fd;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0));
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 650;
+      letter-spacing: 0.2px;
+    }
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    main {
+      padding: 20px 24px 28px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      overflow: auto;
+    }
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+    .caption {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    a { color: var(--link); }
+    code {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 6px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TroopTrack — Data Flow Diagram (DFD)</h1>
+    <p>
+      Source: <code>diagrams/trooptrack-data-flow-architecture.mmd</code>
+    </p>
+  </header>
+
+  <main>
+    <div class="card">
+      <img
+        src="./trooptrack-data-flow-architecture.png"
+        alt="TroopTrack data flow diagram (DFD)"
+      />
+
+      <div class="caption">
+        <strong>How to read:</strong> Actors (Soldier / Clerk / Adjutant) interact with the Next.js UI, which calls 5 simplified backend
+        processes (Auth, Soldier/Profile, Plans, Tests/IPFT, Reports/Analytics). Each process reads/writes the same central SQLiteCloud
+        database tables (User, LoginSession, FitnessPlan, AssignedPlan, FitnessTest, Report, IpftDate).
+        <div style="margin-top: 8px;">
+          Prefer a crisp, zoomable version? Open:
+          <a href="./trooptrack-data-flow-architecture.svg">trooptrack-data-flow-architecture.svg</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

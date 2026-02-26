@@ -1,0 +1,76 @@
+%% Data Centered Architecture — TroopTrack (TrackTroop)
+%% Styled to match the provided reference diagram: central repository + surrounding independent modules.
+%% (Generated from current repo structure: Next.js route handlers + SQLiteCloud access)
+
+flowchart TB
+
+%% =========================================================
+%%                     Styles (reference-like)
+%% =========================================================
+classDef central fill:#f6d78b,stroke:#c08b00,stroke-width:2px,color:#111827;
+classDef blue fill:#cfe6ff,stroke:#3b82f6,stroke-width:1.5px,color:#0b1f33;
+classDef green fill:#d7f7df,stroke:#22c55e,stroke-width:1.5px,color:#052e16;
+classDef purple fill:#e9dbff,stroke:#8b5cf6,stroke-width:1.5px,color:#2e1065;
+classDef red fill:#ffe4e6,stroke:#fb7185,stroke-width:1.5px,color:#4c0519;
+classDef yellow fill:#fff7d6,stroke:#f59e0b,stroke-width:1.5px,color:#422006;
+classDef gray fill:#f3f4f6,stroke:#6b7280,stroke-width:1.5px,color:#111827;
+
+%% =========================================================
+%%                     Central Data Store
+%% =========================================================
+DB[(Central Data Store<br/>SQLite / SQLiteCloud Database<br/>DATABASE_URL)]:::central
+
+DBT["Core Tables<br/><br/>• User (soldier/clerk/adjutant + approval)<br/>• LoginSession<br/>• FitnessPlan<br/>• AssignedPlan<br/>• FitnessTest<br/>• Report<br/>• IpftDate"]:::central
+
+DB --- DBT
+
+%% =========================================================
+%%                     Surrounding Modules
+%% =========================================================
+
+SoldierModule["Soldier Module<br/><br/>• View fitness status<br/>• View assigned plan & exercises<br/>• View IPFT schedule/results<br/>• Profile/BMI view"]:::green
+
+ClerkModule["Clerk Module<br/><br/>• Record fitness tests<br/>• Justify results<br/>• Assign plans<br/>• Send reports to adjutant<br/>• View analytics"]:::blue
+
+AdjutantModule["Adjutant Module<br/><br/>• Approve soldiers<br/>• Set IPFT date<br/>• View reports<br/>• View high-risk soldiers<br/>• Dashboard analytics"]:::blue
+
+AuthModule["Authentication Module<br/><br/>• Login<br/>• Signup<br/>• JWT token issue/verify<br/>• Password hashing (bcryptjs)<br/>• Session logging"]:::purple
+
+FitnessModule["Fitness & Plans Module<br/>(Next.js APIs)<br/><br/>• Manage FitnessPlan<br/>• AssignedPlan<br/>• Status calculation<br/>• Charts/trends"]:::green
+
+ReportsModule["Reports Module<br/><br/>• New-soldiers reports<br/>• Clerk reports<br/>• Read/mark reports"]:::purple
+
+HighRiskModule["High-Risk Soldiers Module<br/><br/>• Identify 'Unfit' soldiers<br/>• Provide risk listing output"]:::red
+
+BatchModule["Batch/Admin Scripts<br/><br/>• setup-cloud-db.mjs<br/>• add-sample-plan.mjs<br/>• import-soldiers-to-db.js<br/>• export-db-json.js<br/>• inspect-*.js<br/>• migrate-users-to-prisma.js"]:::gray
+
+FileExports["File Exports / Seeds<br/><br/>• /exports/*.json<br/>• /data/users.json<br/>• /data/fitness-status.json<br/>• /data/users.db (legacy)"]:::yellow
+
+%% =========================================================
+%%                     Data-centric connections
+%% =========================================================
+
+SoldierModule <--> |read| DB
+ClerkModule <--> |read/write| DB
+AdjutantModule <--> |read/write| DB
+
+AuthModule <--> |read/write User + LoginSession| DB
+FitnessModule <--> |read/write plans + tests + assignments| DB
+ReportsModule <--> |read/write Report| DB
+HighRiskModule <--> |read User fitnessStatus| DB
+
+BatchModule <--> |read/write| DB
+BatchModule <--> |read/write| FileExports
+
+%% =========================================================
+%%                         Legend
+%% =========================================================
+subgraph LEGEND[Legend]
+  direction LR
+  L1[Central Data Store]:::central
+  L2[Software Module]:::blue
+  L3[User-facing Module]:::green
+  L4[External/Derived Module]:::red
+  L5[Batch/Script]:::gray
+  L6[Files/Exports]:::yellow
+end

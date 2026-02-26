@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TROOP TRACK - Test Case Scenarios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1a365d;
+            font-size: 28px;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 15px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .overview {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .overview h2 {
+            color: #166534;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        /* Test Case Matrix Table */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            font-size: 13px;
+        }
+        
+        .matrix-table th {
+            background: #1e40af;
+            color: white;
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .matrix-table td {
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .matrix-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        .matrix-table tr:hover {
+            background: #f0f9ff;
+        }
+        
+        .priority-high {
+            background: #fef2f2;
+            color: #dc2626;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .priority-medium {
+            background: #fefce8;
+            color: #ca8a04;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        /* Test Case Box */
+        .test-case {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+        
+        .test-case-header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 15px 20px;
+        }
+        
+        .test-case-header table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .test-case-header td {
+            padding: 5px 0;
+            font-size: 13px;
+        }
+        
+        .test-case-header .label {
+            font-weight: 600;
+            width: 140px;
+            color: #bfdbfe;
+        }
+        
+        .test-case-header .value {
+            color: white;
+        }
+        
+        .test-case-body {
+            padding: 20px;
+        }
+        
+        .section {
+            margin-bottom: 20px;
+        }
+        
+        .section h4 {
+            color: #1e40af;
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #dbeafe;
+        }
+        
+        .section ul {
+            margin-left: 20px;
+        }
+        
+        .section li {
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+        
+        .section p {
+            font-size: 13px;
+            color: #4b5563;
+        }
+        
+        .steps-list {
+            counter-reset: step-counter;
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .steps-list li {
+            counter-increment: step-counter;
+            padding: 8px 10px 8px 40px;
+            position: relative;
+            background: #f9fafb;
+            margin-bottom: 5px;
+            border-radius: 6px;
+            border-left: 3px solid #10b981;
+        }
+        
+        .steps-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #10b981;
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .expected-result {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .expected-result ul {
+            margin-left: 20px;
+        }
+        
+        .expected-result li {
+            color: #166534;
+        }
+        
+        .validation-box {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .validation-box h5 {
+            color: #dc2626;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .validation-box p {
+            color: #7f1d1d;
+            font-size: 12px;
+        }
+        
+        .test-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .test-data-table td {
+            padding: 8px 10px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-data-table td:first-child {
+            background: #f3f4f6;
+            font-weight: 600;
+            width: 150px;
+        }
+        
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+        }
+        
+        .checklist {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+        
+        .checklist h3 {
+            color: #92400e;
+            margin-bottom: 15px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #fde68a;
+        }
+        
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d97706;
+            border-radius: 4px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            .test-case {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎖️ TROOP TRACK</h1>
+        <p class="subtitle">Test Case Scenarios (Excluding Login) — Soldier's Fitness Assessment & Monitoring System</p>
+        
+        <div class="overview">
+            <h2>📋 Overview</h2>
+            <p>This document contains <strong>5 test case scenarios</strong> for TrackTroop, focusing on core system features excluding the login system. Each test case follows a structured format: <strong>Preconditions → Steps → Expected Result</strong>.</p>
+        </div>
+        
+        <!-- Test Case Matrix -->
+        <h2 style="color: #1e40af; margin-bottom: 15px; font-size: 18px;">📊 Test Case Matrix</h2>
+        <table class="matrix-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Feature</th>
+                    <th>Module / Role</th>
+                    <th>Priority</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>TC-001</strong></td>
+                    <td>Approve/Reject Soldier Account</td>
+                    <td>Adjutant → Soldiers</td>
+                    <td><span class="priority-high">High</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TC-002</strong></td>
+                    <td>Create Weekly Fitness Plan (Fit/Unfit)</td>
+                    <td>Adjutant → Plans</td>
+                    <td><span class="priority-high">High</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TC-003</strong></td>
+                    <td>Clerk Sends Report to Adjutant</td>
+                    <td>Clerk → Reports</td>
+                    <td><span class="priority-medium">Medium</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TC-004</strong></td>
+                    <td>Update Profile + BMI Auto-Calculation</td>
+                    <td>Soldier → Profile</td>
+                    <td><span class="priority-medium">Medium</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TC-005</strong></td>
+                    <td>View High-Risk Soldiers (Unfit List)</td>
+                    <td>Adjutant/Clerk → Monitoring</td>
+                    <td><span class="priority-high">High</span></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- TC-001 -->
+        <div class="test-case">
+            <div class="test-case-header">
+                <table>
+                    <tr><td class="label">TEST CASE ID</td><td class="value">TC-001</td></tr>
+                    <tr><td class="label">TITLE</td><td class="value">Approve a pending soldier account</td></tr>
+                    <tr><td class="label">MODULE</td><td class="value">Soldier Management (Adjutant Dashboard)</td></tr>
+                    <tr><td class="label">API ENDPOINT</td><td class="value">POST /api/soldiers/approve</td></tr>
+                    <tr><td class="label">PRIORITY</td><td class="value">High</td></tr>
+                </table>
+            </div>
+            <div class="test-case-body">
+                <div class="section">
+                    <h4>📌 Preconditions</h4>
+                    <ul>
+                        <li>Adjutant is authenticated and can access the Adjutant Dashboard.</li>
+                        <li>At least one soldier exists in the database with <code>approved = false</code>.</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h4>📝 Test Data</h4>
+                    <table class="test-data-table">
+                        <tr><td>soldierId</td><td><code>&lt;pending-soldier-uuid&gt;</code></td></tr>
+                        <tr><td>action</td><td><code>"approve"</code></td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h4>🔢 Steps</h4>
+                    <ol class="steps-list">
+                        <li>Go to <strong>Adjutant Dashboard → Soldiers</strong> page.</li>
+                        <li>In <strong>New Soldier Requests</strong>, select a pending soldier.</li>
+                        <li>Click <strong>Approve</strong>.</li>
+                    </ol>
+                </div>
+                
+                <div class="section">
+                    <h4>✅ Expected Result</h4>
+                    <div class="expected-result">
+                        <ul>
+                            <li>API returns <strong>200 OK</strong> with success message.</li>
+                            <li>The pending soldier disappears from the pending list.</li>
+                            <li>Soldier appears in the approved soldiers list.</li>
+                            <li>Database: <code>User.approved</code> changes from <code>false</code> → <code>true</code>.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="validation-box">
+                    <h5>⚠️ Alternate (Reject)</h5>
+                    <p>Use <code>action = "reject"</code>. Expected: Soldier is removed from pending list AND deleted from database.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TC-002 -->
+        <div class="test-case">
+            <div class="test-case-header">
+                <table>
+                    <tr><td class="label">TEST CASE ID</td><td class="value">TC-002</td></tr>
+                    <tr><td class="label">TITLE</td><td class="value">Create a weekly fitness plan for Fit soldiers</td></tr>
+                    <tr><td class="label">MODULE</td><td class="value">Fitness Plan Management (Adjutant Dashboard)</td></tr>
+                    <tr><td class="label">API ENDPOINT</td><td class="value">POST /api/fitness/plans</td></tr>
+                    <tr><td class="label">PRIORITY</td><td class="value">High</td></tr>
+                </table>
+            </div>
+            <div class="test-case-body">
+                <div class="section">
+                    <h4>📌 Preconditions</h4>
+                    <ul>
+                        <li>Adjutant can access the plan creation UI.</li>
+                        <li>Database is reachable (SQLite Cloud configured).</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h4>📝 Test Data</h4>
+                    <table class="test-data-table">
+                        <tr><td>title</td><td><code>"Weekly Fit Training Program"</code></td></tr>
+                        <tr><td>status</td><td><code>"Fit"</code></td></tr>
+                        <tr><td>createdBy</td><td><code>&lt;adjutant-user-id&gt;</code></td></tr>
+                        <tr><td>exercises</td><td><code>[{ day: "Sunday", exercises: [{ name:"Push-ups", duration:"30 min", focus:"Strength" }] }]</code></td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h4>🔢 Steps</h4>
+                    <ol class="steps-list">
+                        <li>Go to Adjutant Dashboard → <strong>Create Weekly Plan</strong>.</li>
+                        <li>Select <strong>Fit Soldiers</strong>.</li>
+                        <li>Enter a plan title.</li>
+                        <li>Add at least one exercise to at least one day.</li>
+                        <li>Click <strong>Create Fit Weekly Plan</strong>.</li>
+                    </ol>
+                </div>
+                
+                <div class="section">
+                    <h4>✅ Expected Result</h4>
+                    <div class="expected-result">
+                        <ul>
+                            <li>API returns <strong>200 OK</strong> with created plan data.</li>
+                            <li>Database: a new row is added to <code>FitnessPlan</code>.</li>
+                            <li><code>FitnessPlan.exercises</code> is stored as JSON string.</li>
+                            <li>The plan is visible when calling: <code>GET /api/fitness/plans?status=Fit</code></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="validation-box">
+                    <h5>⚠️ Validation (Negative Test)</h5>
+                    <p>Leave <code>title</code> empty and submit. Expected: API returns <strong>400</strong> with <code>missing fields</code>.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TC-003 -->
+        <div class="test-case">
+            <div class="test-case-header">
+                <table>
+                    <tr><td class="label">TEST CASE ID</td><td class="value">TC-003</td></tr>
+                    <tr><td class="label">TITLE</td><td class="value">Clerk sends a report/message to Adjutant</td></tr>
+                    <tr><td class="label">MODULE</td><td class="value">Reports (Clerk Dashboard → Adjutant Dashboard)</td></tr>
+                    <tr><td class="label">API ENDPOINT</td><td class="value">POST /api/reports/clerk-report</td></tr>
+                    <tr><td class="label">PRIORITY</td><td class="value">Medium</td></tr>
+                </table>
+            </div>
+            <div class="test-case-body">
+                <div class="section">
+                    <h4>📌 Preconditions</h4>
+                    <ul>
+                        <li>Clerk is authenticated and can access the Reports UI.</li>
+                        <li>Adjutant can access the reports/alerts UI.</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h4>📝 Test Data</h4>
+                    <table class="test-data-table">
+                        <tr><td>title</td><td><code>"Monthly Fitness Summary - Feb 2026"</code></td></tr>
+                        <tr><td>message</td><td><code>"5 out of 7 soldiers passed..."</code></td></tr>
+                        <tr><td>sentBy</td><td><code>&lt;clerk-user-id&gt;</code></td></tr>
+                        <tr><td>sentByName</td><td><code>"Clerk Ahmad"</code></td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h4>🔢 Steps</h4>
+                    <ol class="steps-list">
+                        <li>Go to Clerk Dashboard → <strong>Reports</strong>.</li>
+                        <li>Fill in Title and Message.</li>
+                        <li>(Optional) Attach a file (if supported by UI).</li>
+                        <li>Click <strong>Send Report</strong>.</li>
+                    </ol>
+                </div>
+                
+                <div class="section">
+                    <h4>✅ Expected Result</h4>
+                    <div class="expected-result">
+                        <ul>
+                            <li>API returns <strong>201 Created</strong>.</li>
+                            <li>Database: new row in <code>Report</code> table with:
+                                <ul>
+                                    <li><code>type = "clerk-report"</code></li>
+                                    <li><code>sentTo = "adjutant"</code></li>
+                                    <li><code>status = "sent"</code></li>
+                                </ul>
+                            </li>
+                            <li>Adjutant sees the report via: <code>GET /api/reports/clerk-report</code></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="validation-box">
+                    <h5>⚠️ Validation (Negative Test)</h5>
+                    <p>Missing title OR missing message. Expected: API returns <strong>400</strong> with required field error.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TC-004 -->
+        <div class="test-case">
+            <div class="test-case-header">
+                <table>
+                    <tr><td class="label">TEST CASE ID</td><td class="value">TC-004</td></tr>
+                    <tr><td class="label">TITLE</td><td class="value">Update height/weight and auto-calculate BMI</td></tr>
+                    <tr><td class="label">MODULE</td><td class="value">Profile (Soldier Dashboard)</td></tr>
+                    <tr><td class="label">API ENDPOINT</td><td class="value">PATCH /api/profile?userId=&lt;id&gt;</td></tr>
+                    <tr><td class="label">PRIORITY</td><td class="value">Medium</td></tr>
+                </table>
+            </div>
+            <div class="test-case-body">
+                <div class="section">
+                    <h4>📌 Preconditions</h4>
+                    <ul>
+                        <li>Soldier exists in database.</li>
+                        <li>Soldier profile page can load user data.</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h4>📝 Test Data</h4>
+                    <table class="test-data-table">
+                        <tr><td>userId</td><td><code>&lt;soldier-user-id&gt;</code></td></tr>
+                        <tr><td>Update body</td><td><code>{ "height": 175, "weight": 80 }</code></td></tr>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h4>🔢 Steps</h4>
+                    <ol class="steps-list">
+                        <li>Go to Soldier Dashboard → <strong>Profile</strong>.</li>
+                        <li>Change <strong>Height</strong> to 175.</li>
+                        <li>Change <strong>Weight</strong> to 80.</li>
+                        <li>Click <strong>Save / Update Profile</strong>.</li>
+                    </ol>
+                </div>
+                
+                <div class="section">
+                    <h4>✅ Expected Result</h4>
+                    <div class="expected-result">
+                        <ul>
+                            <li>API returns <strong>200 OK</strong> with updated profile.</li>
+                            <li>Database fields updated: <code>height = 175</code>, <code>weight = 80</code></li>
+                            <li><code>bmi</code> auto-calculated: BMI = 80 / (1.75)² = <strong>26.1</strong></li>
+                            <li>UI shows BMI category consistent with BMI chart.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="validation-box">
+                    <h5>⚠️ Validation (Negative Test)</h5>
+                    <p>Send fields not in allowed list. Expected: API ignores disallowed fields or returns <code>No valid fields to update</code>.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TC-005 -->
+        <div class="test-case">
+            <div class="test-case-header">
+                <table>
+                    <tr><td class="label">TEST CASE ID</td><td class="value">TC-005</td></tr>
+                    <tr><td class="label">TITLE</td><td class="value">Fetch & display all Unfit soldiers as high-risk list</td></tr>
+                    <tr><td class="label">MODULE</td><td class="value">High-Risk Monitoring (Clerk/Adjutant Dashboard)</td></tr>
+                    <tr><td class="label">API ENDPOINT</td><td class="value">GET /api/high-risk-soldiers</td></tr>
+                    <tr><td class="label">PRIORITY</td><td class="value">High</td></tr>
+                </table>
+            </div>
+            <div class="test-case-body">
+                <div class="section">
+                    <h4>📌 Preconditions</h4>
+                    <ul>
+                        <li>Database contains at least one soldier with <code>fitnessStatus = "Unfit"</code>.</li>
+                    </ul>
+                </div>
+                
+                <div class="section">
+                    <h4>🔢 Steps</h4>
+                    <ol class="steps-list">
+                        <li>Open Adjutant or Clerk Dashboard → <strong>High-Risk Soldiers</strong> section.</li>
+                        <li>System calls <code>GET /api/high-risk-soldiers</code>.</li>
+                        <li>Verify list entries and counts.</li>
+                    </ol>
+                </div>
+                
+                <div class="section">
+                    <h4>✅ Expected Result</h4>
+                    <div class="expected-result">
+                        <ul>
+                            <li>API returns <strong>200 OK</strong>.</li>
+                            <li>Response includes:
+                                <ul>
+                                    <li><code>highRiskSoldiers: [...]</code></li>
+                                    <li><code>totalRiskCount: &lt;number&gt;</code></li>
+                                </ul>
+                            </li>
+                            <li>Every soldier in <code>highRiskSoldiers</code> has <code>fitnessStatus = "Unfit"</code>.</li>
+                            <li>Soldiers are sorted by name.</li>
+                            <li>UI shows correct total and renders each soldier with a risk label.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="validation-box">
+                    <h5>⚠️ Edge Case</h5>
+                    <p>If no unfit soldiers exist: <code>highRiskSoldiers: []</code>, <code>totalRiskCount: 0</code>. UI shows an empty-state message.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Checklist -->
+        <div class="checklist">
+            <h3>✅ Completion Checklist</h3>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>TC-001 — Approve/Reject Soldier Account — Executed and verified</span>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>TC-002 — Create Weekly Fitness Plan — Executed and verified</span>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>TC-003 — Clerk Sends Report — Executed and verified</span>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>TC-004 — Update Profile + BMI Auto-Calculation — Executed and verified</span>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <span>TC-005 — View High-Risk Soldiers — Executed and verified</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>TROOP TRACK</strong> — Soldier's Fitness Assessment & Monitoring System</p>
+            <p>Document generated: February 25, 2026 | Project: SDP-Project</p>
+        </div>
+    </div>
+</body>
+</html>
