@@ -151,6 +151,7 @@ function PlanForm() {
 		});
 	const [submitting, setSubmitting] = useState(false);
 	const [message, setMessage] = useState<string | null>(null);
+	const [messageType, setMessageType] = useState<"success" | "error">("error");
 
 		const updateExerciseForDay = (day: string, idx: number, field: keyof (typeof exercisesByDay)[string][number], value: string) => {
 			setExercisesByDay((prev) => {
@@ -172,6 +173,7 @@ function PlanForm() {
 
 	const submit = async () => {
 		if (!title.trim()) {
+			setMessageType("error");
 			setMessage("Please provide a title");
 			return;
 		}
@@ -179,6 +181,7 @@ function PlanForm() {
 		const exercisesPayload = days.map((d) => ({ day: d, items: exercisesByDay[d].filter((it) => it.name.trim() !== "") }));
 		const hasAny = exercisesPayload.some((p) => p.items.length > 0);
 		if (!hasAny) {
+			setMessageType("error");
 			setMessage("Add at least one exercise to the plan");
 			return;
 		}
@@ -202,7 +205,8 @@ function PlanForm() {
 			const json = await res.json();
 			console.log('Create plan response:', json, 'status', res.status);
 			if (json?.ok) {
-				setMessage(`Plan created${json.plan?.id ? ` (id: ${json.plan.id})` : ''}`);
+				setMessageType("success");
+				setMessage("Plan created");
 				setTitle('');
 				// reset per-day exercises to single empty row each
 				setExercisesByDay(() => {
@@ -213,9 +217,11 @@ function PlanForm() {
 			} else {
 				// show error payload if present for easier debugging
 				console.error('Failed to create plan', json);
+				setMessageType("error");
 				setMessage(json?.error || `Failed to create plan (status ${res.status})`);
 			}
 		} catch (err) {
+			setMessageType("error");
 			setMessage(String(err));
 		} finally {
 			setSubmitting(false);
@@ -364,7 +370,15 @@ function PlanForm() {
 			</div>
 
 			{/* Messages */}
-			{message && <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 p-3 rounded-xl">{message}</div>}
+			{message && (
+				<div className={`text-sm p-3 rounded-xl ${
+					messageType === "success"
+						? "text-green-300 bg-green-500/10 border border-green-500/20"
+						: "text-red-300 bg-red-500/10 border border-red-500/20"
+				}`}>
+					{message}
+				</div>
+			)}
 
 			{/* Submit Button */}
 			<div>

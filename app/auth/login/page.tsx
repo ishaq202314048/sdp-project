@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Logo from "@/components/Logo";
-import { Shield } from "lucide-react";
+import { Shield, Eye, EyeOff } from "lucide-react";
 
 const particles = [
     { left: "8%", top: "12%", delay: "0s", dur: "3s" },
@@ -114,6 +114,7 @@ function LoginContent() {
     const [userType, setUserType] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");    const [isLoading, setIsLoading] = useState(false);
     const pendingApproval = searchParams.get("pending") === "true";
 
@@ -164,7 +165,7 @@ function LoginContent() {
             {/* Brand bar */}
             <div className="absolute top-6 left-6 z-10 flex items-center gap-3">
                 <div className="p-2 rounded-xl bg-white/[0.06] backdrop-blur-xl border border-white/[0.08] shadow-lg shadow-black/20">
-                    <Logo size={28} />
+                    <Logo size={72} />
                 </div>
                 <div className="flex flex-col">
                     <span className="font-black text-sm tracking-[0.2em] text-transparent bg-clip-text bg-linear-to-r from-emerald-300 to-green-200">
@@ -281,7 +282,7 @@ function LoginContent() {
                             <div className="relative group">
                                 <div className="absolute -inset-3 rounded-full bg-emerald-500/20 blur-xl group-hover:bg-emerald-500/30 transition-all duration-500" />
                                 <div className="relative p-4 rounded-2xl bg-linear-to-br from-white/10 to-white/5 border border-white/10 shadow-lg shadow-emerald-500/10 backdrop-blur-sm">
-                                    <Logo size={48} />
+                                    <Logo size={72} />
                                 </div>
                             </div>
                             <div className="space-y-1">
@@ -326,16 +327,26 @@ function LoginContent() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password" className="text-xs font-semibold tracking-wide uppercase text-slate-400">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                disabled={isLoading}
-                                className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/10 focus:bg-white/[0.08] transition-all duration-300 pl-4"
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    disabled={isLoading}
+                                    className="h-12 rounded-xl bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-emerald-400/50 focus:ring-2 focus:ring-emerald-400/10 focus:bg-white/[0.08] transition-all duration-300 pl-4 pr-12"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-400 transition-colors duration-200"
+                                    tabIndex={-1}
+                                >
+                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="userType" className="text-xs font-semibold tracking-wide uppercase text-slate-400">Role</Label>
