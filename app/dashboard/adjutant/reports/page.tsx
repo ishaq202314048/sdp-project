@@ -345,6 +345,9 @@ export default function AdjutantReportsPage() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
+
+      // Remove the report from the list after download
+      setReports((prev) => prev.filter((r) => r.id !== reportId));
     } catch (err) {
       console.error("Failed to download PDF", err);
       alert("Failed to download PDF. Please try again.");
