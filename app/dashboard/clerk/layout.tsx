@@ -44,8 +44,8 @@ export default function ClerkLayout({
                         </div>
                     </div>
 
-                    <NavigationMenu className="flex">
-                        <NavigationMenuList className="flex-wrap">
+                    <NavigationMenu className="hidden md:flex">
+                        <NavigationMenuList>
                             {navitems.map((item) => (
                                 <NavigationMenuItem key={item.href}>
                                     <NavigationMenuLink asChild>
