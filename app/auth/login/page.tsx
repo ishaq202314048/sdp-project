@@ -168,7 +168,7 @@ function LoginContent() {
                     <Logo size={72} />
                 </div>
                 <div className="flex flex-col">
-                    <span className="font-black text-sm tracking-[0.2em] text-transparent bg-clip-text bg-linear-to-r from-emerald-300 to-green-200">
+                    <span className="font-black text-lg tracking-[0.2em] text-transparent bg-clip-text bg-linear-to-r from-emerald-300 to-green-200">
                         TROOP TRACK
                     </span>
                     <span className="text-[9px] tracking-[0.15em] text-slate-500 uppercase font-medium">Military Fitness System</span>
@@ -282,11 +282,11 @@ function LoginContent() {
                             <div className="relative group">
                                 <div className="absolute -inset-3 rounded-full bg-emerald-500/20 blur-xl group-hover:bg-emerald-500/30 transition-all duration-500" />
                                 <div className="relative p-4 rounded-2xl bg-linear-to-br from-white/10 to-white/5 border border-white/10 shadow-lg shadow-emerald-500/10 backdrop-blur-sm">
-                                    <Logo size={72} />
+                                    <Logo size={96} />
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <span className="text-2xl font-black tracking-[0.15em] text-transparent bg-clip-text bg-linear-to-r from-emerald-300 via-green-200 to-emerald-400">
+                                <span className="text-base font-black tracking-[0.15em] text-transparent bg-clip-text bg-linear-to-r from-emerald-300 via-green-200 to-emerald-400">
                                     TROOP TRACK
                                 </span>
                                 <div className="flex items-center justify-center gap-2">
