@@ -346,8 +346,11 @@ export default function AdjutantReportsPage() {
       a.remove();
       window.URL.revokeObjectURL(url);
 
-      // Remove the report from the list after download
+      // Remove the report from the list
       setReports((prev) => prev.filter((r) => r.id !== reportId));
+
+      // Delete the report from the database
+      await fetch(`/api/reports/new-soldiers?id=${reportId}`, { method: "DELETE" });
     } catch (err) {
       console.error("Failed to download PDF", err);
       alert("Failed to download PDF. Please try again.");

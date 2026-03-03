@@ -47,3 +47,22 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to fetch reports' }, { status: 500 });
   }
 }
+
+// DELETE — remove a report after adjutant downloads it
+export async function DELETE(request: NextRequest) {
+  try {
+    const db = getDb();
+    const { searchParams } = new URL(request.url);
+    const reportId = searchParams.get("id");
+
+    if (!reportId) {
+      return NextResponse.json({ error: 'Report ID is required' }, { status: 400 });
+    }
+
+    await db.sql`DELETE FROM Report WHERE id = ${reportId}`;
+    return NextResponse.json({ message: 'Report deleted' });
+  } catch (error) {
+    console.error('[DELETE /api/reports/new-soldiers]', error);
+    return NextResponse.json({ error: 'Failed to delete report' }, { status: 500 });
+  }
+}
