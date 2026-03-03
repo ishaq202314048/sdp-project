@@ -251,6 +251,13 @@ export default function AdjutantReportsPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ alertId, userId: currentUserId }),
         });
+
+        // If it's a clerk report, also delete it from the Report table
+        if (alertId.startsWith("clerk-report-")) {
+          const reportId = alertId.replace("clerk-report-", "");
+          await fetch(`/api/reports/new-soldiers?id=${reportId}`, { method: "DELETE" });
+        }
+
         // Dispatch event to notify navigation to refresh alert count
         window.dispatchEvent(new CustomEvent('alertsAcknowledged'));
       } catch (err) {
