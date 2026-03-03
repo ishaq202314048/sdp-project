@@ -80,8 +80,16 @@ export async function GET(request: NextRequest) {
       unackedAlerts.push("no-unfit-plan");
     }
 
-    // Note: Clerk reports are NOT counted for the red dot notification.
-    // The red dot only shows for fitness/health alerts (unfit soldiers, missing BMI, MEDCAT, IPFT, plans).
+    // Check for unacknowledged clerk reports
+    const clerkReports = await db.sql`SELECT id FROM Report WHERE sentTo = 'adjutant'`;
+    if (Array.isArray(clerkReports)) {
+      for (const report of clerkReports) {
+        if (!acknowledgedIds.has(`clerk-report-${report.id}`)) {
+          alertCount++;
+          unackedAlerts.push(`clerk-report-${report.id}`);
+        }
+      }
+    }
 
     console.log("[Unacknowledged Alerts Count]", { userId, count: alertCount, unackedAlerts, acknowledged: [...acknowledgedIds] });
 
