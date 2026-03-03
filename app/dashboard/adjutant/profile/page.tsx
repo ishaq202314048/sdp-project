@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 // Types
@@ -29,18 +29,10 @@ interface AdjudantProfile {
     adjutantEmergencyContact?: string;
 }
 
-interface UnitOverview {
-    totalSoldiers: number;
-    fitSoldiers: number;
-    unfitSoldiers: number;
-    passRate: number;
-}
-
 export default function AdjudantProfilePage() {
     const [profile, setProfile] = useState<AdjudantProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [unitOverview, setUnitOverview] = useState<UnitOverview | null>(null);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -53,10 +45,7 @@ export default function AdjudantProfilePage() {
                 }
 
                 const user = JSON.parse(userData);
-                const [profileRes, overviewRes] = await Promise.all([
-                    fetch(`/api/profile?userId=${user.id}`),
-                    fetch('/api/soldiers/unit-overview'),
-                ]);
+                const profileRes = await fetch(`/api/profile?userId=${user.id}`);
 
                 if (!profileRes.ok) {
                     throw new Error('Failed to fetch profile');
@@ -64,11 +53,6 @@ export default function AdjudantProfilePage() {
 
                 const data = await profileRes.json();
                 setProfile(data);
-
-                if (overviewRes.ok) {
-                    const overviewData = await overviewRes.json();
-                    setUnitOverview(overviewData);
-                }
             } catch (err) {
                 console.error('Error fetching profile:', err);
                 setError(err instanceof Error ? err.message : 'Failed to load profile');
@@ -199,38 +183,6 @@ export default function AdjudantProfilePage() {
                         </CardContent>
                     </Card>
                 </div>
-
-                {/* Unit Overview */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Unit Overview</CardTitle>
-                        <CardDescription>Key metrics for your assigned unit</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {unitOverview ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div className="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                                    <p className="text-sm text-slate-400 mb-2">Total Soldiers</p>
-                                    <p className="text-2xl font-bold text-blue-400">{unitOverview.totalSoldiers}</p>
-                                </div>
-                                <div className="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                                    <p className="text-sm text-slate-400 mb-2">Fit Soldiers</p>
-                                    <p className="text-2xl font-bold text-emerald-400">{unitOverview.fitSoldiers}</p>
-                                </div>
-                                <div className="p-4 bg-red-500/10 rounded-xl border border-red-500/20">
-                                    <p className="text-sm text-slate-400 mb-2">Unfit Soldiers</p>
-                                    <p className="text-2xl font-bold text-red-400">{unitOverview.unfitSoldiers}</p>
-                                </div>
-                                <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
-                                    <p className="text-sm text-slate-400 mb-2">Pass Rate</p>
-                                    <p className="text-2xl font-bold text-purple-400">{unitOverview.passRate.toFixed(1)}%</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <p className="text-slate-500">Loading unit overview...</p>
-                        )}
-                    </CardContent>
-                </Card>
             </div>
         </div>
     );
