@@ -36,6 +36,10 @@ export async function PATCH(request: NextRequest) {
         const allowedFields = [
             'phone', 'address', 'emergencyContactName', 'emergencyContact',
             'rank', 'unit', 'bloodGroup', 'height', 'weight', 'medicalCategory',
+            'clerkPhone', 'clerkAddress', 'clerkEmergencyContactName', 'clerkEmergencyContact',
+            'clerkServiceNo', 'clerkRank', 'clerkUnit', 'clerkRole', 'clerkDateOfJoining',
+            'adjutantPhone', 'adjutantAddress', 'adjutantEmergencyContactName', 'adjutantEmergencyContact',
+            'adjutantServiceNo', 'adjutantRank', 'adjutantUnit', 'adjutantDateOfJoining',
         ];
 
         const updates: string[] = [];

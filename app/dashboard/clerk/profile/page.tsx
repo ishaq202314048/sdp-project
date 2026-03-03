@@ -32,6 +32,16 @@ interface ClerkProfile {
     id: string;
     fullName: string;
     email: string;
+    // Common fields (may also be stored here)
+    serviceNo?: string;
+    rank?: string;
+    unit?: string;
+    phone?: string;
+    address?: string;
+    emergencyContactName?: string;
+    emergencyContact?: string;
+    dateOfJoining?: string;
+    // Clerk-specific prefixed fields
     clerkServiceNo?: string;
     clerkRank?: string;
     clerkUnit?: string;
@@ -76,10 +86,10 @@ export default function ClerkProfilePage() {
                 const data = await response.json();
                 setProfile(data);
                 setFormData({
-                    phone: data.clerkPhone || "",
-                    address: data.clerkAddress || "",
-                    emergencyContactName: data.clerkEmergencyContactName || "",
-                    emergencyContact: data.clerkEmergencyContact || "",
+                    phone: data.clerkPhone || data.phone || "",
+                    address: data.clerkAddress || data.address || "",
+                    emergencyContactName: data.clerkEmergencyContactName || data.emergencyContactName || "",
+                    emergencyContact: data.clerkEmergencyContact || data.emergencyContact || "",
                 });
             } catch (err) {
                 console.error('Error fetching profile:', err);
@@ -107,10 +117,10 @@ export default function ClerkProfilePage() {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    phone: formData.phone,
-                    address: formData.address,
-                    emergencyContactName: formData.emergencyContactName,
-                    emergencyContact: formData.emergencyContact,
+                    clerkPhone: formData.phone,
+                    clerkAddress: formData.address,
+                    clerkEmergencyContactName: formData.emergencyContactName,
+                    clerkEmergencyContact: formData.emergencyContact,
                 }),
             });
 
@@ -141,23 +151,23 @@ export default function ClerkProfilePage() {
     }
 
     const serviceDetails = [
-        { label: "Service Number", value: profile.clerkServiceNo || "N/A", icon: Shield },
-        { label: "Rank", value: profile.clerkRank || "N/A", icon: Award },
-        { label: "Unit", value: profile.clerkUnit || "N/A", icon: Shield },
+        { label: "Service Number", value: profile.clerkServiceNo || profile.serviceNo || "N/A", icon: Shield },
+        { label: "Rank", value: profile.clerkRank || profile.rank || "N/A", icon: Award },
+        { label: "Unit", value: profile.clerkUnit || profile.unit || "N/A", icon: Shield },
         { label: "Role", value: profile.clerkRole || "N/A", icon: Shield },
-        { label: "Date of Joining", value: profile.clerkDateOfJoining ? new Date(profile.clerkDateOfJoining).toLocaleDateString() : "N/A", icon: Calendar },
+        { label: "Date of Joining", value: (profile.clerkDateOfJoining || profile.dateOfJoining) ? new Date(profile.clerkDateOfJoining || profile.dateOfJoining!).toLocaleDateString() : "N/A", icon: Calendar },
     ];
 
     const personalDetails = [
         { label: "Email", value: profile.email, icon: Mail },
-        { label: "Phone", value: profile.clerkPhone || "N/A", icon: Phone },
-        { label: "Address", value: profile.clerkAddress || "N/A", icon: MapPin },
+        { label: "Phone", value: profile.clerkPhone || profile.phone || "N/A", icon: Phone },
+        { label: "Address", value: profile.clerkAddress || profile.address || "N/A", icon: MapPin },
         { label: "Status", value: "Active", icon: Shield },
     ];
 
     const emergencyInfo = [
-        { label: "Emergency Contact Name", value: profile.clerkEmergencyContactName || "N/A" },
-        { label: "Emergency Contact Number", value: profile.clerkEmergencyContact || "N/A" },
+        { label: "Emergency Contact Name", value: profile.clerkEmergencyContactName || profile.emergencyContactName || "N/A" },
+        { label: "Emergency Contact Number", value: profile.clerkEmergencyContact || profile.emergencyContact || "N/A" },
     ];
 
     return (
@@ -249,16 +259,16 @@ export default function ClerkProfilePage() {
                                 <h2 className="text-3xl font-bold mb-2">{profile.fullName}</h2>
                                 <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
                                     <Badge className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-                                        {profile.clerkRank || "N/A"}
+                                        {profile.clerkRank || profile.rank || "N/A"}
                                     </Badge>
                                     <Badge className="bg-white/20 hover:bg-white/30 text-white border-white/30">
-                                        {profile.clerkServiceNo || "N/A"}
+                                        {profile.clerkServiceNo || profile.serviceNo || "N/A"}
                                     </Badge>
                                     <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white border-none">
                                         Active
                                     </Badge>
                                 </div>
-                                <p className="text-lg opacity-90 mb-2">{profile.clerkUnit || "Unit not set"}</p>
+                                <p className="text-lg opacity-90 mb-2">{profile.clerkUnit || profile.unit || "Unit not set"}</p>
                                 <div className="flex flex-wrap gap-4 text-sm opacity-90 justify-center md:justify-start">
                                     <span className="flex items-center gap-1">
                                         <Mail className="w-4 h-4" />
@@ -266,7 +276,7 @@ export default function ClerkProfilePage() {
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <Phone className="w-4 h-4" />
-                                        {profile.clerkPhone || "N/A"}
+                                        {profile.clerkPhone || profile.phone || "N/A"}
                                     </span>
                                 </div>
                             </div>
