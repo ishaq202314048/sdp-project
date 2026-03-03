@@ -8,7 +8,6 @@ import {
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
-    navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Home, User, Shield, FileText } from "lucide-react";
 
@@ -68,12 +67,15 @@ export function AdjutantNav() {
     }, [pathname]); // Re-check when pathname changes (e.g., after acknowledging on reports page)
 
     return (
-        <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
+        <NavigationMenu className="flex">
+            <NavigationMenuList className="flex-wrap">
                 {navitems.map((item) => (
                     <NavigationMenuItem key={item.href}>
-                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                            <Link href={item.href}>
+                        <NavigationMenuLink asChild>
+                            <Link 
+                                href={item.href}
+                                className="inline-flex h-9 items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                            >
                                 <span className="flex items-center gap-2 relative">
                                     {item.icon}
                                     {item.title}
