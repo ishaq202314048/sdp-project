@@ -80,8 +80,8 @@ export async function GET(request: NextRequest) {
       unackedAlerts.push("no-unfit-plan");
     }
 
-    // Check for unacknowledged clerk reports
-    const clerkReports = await db.sql`SELECT id FROM Report WHERE sentTo = 'adjutant'`;
+    // Check for unacknowledged clerk reports (only clerk-report type, not new-soldiers)
+    const clerkReports = await db.sql`SELECT id FROM Report WHERE type = 'clerk-report' AND sentTo = 'adjutant'`;
     if (Array.isArray(clerkReports)) {
       for (const report of clerkReports) {
         if (!acknowledgedIds.has(`clerk-report-${report.id}`)) {
