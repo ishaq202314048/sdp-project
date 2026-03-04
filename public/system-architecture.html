@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackTroop — System Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #020617;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px 60px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 40px;
+        }
+
+        .architecture {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            position: relative;
+        }
+
+        /* ── Layer styling ── */
+        .layer {
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+        }
+        .layer-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .layer-label .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Client Layer */
+        .client-layer {
+            background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.03));
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+        .client-layer .layer-label { color: #60a5fa; }
+        .client-layer .dot { background: #3b82f6; }
+
+        /* Server Layer */
+        .server-layer {
+            background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(16,185,129,0.03));
+            border: 1px solid rgba(16,185,129,0.2);
+        }
+        .server-layer .layer-label { color: #34d399; }
+        .server-layer .dot { background: #10b981; }
+
+        /* API Layer */
+        .api-layer {
+            background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(168,85,247,0.03));
+            border: 1px solid rgba(168,85,247,0.2);
+        }
+        .api-layer .layer-label { color: #c084fc; }
+        .api-layer .dot { background: #a855f7; }
+
+        /* Database Layer */
+        .db-layer {
+            background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03));
+            border: 1px solid rgba(245,158,11,0.2);
+        }
+        .db-layer .layer-label { color: #fbbf24; }
+        .db-layer .dot { background: #f59e0b; }
+
+        /* Deploy Layer */
+        .deploy-layer {
+            background: linear-gradient(135deg, rgba(236,72,153,0.08), rgba(236,72,153,0.03));
+            border: 1px solid rgba(236,72,153,0.2);
+        }
+        .deploy-layer .layer-label { color: #f472b6; }
+        .deploy-layer .dot { background: #ec4899; }
+
+        /* ── Cards inside layers ── */
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card {
+            background: rgba(15,23,42,0.7);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 16px 20px;
+            flex: 1;
+            min-width: 200px;
+            backdrop-filter: blur(10px);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .card:hover {
+            border-color: rgba(255,255,255,0.15);
+            transform: translateY(-2px);
+        }
+        .card-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+        .card-desc {
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        .card-tech {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .tag-blue   { background: rgba(59,130,246,0.15);  color: #60a5fa; }
+        .tag-green  { background: rgba(16,185,129,0.15);  color: #34d399; }
+        .tag-purple { background: rgba(168,85,247,0.15);  color: #c084fc; }
+        .tag-orange { background: rgba(245,158,11,0.15);  color: #fbbf24; }
+        .tag-pink   { background: rgba(236,72,153,0.15);  color: #f472b6; }
+        .tag-slate  { background: rgba(100,116,139,0.15); color: #94a3b8; }
+
+        /* Role cards (wider) */
+        .role-card {
+            min-width: 280px;
+        }
+        .role-pages {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .page-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.05);
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* API endpoint groups */
+        .api-group {
+            min-width: 150px;
+            flex: 1;
+        }
+        .api-group .endpoint {
+            font-size: 11px;
+            color: #94a3b8;
+            padding: 3px 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+        .api-group .endpoint .method {
+            font-weight: 700;
+            font-size: 10px;
+            display: inline-block;
+            width: 38px;
+            text-align: center;
+            border-radius: 4px;
+            padding: 1px 0;
+            margin-right: 4px;
+        }
+        .method-get    { background: rgba(16,185,129,0.2); color: #34d399; }
+        .method-post   { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .method-patch  { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .method-delete { background: rgba(239,68,68,0.2);  color: #f87171; }
+
+        /* Arrow connectors between layers */
+        .arrow-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            color: #334155;
+            font-size: 12px;
+        }
+        .arrow-row .line {
+            width: 1px;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+        }
+        .arrow-row svg {
+            opacity: 0.3;
+        }
+        .arrow-label {
+            font-size: 10px;
+            color: #475569;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* DB table list */
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+        }
+        .db-table {
+            background: rgba(245,158,11,0.06);
+            border: 1px solid rgba(245,158,11,0.15);
+            border-radius: 8px;
+            padding: 10px 14px;
+        }
+        .db-table-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fbbf24;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+        .db-table-desc {
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 11px;
+            color: #334155;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>TrackTroop — System Architecture</h1>
+    <p class="subtitle">Military Fitness Tracking & Management System</p>
+
+    <div class="architecture">
+
+        <!-- ═══════════════════ LAYER 1: CLIENT / PRESENTATION ═══════════════════ -->
+        <div class="layer client-layer">
+            <div class="layer-label"><span class="dot"></span> Presentation Layer — Client-Side (React)</div>
+            <div class="cards">
+                <div class="card role-card">
+                    <div class="card-icon">🎖️</div>
+                    <div class="card-title">Adjutant Dashboard</div>
+                    <div class="card-desc">Administrative oversight — soldiers, alerts, fitness tests, reports, profile</div>
+                    <div class="role-pages">
+                        <span class="page-tag">Home</span>
+                        <span class="page-tag">Soldiers</span>
+                        <span class="page-tag">Fitness Tests</span>
+                        <span class="page-tag">Alerts</span>
+                        <span class="page-tag">Reports</span>
+                        <span class="page-tag">Profile</span>
+                    </div>
+                    <div class="card-tech">
+                        <span class="tag tag-blue">React</span>
+                        <span class="tag tag-blue">Recharts</span>
+                        <span class="tag tag-blue">pdf-lib</span>
+                    </div>
+                </div>
+                <div class="card role-card">
+                    <div class="card-icon">📋</div>
+                    <div class="card-title">Clerk Dashboard</div>
+                    <div class="card-desc">Data entry & reporting — soldiers list, overview, reports, profile</div>
+                    <div class="role-pages">
+                        <span class="page-tag">Home</span>
+                        <span class="page-tag">Overview</span>
+                        <span class="page-tag">Soldiers</span>
+                        <span class="page-tag">Reports</span>
+                        <span class="page-tag">Profile</span>
+                    </div>
+                    <div class="card-tech">
+                        <span class="tag tag-blue">React</span>
+                        <span class="tag tag-blue">Recharts</span>
+                    </div>
+                </div>
+                <div class="card role-card">
+                    <div class="card-icon">🪖</div>
+                    <div class="card-title">Soldier Dashboard</div>
+                    <div class="card-desc">Personal fitness tracking — fitness status, progress, exercises, profile</div>
+                    <div class="role-pages">
+                        <span class="page-tag">Home</span>
+                        <span class="page-tag">Fitness</span>
+                        <span class="page-tag">Progress</span>
+                        <span class="page-tag">Profile</span>
+                    </div>
+                    <div class="card-tech">
+                        <span class="tag tag-blue">React</span>
+                        <span class="tag tag-blue">Recharts</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔐</div>
+                    <div class="card-title">Auth Pages</div>
+                    <div class="card-desc">Login, Signup, Forgot Password with role-based routing</div>
+                    <div class="card-tech">
+                        <span class="tag tag-blue">JWT</span>
+                        <span class="tag tag-blue">localStorage</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+            <span class="arrow-label">HTTP Requests / JSON</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </div>
+
+        <!-- ═══════════════════ LAYER 2: SERVER FRAMEWORK ═══════════════════ -->
+        <div class="layer server-layer">
+            <div class="layer-label"><span class="dot"></span> Application Layer — Next.js 16 (App Router)</div>
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <div class="card-title">Next.js App Router</div>
+                    <div class="card-desc">Server-side rendering, file-based routing, Turbopack dev server</div>
+                    <div class="card-tech">
+                        <span class="tag tag-green">Next.js 16.1.1</span>
+                        <span class="tag tag-green">Turbopack</span>
+                        <span class="tag tag-green">React 19</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔑</div>
+                    <div class="card-title">Auth Module</div>
+                    <div class="card-desc">JWT token generation & verification, bcryptjs password hashing</div>
+                    <div class="card-tech">
+                        <span class="tag tag-green">jsonwebtoken</span>
+                        <span class="tag tag-green">bcryptjs</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🎨</div>
+                    <div class="card-title">UI Components</div>
+                    <div class="card-desc">Reusable shadcn/ui components — Card, Button, Dialog, Badge, Input, Select</div>
+                    <div class="card-tech">
+                        <span class="tag tag-green">shadcn/ui</span>
+                        <span class="tag tag-green">Tailwind CSS</span>
+                        <span class="tag tag-green">Lucide Icons</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🗃️</div>
+                    <div class="card-title">DB Client (lib/)</div>
+                    <div class="card-desc">Singleton SQLite Cloud connection, user CRUD helpers, type definitions</div>
+                    <div class="card-tech">
+                        <span class="tag tag-green">sqlitecloud-client.ts</span>
+                        <span class="tag tag-green">db.ts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+            <span class="arrow-label">Route Handlers</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </div>
+
+        <!-- ═══════════════════ LAYER 3: API ROUTES ═══════════════════ -->
+        <div class="layer api-layer">
+            <div class="layer-label"><span class="dot"></span> API Layer — Next.js Route Handlers (/api/*)</div>
+            <div class="cards">
+                <div class="card api-group">
+                    <div class="card-title">🔐 Auth</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/auth/login</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/auth/signup</div>
+                </div>
+                <div class="card api-group">
+                    <div class="card-title">👤 Profile</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/profile</div>
+                    <div class="endpoint"><span class="method method-patch">PATCH</span>/api/profile</div>
+                </div>
+                <div class="card api-group">
+                    <div class="card-title">🪖 Soldiers</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/soldiers</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/soldiers/approve</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/soldiers/new</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/soldiers/unit-overview</div>
+                    <div class="endpoint"><span class="method method-delete">DEL</span>/api/soldiers (delete)</div>
+                </div>
+                <div class="card api-group">
+                    <div class="card-title">💪 Fitness</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/fitness</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/fitness/assign</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/fitness/plans</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/fitness/calculate-status</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/fitness/monthly-trend</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/fitness/reports-chart</div>
+                </div>
+                <div class="card api-group">
+                    <div class="card-title">🏋️ Fitness Tests</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/fitness-test/create</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/fitness-test/ipft-results</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/fitness-test/ipft-date</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/soldier-fitness-tests</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/soldier-exercises</div>
+                </div>
+                <div class="card api-group">
+                    <div class="card-title">📊 Reports & Alerts</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/reports/new-soldiers</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/reports/new-soldiers</div>
+                    <div class="endpoint"><span class="method method-delete">DEL</span>/api/reports/new-soldiers</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/reports/clerk-report</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/acknowledged-alerts</div>
+                    <div class="endpoint"><span class="method method-post">POST</span>/api/acknowledged-alerts</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/unacknowledged-alerts-count</div>
+                    <div class="endpoint"><span class="method method-get">GET</span>/api/high-risk-soldiers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+            <span class="arrow-label">SQL Queries via @sqlitecloud/drivers</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </div>
+
+        <!-- ═══════════════════ LAYER 4: DATABASE ═══════════════════ -->
+        <div class="layer db-layer">
+            <div class="layer-label"><span class="dot"></span> Data Layer — SQLite Cloud</div>
+            <div class="table-grid">
+                <div class="db-table">
+                    <div class="db-table-name">User</div>
+                    <div class="db-table-desc">Soldiers, Clerks, Adjutants — all roles in one table with prefixed fields</div>
+                </div>
+                <div class="db-table">
+                    <div class="db-table-name">FitnessTest</div>
+                    <div class="db-table-desc">Exercise results per soldier — Pass/Fail, durations, justified by clerk</div>
+                </div>
+                <div class="db-table">
+                    <div class="db-table-name">FitnessPlan</div>
+                    <div class="db-table-desc">Weekly workout plans for Fit & Unfit soldiers</div>
+                </div>
+                <div class="db-table">
+                    <div class="db-table-name">Report</div>
+                    <div class="db-table-desc">Clerk → Adjutant reports (new soldiers, clerk reports)</div>
+                </div>
+                <div class="db-table">
+                    <div class="db-table-name">AcknowledgedAlert</div>
+                    <div class="db-table-desc">Tracks which alerts the adjutant has acknowledged</div>
+                </div>
+                <div class="db-table">
+                    <div class="db-table-name">IpftDate</div>
+                    <div class="db-table-desc">Scheduled IPFT test dates</div>
+                </div>
+                <div class="db-table">
+                    <div class="db-table-name">LoginSession</div>
+                    <div class="db-table-desc">Tracks user login sessions, IP, user-agent</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arrow -->
+        <div class="arrow-row">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+            <span class="arrow-label">Deployed via</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </div>
+
+        <!-- ═══════════════════ LAYER 5: DEPLOYMENT ═══════════════════ -->
+        <div class="layer deploy-layer">
+            <div class="layer-label"><span class="dot"></span> Deployment & Infrastructure</div>
+            <div class="cards">
+                <div class="card">
+                    <div class="card-icon">▲</div>
+                    <div class="card-title">Vercel</div>
+                    <div class="card-desc">Auto-deploy from GitHub on push to main branch. Edge-optimized hosting.</div>
+                    <div class="card-tech">
+                        <span class="tag tag-pink">troop-track.vercel.app</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🐙</div>
+                    <div class="card-title">GitHub</div>
+                    <div class="card-desc">Source control — ishaq202314048/sdp-project, main branch</div>
+                    <div class="card-tech">
+                        <span class="tag tag-pink">Git</span>
+                        <span class="tag tag-pink">CI/CD</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">☁️</div>
+                    <div class="card-title">SQLite Cloud</div>
+                    <div class="card-desc">Managed cloud database — auth.sqlitecloud via @sqlitecloud/drivers</div>
+                    <div class="card-tech">
+                        <span class="tag tag-pink">Managed DB</span>
+                        <span class="tag tag-pink">TLS</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">pnpm</div>
+                    <div class="card-desc">Fast, disk-efficient package manager for dependency management</div>
+                    <div class="card-tech">
+                        <span class="tag tag-pink">pnpm 10.x</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        TrackTroop System Architecture — Software Development Project 2026
+    </div>
+
+</body>
+</html>
